@@ -2,7 +2,7 @@
 /* vim:set et sts=4: */
 /* ibus - The Input Bus
  * Copyright (C) 2008-2013 Peng Huang <shawn.p.huang@gmail.com>
- * Copyright (C) 2018-2019 Takao Fujiwara <takao.fujiwara1@gmail.com>
+ * Copyright (C) 2018-2023 Takao Fujiwara <takao.fujiwara1@gmail.com>
  * Copyright (C) 2008-2019 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -55,6 +55,7 @@ enum {
     CURSOR_DOWN_LOOKUP_TABLE,
     REGISTER_PROPERTIES,
     UPDATE_PROPERTY,
+    REQUIRE_SURROUNDING_TEXT,
     LAST_SIGNAL,
 };
 
@@ -488,6 +489,21 @@ ibus_input_context_class_init (IBusInputContextClass *class)
             1,
             IBUS_TYPE_PROPERTY);
 
+    /**
+     * IBusInputContext::require-surrounding-text:
+     * @context: An IBusInputContext.
+     *
+     * Emitted to receive the RequireSurroundingText signal from the daemon.
+     */
+    context_signals[REQUIRE_SURROUNDING_TEXT] =
+        g_signal_new (I_("require-surrounding-text"),
+            G_TYPE_FROM_CLASS (class),
+            G_SIGNAL_RUN_LAST,
+            0,
+            NULL, NULL,
+            _ibus_marshal_VOID__VOID,
+            G_TYPE_NONE, 0);
+
     text_empty = ibus_text_new_from_static_string ("");
     g_object_ref_sink (text_empty);
 }
@@ -549,8 +565,10 @@ ibus_input_context_g_signal (GDBusProxy  *proxy,
         g_variant_unref (variant);
         g_signal_emit (context, context_signals[COMMIT_TEXT], 0, text);
 
-        if (g_object_is_floating (text))
+        if (g_object_is_floating (text)) {
+            g_object_ref_sink (text);
             g_object_unref (text);
+        }
         return;
     }
     if (g_strcmp0 (signal_name, "UpdatePreeditText") == 0) {
@@ -568,8 +586,10 @@ ibus_input_context_g_signal (GDBusProxy  *proxy,
                        cursor_pos,
                        visible);
 
-        if (g_object_is_floating (text))
+        if (g_object_is_floating (text)) {
+            g_object_ref_sink (text);
             g_object_unref (text);
+        }
         return;
     }
     if (g_strcmp0 (signal_name, "UpdatePreeditTextWithMode") == 0) {
@@ -590,8 +610,10 @@ ibus_input_context_g_signal (GDBusProxy  *proxy,
                        visible,
                        mode);
 
-        if (g_object_is_floating (text))
+        if (g_object_is_floating (text)) {
+            g_object_ref_sink (text);
             g_object_unref (text);
+        }
         return;
     }
 
@@ -618,8 +640,10 @@ ibus_input_context_g_signal (GDBusProxy  *proxy,
                        0,
                        text,
                        visible);
-        if (g_object_is_floating (text))
+        if (g_object_is_floating (text)) {
+            g_object_ref_sink (text);
             g_object_unref (text);
+        }
         return;
     }
 
@@ -636,8 +660,10 @@ ibus_input_context_g_signal (GDBusProxy  *proxy,
                        0,
                        table,
                        visible);
-        if (g_object_is_floating (table))
+        if (g_object_is_floating (table)) {
+            g_object_ref_sink (table);
             g_object_unref (table);
+        }
         return;
 
     }
@@ -654,8 +680,10 @@ ibus_input_context_g_signal (GDBusProxy  *proxy,
                        0,
                        prop_list);
 
-        if (g_object_is_floating (prop_list))
+        if (g_object_is_floating (prop_list)) {
+            g_object_ref_sink (prop_list);
             g_object_unref (prop_list);
+        }
         return;
     }
 
@@ -667,8 +695,10 @@ ibus_input_context_g_signal (GDBusProxy  *proxy,
 
         g_signal_emit (context, context_signals[UPDATE_PROPERTY], 0, prop);
 
-        if (g_object_is_floating (prop))
+        if (g_object_is_floating (prop)) {
+            g_object_ref_sink (prop);
             g_object_unref (prop);
+        }
         return;
     }
 
@@ -721,6 +751,7 @@ ibus_input_context_g_signal (GDBusProxy  *proxy,
 
     if (g_strcmp0 (signal_name, "RequireSurroundingText") == 0) {
         priv->needs_surrounding_text = TRUE;
+        g_signal_emit (context, context_signals[REQUIRE_SURROUNDING_TEXT], 0);
         return;
     }
 
@@ -1102,9 +1133,19 @@ ibus_input_context_set_surrounding_text (IBusInputContext   *context,
 
     priv = IBUS_INPUT_CONTEXT_GET_PRIVATE (context);
 
+    /* This API should send "SetSurroundingText" D-Bus method when
+     * input contexts are switched between tabs in a text application
+     * so that engines can receive the updated surrounding texts after
+     * focus-in events happen.
+     *
+     * GNOME shell uses a single input context and the address of the input
+     * contexts are always same. So check the address of texts if the input
+     * contexts on applications are switched.
+     */
     if (cursor_pos != priv->surrounding_cursor_pos ||
         anchor_pos != priv->selection_anchor_pos ||
         priv->surrounding_text == NULL ||
+        text != priv->surrounding_text ||
         g_strcmp0 (text->text, priv->surrounding_text->text) != 0) {
         if (priv->surrounding_text)
             g_object_unref (priv->surrounding_text);
@@ -1149,14 +1190,14 @@ ibus_input_context_set_content_type (IBusInputContext *context,
     g_assert (IBUS_IS_INPUT_CONTEXT (context));
 
     cached_content_type =
-        g_dbus_proxy_get_cached_property ((GDBusProxy *) context,
+        g_dbus_proxy_get_cached_property ((GDBusProxy *)context,
                                           "ContentType");
     content_type = g_variant_new ("(uu)", purpose, hints);
 
     g_variant_ref_sink (content_type);
-    if (cached_content_type == NULL ||
+    if (!cached_content_type ||
         !g_variant_equal (content_type, cached_content_type)) {
-        g_dbus_proxy_call ((GDBusProxy *) context,
+        g_dbus_proxy_call ((GDBusProxy *)context,
                            "org.freedesktop.DBus.Properties.Set",
                            g_variant_new ("(ssv)",
                                           IBUS_INTERFACE_INPUT_CONTEXT,
@@ -1168,9 +1209,13 @@ ibus_input_context_set_content_type (IBusInputContext *context,
                            NULL, /* callback */
                            NULL  /* user_data */
                            );
+        /* Need to update the cache by manual since there is a timing issue. */
+        g_dbus_proxy_set_cached_property ((GDBusProxy *)context,
+                                          "ContentType",
+                                          content_type);
     }
 
-    if (cached_content_type != NULL)
+    if (cached_content_type)
         g_variant_unref (cached_content_type);
     g_variant_unref (content_type);
 }
@@ -1283,19 +1328,20 @@ void
 ibus_input_context_set_client_commit_preedit (IBusInputContext *context,
                                               gboolean          client_commit)
 {
-    GVariant *cached_content_type;
+    GVariant *cached_var_client_commit;
     GVariant *var_client_commit;
 
     g_assert (IBUS_IS_INPUT_CONTEXT (context));
 
-    cached_content_type =
-        g_dbus_proxy_get_cached_property ((GDBusProxy *) context,
+    cached_var_client_commit =
+        g_dbus_proxy_get_cached_property ((GDBusProxy *)context,
                                           "ClientCommitPreedit");
     var_client_commit = g_variant_new ("(b)", client_commit);
 
     g_variant_ref_sink (var_client_commit);
-    if (cached_content_type == NULL) {
-        g_dbus_proxy_call ((GDBusProxy *) context,
+    if (!cached_var_client_commit ||
+        !g_variant_equal (var_client_commit, cached_var_client_commit)) {
+        g_dbus_proxy_call ((GDBusProxy *)context,
                            "org.freedesktop.DBus.Properties.Set",
                            g_variant_new ("(ssv)",
                                           IBUS_INTERFACE_INPUT_CONTEXT,
@@ -1307,11 +1353,144 @@ ibus_input_context_set_client_commit_preedit (IBusInputContext *context,
                            NULL, /* callback */
                            NULL  /* user_data */
                            );
+        /* Need to update the cache by manual since there is a timing issue. */
+        g_dbus_proxy_set_cached_property ((GDBusProxy *)context,
+                                          "ClientCommitPreedit",
+                                          var_client_commit);
     }
 
-    if (cached_content_type != NULL)
-        g_variant_unref (cached_content_type);
+    if (cached_var_client_commit)
+        g_variant_unref (cached_var_client_commit);
     g_variant_unref (var_client_commit);
+}
+
+void
+ibus_input_context_set_post_process_key_event (IBusInputContext *context,
+                                               gboolean          enable)
+{
+    GVariant *cached_var_post;
+    GVariant *var_post;
+
+    g_assert (IBUS_IS_INPUT_CONTEXT (context));
+
+    cached_var_post =
+        g_dbus_proxy_get_cached_property ((GDBusProxy *)context,
+                                          "EffectivePostProcessKeyEvent");
+    var_post = g_variant_new ("(b)", enable);
+    g_variant_ref_sink (var_post);
+    if (!cached_var_post ||
+        !g_variant_equal (var_post, cached_var_post)) {
+        g_dbus_proxy_call ((GDBusProxy *)context,
+                           "org.freedesktop.DBus.Properties.Set",
+                           g_variant_new ("(ssv)",
+                                          IBUS_INTERFACE_INPUT_CONTEXT,
+                                          "EffectivePostProcessKeyEvent",
+                                          var_post),
+                           G_DBUS_CALL_FLAGS_NONE,
+                           -1,
+                           NULL, /* cancellable */
+                           NULL, /* callback */
+                           NULL  /* user_data */
+                           );
+        /* Need to update the cache by manual since there is a timing issue. */
+        g_dbus_proxy_set_cached_property ((GDBusProxy *)context,
+                                          "EffectivePostProcessKeyEvent",
+                                          var_post);
+    }
+
+    if (cached_var_post)
+        g_variant_unref (cached_var_post);
+    g_variant_unref (var_post);
+}
+
+void
+ibus_input_context_post_process_key_event (IBusInputContext *context)
+{
+    GVariant *cached_var_post;
+    gboolean enable = FALSE;
+    GVariant *result;
+    GError *error = NULL;
+    GVariant *variant = NULL;
+    GVariantIter iter;
+    gsize size;
+    char type = 0;
+    GVariant *vtext = NULL;
+
+    g_assert (IBUS_IS_INPUT_CONTEXT (context));
+
+    cached_var_post =
+        g_dbus_proxy_get_cached_property ((GDBusProxy *)context,
+                                          "EffectivePostProcessKeyEvent");
+    if (cached_var_post)
+        g_variant_get (cached_var_post, "(b)", &enable);
+    if (!enable) {
+        g_warning ("%s: ibus_input_context_set_post_process_key_event() "
+                   "needs to be called before.",
+                   G_STRFUNC);
+        if (cached_var_post)
+            g_variant_unref (cached_var_post);
+        return;
+    }
+    g_variant_unref (cached_var_post);
+    result = g_dbus_proxy_call_sync (
+            (GDBusProxy *)context,
+            "org.freedesktop.DBus.Properties.Get",
+            g_variant_new ("(ss)",
+                           IBUS_INTERFACE_INPUT_CONTEXT,
+                           "PostProcessKeyEvent"),
+            G_DBUS_CALL_FLAGS_NONE,
+            -1,
+            NULL,
+            &error);
+    if (error) {
+        g_warning ("%s: %s", G_STRFUNC, error->message);
+        g_error_free (error);
+        return;
+    }
+
+    g_variant_get (result, "(v)", &variant);
+    g_assert (variant);
+    g_variant_iter_init (&iter, variant);
+    size = g_variant_iter_n_children (&iter);
+    while (size >0 && g_variant_iter_loop (&iter, "(yv)", &type, &vtext)) {
+        IBusText *text =
+                (IBusText *)ibus_serializable_deserialize_object (vtext);
+        if (!IBUS_IS_TEXT (text)) {
+            g_warning ("%s: %s", G_STRFUNC, "text is not IBusText");
+            break;
+        }
+        switch (type) {
+        case 'c':
+            g_signal_emit (context, context_signals[COMMIT_TEXT], 0, text);
+            break;
+        case 'f': {
+            gchar **array = NULL;
+            guint keyval, keycode, state;
+            array = g_strsplit (text->text, ",", -1);
+            keyval = g_ascii_strtoull (array[0], NULL, 10);
+            keycode = g_ascii_strtoull (array[1], NULL, 10);
+            state = g_ascii_strtoull (array[2], NULL, 10);
+            g_strfreev (array);
+            g_signal_emit (context,
+                           context_signals[FORWARD_KEY_EVENT],
+                           0,
+                           keyval,
+                           keycode,
+                           state | IBUS_FORWARD_MASK);
+            break;
+        }
+        default:
+            g_warning ("%s: Type '%c' is not supported.", G_STRFUNC, type);
+        }
+        if (g_object_is_floating (text)) {
+            g_object_ref_sink (text);
+            g_object_unref (text);
+        }
+        g_clear_pointer (&vtext, g_variant_unref);
+    }
+
+    g_variant_unref (variant);
+    g_variant_unref (result);
 }
 
 #define DEFINE_FUNC(name, Name)                                         \

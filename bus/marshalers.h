@@ -120,10 +120,19 @@ void bus_marshal_VOID__UINT_UINT_UINT (GClosure     *closure,
                                        gpointer      invocation_hint,
                                        gpointer      marshal_data);
 
-/* VOID:VARIANT (./marshalers.list:15) */
+/* VOID:UINT,BOOLEAN,BOOLEAN (./marshalers.list:15) */
+G_GNUC_INTERNAL
+void bus_marshal_VOID__UINT_BOOLEAN_BOOLEAN (GClosure     *closure,
+                                             GValue       *return_value,
+                                             guint         n_param_values,
+                                             const GValue *param_values,
+                                             gpointer      invocation_hint,
+                                             gpointer      marshal_data);
+
+/* VOID:VARIANT (./marshalers.list:16) */
 #define bus_marshal_VOID__VARIANT	g_cclosure_marshal_VOID__VARIANT
 
-/* VOID:VOID (./marshalers.list:16) */
+/* VOID:VOID (./marshalers.list:17) */
 #define bus_marshal_VOID__VOID	g_cclosure_marshal_VOID__VOID
 
 

@@ -1,7 +1,10 @@
+#! /usr/bin/dh-exec
 etc/dconf/*
+etc/xdg/Xwayland-session.d/*
 usr/bin/ibus
 usr/bin/ibus-daemon
 usr/bin/ibus-setup
+[linux-any] usr/lib/systemd/user/*
 usr/libexec/ibus-dconf
 usr/libexec/ibus-engine-simple
 usr/libexec/ibus-extension-gtk3

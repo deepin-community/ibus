@@ -2,7 +2,7 @@
 /* vim:set et sts=4: */
 /* ibus - The Input Bus
  * Copyright (C) 2014 Peng Huang <shawn.p.huang@gmail.com>
- * Copyright (C) 2015-2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
+ * Copyright (C) 2015-2023 Takao Fujiwara <takao.fujiwara1@gmail.com>
  * Copyright (C) 2014-2017 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -34,16 +34,9 @@
 #include "ibuskeysyms.h"
 #include "ibusutil.h"
 
-/* This file contains the table of the compose sequences,
- * static const guint16 gtk_compose_seqs_compact[] = {}
- * It is generated from the compose-parse.py script.
- */
-#include "gtkimcontextsimpleseqs.h"
-
 #include <memory.h>
 #include <stdlib.h>
 
-#define X11_DATADIR X11_DATA_PREFIX "/share/X11/locale"
 #define IBUS_ENGINE_SIMPLE_GET_PRIVATE(o)  \
    ((IBusEngineSimplePrivate *)ibus_engine_simple_get_instance_private (o))
 
@@ -52,7 +45,7 @@
         COMPOSE_BUFFER_SIZE < IBUS_MAX_COMPOSE_LEN) {                   \
         COMPOSE_BUFFER_SIZE = ((index) + 10) < IBUS_MAX_COMPOSE_LEN     \
                               ? ((index) + 10) : IBUS_MAX_COMPOSE_LEN;  \
-        (buffer) = g_renew (guint16, (buffer), COMPOSE_BUFFER_SIZE + 1);\
+        (buffer) = g_renew (guint, (buffer), COMPOSE_BUFFER_SIZE + 1);  \
     }                                                                   \
     if ((index) < COMPOSE_BUFFER_SIZE) {                                \
         (buffer)[(index)] = (value);                                    \
@@ -77,7 +70,7 @@ typedef struct {
 } IBusEngineDict;
 
 struct _IBusEngineSimplePrivate {
-    guint16            *compose_buffer;
+    guint              *compose_buffer;
     GString            *tentative_match;
     int                 tentative_match_len;
     char               *tentative_emoji;
@@ -90,33 +83,6 @@ struct _IBusEngineSimplePrivate {
     IBusEngineDict     *emoji_dict;
     IBusLookupTable    *lookup_table;
     gboolean            lookup_table_visible;
-};
-
-/* From the values below, the value 30 means the number of different first keysyms
- * that exist in the Compose file (from Xorg). When running compose-parse.py without
- * parameters, you get the count that you can put here. Needed when updating the
- * gtkimcontextsimpleseqs.h header file (contains the compose sequences).
- * Assign the value of "Number of different first items" of compose-parse.py
- * to n_seqs in IBusComposeTableCompact
- */
-IBusComposeTableCompactPrivate ibus_compose_table_compact_32bit_priv = {
-    gtk_compose_seqs_compact_32bit_second
-};
-
-const IBusComposeTableCompactEx ibus_compose_table_compact = {
-    NULL,
-    gtk_compose_seqs_compact,
-    5,
-    30,
-    6
-};
-
-const IBusComposeTableCompactEx ibus_compose_table_compact_32bit = {
-    &ibus_compose_table_compact_32bit_priv,
-    gtk_compose_seqs_compact_32bit_first,
-    5,
-    9,
-    6
 };
 
 guint COMPOSE_BUFFER_SIZE = 20;
@@ -174,13 +140,35 @@ ibus_engine_simple_class_init (IBusEngineSimpleClass *class)
 static void
 ibus_engine_simple_init (IBusEngineSimple *simple)
 {
+    GBytes *data;
+    GError *error = NULL;
+    const char *contents;
+    gsize length = 0;
+    IBusComposeTableEx *en_compose_table;
+
     simple->priv = IBUS_ENGINE_SIMPLE_GET_PRIVATE (simple);
-    simple->priv->compose_buffer = g_new0(guint16, COMPOSE_BUFFER_SIZE + 1);
+    simple->priv->compose_buffer = g_new0 (guint, COMPOSE_BUFFER_SIZE + 1);
     simple->priv->hex_mode_enabled =
         g_getenv("IBUS_ENABLE_CTRL_SHIFT_U") != NULL ||
         g_getenv("IBUS_ENABLE_CONTROL_SHIFT_U") != NULL;
     simple->priv->tentative_match = g_string_new ("");
     simple->priv->tentative_match_len = 0;
+    data = g_resources_lookup_data ("/org/freedesktop/ibus/compose/sequences",
+                                    G_RESOURCE_LOOKUP_FLAGS_NONE,
+                                    &error);
+    if (error) {
+        g_warning ("Not found compose resource %s", error->message);
+        g_clear_error (&error);
+        return;
+    }
+    contents = g_bytes_get_data (data, &length);
+    en_compose_table = ibus_compose_table_deserialize (contents, length, FALSE);
+    if (!en_compose_table) {
+        g_warning ("Failed to load EN compose table");
+    } else {
+        global_tables = ibus_compose_table_list_add_table (global_tables,
+                                                           en_compose_table);
+    }
 }
 
 
@@ -338,7 +326,7 @@ ibus_engine_simple_update_preedit_text (IBusEngineSimple *simple)
             g_string_append (s, priv->tentative_match->str);
         } else {
             for (i = 0; priv->compose_buffer[i]; ++i) {
-                guint16 keysym = priv->compose_buffer[i];
+                guint keysym = priv->compose_buffer[i];
                 gboolean show_keysym = TRUE;
                 gboolean need_space = FALSE;
                 gunichar ch;
@@ -386,7 +374,7 @@ ibus_engine_simple_update_preedit_text (IBusEngineSimple *simple)
     } else if (s->len >= G_MAXINT) {
         g_warning ("%s is too long compose length: %lu", s->str, s->len);
     } else {
-        int len = (int)s->len;
+        guint len = (guint)g_utf8_strlen (s->str, -1);
         IBusText *text = ibus_text_new_from_string (s->str);
         ibus_text_append_attribute (text,
                 IBUS_ATTR_TYPE_UNDERLINE, IBUS_ATTR_UNDERLINE_SINGLE, 0, len);
@@ -600,15 +588,15 @@ no_sequence_matches (IBusEngineSimple *simple,
      * match pending.
      */
     if (priv->tentative_match_len > 0) {
-        guint16 *compose_buffer;
+        guint *compose_buffer;
         int len = priv->tentative_match_len;
         int i;
         char *str;
 
-        compose_buffer = alloca (sizeof (guint16) * COMPOSE_BUFFER_SIZE);
+        compose_buffer = alloca (sizeof (guint) * COMPOSE_BUFFER_SIZE);
         memcpy (compose_buffer,
                 priv->compose_buffer,
-                sizeof (guint16) * COMPOSE_BUFFER_SIZE);
+                sizeof (guint) * COMPOSE_BUFFER_SIZE);
 
         str = g_strdup (priv->tentative_match->str);
         ibus_engine_simple_commit_str (simple, str);
@@ -661,9 +649,10 @@ no_sequence_matches (IBusEngineSimple *simple,
         ch = ibus_keyval_to_unicode (keyval);
         /* IBUS_CHANGE: RH#769133
          * Since we use ibus xkb engines as the disable state,
-         * do not commit the characters locally without in_hex_sequence. */
-        if (ch != 0 && !g_unichar_iscntrl (ch) &&
-            priv->in_hex_sequence) {
+         * Super-space and space key can launch IBus Emojier.
+         */
+        if (ch != 0 && !g_unichar_iscntrl (ch) && ch > 0x7F) {
+            ibus_engine_simple_commit_char (simple, ch);
             return TRUE;
         } else {
             return FALSE;
@@ -785,7 +774,6 @@ ibus_engine_simple_check_all_compose_table (IBusEngineSimple *simple,
     GString *output = g_string_new ("");
     gboolean success = FALSE;
     gboolean is_32bit = FALSE;
-    gunichar *output_chars = NULL;
     gunichar output_char = '\0';
 
     /* GtkIMContextSimple output the first compose char in case of
@@ -850,57 +838,6 @@ ibus_engine_simple_check_all_compose_table (IBusEngineSimple *simple,
     g_string_free (output, TRUE);
     output = NULL;
 
-    if (ibus_compose_table_compact_check (&ibus_compose_table_compact,
-                                          priv->compose_buffer,
-                                          n_compose,
-                                          &compose_finish,
-                                          &output_chars)) {
-        priv->in_compose_sequence = TRUE;
-        if (compose_finish) {
-            if (success) {
-                g_string_append_unichar (priv->tentative_match, *output_chars);
-                priv->tentative_match_len = n_compose;
-            } else {
-                ibus_engine_simple_commit_char (simple, *output_chars);
-                priv->compose_buffer[0] = 0;
-            }
-            g_free (output_chars);
-            ibus_engine_simple_update_preedit_text (simple);
-            return TRUE;
-        }
-        success = TRUE;
-    }
-    g_free (output_chars);
-    output_chars = NULL;
-    if (ibus_compose_table_compact_check (&ibus_compose_table_compact_32bit,
-                                          priv->compose_buffer,
-                                          n_compose,
-                                          &compose_finish,
-                                          &output_chars)) {
-        priv->in_compose_sequence = TRUE;
-        if (compose_finish) {
-            GError *error = NULL;
-            char *str = g_ucs4_to_utf8 (output_chars, -1, NULL, NULL, &error);
-            if (!str) {
-                g_warning ("Failed to output multiple characters: %s",
-                           error->message);
-                g_error_free (error);
-            } else if (success) {
-                g_string_append (priv->tentative_match, str);
-                priv->tentative_match_len = n_compose;
-            } else {
-                ibus_engine_simple_commit_str (simple, str);
-                priv->compose_buffer[0] = 0;
-            }
-            g_free (str);
-            g_free (output_chars);
-            ibus_engine_simple_update_preedit_text (simple);
-            return TRUE;
-        }
-        success = TRUE;
-    }
-    g_free (output_chars);
-    output_chars = NULL;
     if (ibus_check_algorithmically (priv->compose_buffer,
                                     n_compose,
                                     &output_char)) {
@@ -1448,8 +1385,16 @@ ibus_engine_simple_add_table_by_locale (IBusEngineSimple *simple,
             g_free (path);
             return retval;
         }
-        g_free (path);
-        path = NULL;
+        g_clear_pointer(&path, g_free);
+
+        path = g_build_filename (g_get_user_config_dir (),
+                                 "gtk-4.0", "Compose", NULL);
+        if (g_file_test (path, G_FILE_TEST_EXISTS)) {
+            ibus_engine_simple_add_compose_file (simple, path);
+            g_free (path);
+            return retval;
+        }
+        g_clear_pointer(&path, g_free);
 
         path = g_build_filename (g_get_user_config_dir (),
                                  "gtk-3.0", "Compose", NULL);
@@ -1458,8 +1403,7 @@ ibus_engine_simple_add_table_by_locale (IBusEngineSimple *simple,
             g_free (path);
             return retval;
         }
-        g_free (path);
-        path = NULL;
+        g_clear_pointer(&path, g_free);
 
         home = g_get_home_dir ();
         if (home == NULL)
@@ -1471,8 +1415,7 @@ ibus_engine_simple_add_table_by_locale (IBusEngineSimple *simple,
             g_free (path);
             return retval;
         }
-        g_free (path);
-        path = NULL;
+        g_clear_pointer(&path, g_free);
 
 #if GLIB_CHECK_VERSION (2, 58, 0)
         langs = g_get_language_names_with_category ("LC_CTYPE");
@@ -1497,7 +1440,7 @@ ibus_engine_simple_add_table_by_locale (IBusEngineSimple *simple,
             for (sys_lang = sys_langs; *sys_lang; sys_lang++) {
                 if (g_ascii_strncasecmp (*lang, *sys_lang,
                                          strlen (*sys_lang)) == 0) {
-                    path = g_build_filename (X11_DATADIR,
+                    path = g_build_filename (X11_LOCALEDATADIR,
                                              *lang, "Compose", NULL);
                     break;
                 }
@@ -1508,8 +1451,7 @@ ibus_engine_simple_add_table_by_locale (IBusEngineSimple *simple,
 
             if (g_file_test (path, G_FILE_TEST_EXISTS))
                 break;
-            g_free (path);
-            path = NULL;
+            g_clear_pointer(&path, g_free);
         }
 
 #if !GLIB_CHECK_VERSION (2, 58, 0)
@@ -1518,15 +1460,13 @@ ibus_engine_simple_add_table_by_locale (IBusEngineSimple *simple,
 
         if (path != NULL)
             ibus_engine_simple_add_compose_file (simple, path);
-        g_free (path);
-        path = NULL;
+        g_clear_pointer(&path, g_free);
     } else {
-        path = g_build_filename (X11_DATADIR, locale, "Compose", NULL);
+        path = g_build_filename (X11_LOCALEDATADIR, locale, "Compose", NULL);
         do {
             if (g_file_test (path, G_FILE_TEST_EXISTS))
                 break;
-            g_free (path);
-            path = NULL;
+            g_clear_pointer(&path, g_free);
         } while (0);
         if (path == NULL)
             return retval;

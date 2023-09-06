@@ -35,6 +35,22 @@ ibus_attr_underline_get_type (void)
     }
     return etype;
 }
+/* enumerations from "ibusbus.h" */
+GType
+ibus_bus_global_binding_type_get_type (void)
+{
+    static GType etype = 0;
+    if (G_UNLIKELY(etype == 0)) {
+        static const GEnumValue values[] = {
+            { IBUS_BUS_GLOBAL_BINDING_TYPE_ANY, "IBUS_BUS_GLOBAL_BINDING_TYPE_ANY", "any" },
+            { IBUS_BUS_GLOBAL_BINDING_TYPE_IME_SWITCHER, "IBUS_BUS_GLOBAL_BINDING_TYPE_IME_SWITCHER", "ime-switcher" },
+            { IBUS_BUS_GLOBAL_BINDING_TYPE_EMOJI_TYPING, "IBUS_BUS_GLOBAL_BINDING_TYPE_EMOJI_TYPING", "emoji-typing" },
+            { 0, NULL, NULL }
+        };
+        etype = g_enum_register_static (g_intern_static_string ("IBusBusGlobalBindingType"), values);
+    }
+    return etype;
+}
 /* enumerations from "ibusobject.h" */
 GType
 ibus_object_flags_get_type (void)
@@ -131,6 +147,9 @@ ibus_capabilite_get_type (void)
             { IBUS_CAP_FOCUS, "IBUS_CAP_FOCUS", "focus" },
             { IBUS_CAP_PROPERTY, "IBUS_CAP_PROPERTY", "property" },
             { IBUS_CAP_SURROUNDING_TEXT, "IBUS_CAP_SURROUNDING_TEXT", "surrounding-text" },
+            { IBUS_CAP_OSK, "IBUS_CAP_OSK", "osk" },
+            { IBUS_CAP_SYNC_PROCESS_KEY, "IBUS_CAP_SYNC_PROCESS_KEY", "sync-process-key" },
+            { IBUS_CAP_SYNC_PROCESS_KEY_V2, "IBUS_CAP_SYNC_PROCESS_KEY_V2", "sync-process-key-v2" },
             { 0, NULL, NULL }
         };
         etype = g_flags_register_static (g_intern_static_string ("IBusCapabilite"), values);
@@ -267,6 +286,7 @@ ibus_input_hints_get_type (void)
             { IBUS_INPUT_HINT_VERTICAL_WRITING, "IBUS_INPUT_HINT_VERTICAL_WRITING", "vertical-writing" },
             { IBUS_INPUT_HINT_EMOJI, "IBUS_INPUT_HINT_EMOJI", "emoji" },
             { IBUS_INPUT_HINT_NO_EMOJI, "IBUS_INPUT_HINT_NO_EMOJI", "no-emoji" },
+            { IBUS_INPUT_HINT_PRIVATE, "IBUS_INPUT_HINT_PRIVATE", "private" },
             { 0, NULL, NULL }
         };
         etype = g_flags_register_static (g_intern_static_string ("IBusInputHints"), values);

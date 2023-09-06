@@ -1,0 +1,2 @@
+# not intended for user execution
+no-manual-page *usr/libexec/ibus-wayland*

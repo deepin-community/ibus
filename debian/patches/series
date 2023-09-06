@@ -1,10 +1,5 @@
-# from upstream master
-ibusimcontext_Fix-wrong-cursor-location-in-gtk3-apps.patch
-ui_gtk2-Deprecate-gettext.bind_textdomain_codeset.patch
-
 debian-multiarch.patch
 0003-dconf-Use-dbus-run-session-to-set-up-dconf-overrides.patch
 dconf-Create-a-temporary-XDG_RUNTIME_DIR.patch
-libexec-fhs2-compat.patch
 socket-name-compatibility.patch
 ubuntu-forward-panel-properties.patch

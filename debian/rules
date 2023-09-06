@@ -63,9 +63,9 @@ endif
 CONFIGURE_FLAGS += --enable-memconf
 
 ifeq ($(DEB_HOST_ARCH_OS),linux)
-CONFIGURE_FLAGS += --enable-wayland
+CONFIGURE_FLAGS += --enable-wayland --enable-systemd-services
 else
-CONFIGURE_FLAGS += --disable-wayland
+CONFIGURE_FLAGS += --disable-wayland --disable-systemd-services
 endif
 
 override_dh_auto_configure:

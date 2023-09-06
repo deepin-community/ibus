@@ -3,8 +3,8 @@
 # ibus - The Input Bus
 #
 # Copyright (c) 2007-2013 Peng Huang <shawn.p.huang@gmail.com>
-# Copyright (c) 2013-2018 Takao Fujiwara <takao.fujiwara1@gmail.com>
-# Copyright (c) 2007-2018 Red Hat, Inc.
+# Copyright (c) 2013-2022 Takao Fujiwara <takao.fujiwara1@gmail.com>
+# Copyright (c) 2007-2022 Red Hat, Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,7 @@
 # USA
 
 NULL =
+SUBDIRS = . services
 
 libibus = $(top_builddir)/src/libibus-@IBUS_API_VERSION@.la
 
@@ -162,13 +163,7 @@ test_stress_LDADD = \
 	$(NULL)
 
 EXTRA_DIST =                \
-	$(man_one_in_files)     \
 	marshalers.list         \
-	$(NULL)
-
-CLEANFILES = \
-	$(man_one_DATA)            \
-	$(man_one_files)        \
 	$(NULL)
 
 $(libibus):
@@ -179,26 +174,7 @@ test: ibus-daemon
 		G_DEBUG=fatal_warnings \
 		$(builddir)/ibus-daemon -v
 
-man_one_in_files = ibus-daemon.1.in
-man_one_files = $(man_one_in_files:.1.in=.1)
-man_one_DATA =$(man_one_files:.1=.1.gz) 
+man_one_DATA = ibus-daemon.1
 man_onedir = $(mandir)/man1
-%.1: %.1.in
-	$(AM_V_GEN) sed \
-		-e 's|@VERSION[@]|$(VERSION)|g' $< > $@.tmp && \
-		mv $@.tmp $@
-%.1.gz: %.1
-	$(AM_V_GEN) gzip -c $< > $@.tmp && mv $@.tmp $@
-
-
-dbusservice_in_files = org.freedesktop.IBus.service.in
-dbusservice_DATA = $(dbusservice_in_files:.service.in=.service)
-dbusservicedir=${datadir}/dbus-1/services
-
-org.freedesktop.IBus.service: org.freedesktop.IBus.service.in
-	$(AM_V_GEN) sed -e "s|\@bindir\@|$(bindir)|" -e "s|\@xim_cli_arg\@|$(XIM_CLI_ARG)|" $< > $@.tmp && mv $@.tmp $@
-
-EXTRA_DIST += $(dbusservice_in_files)
-CLEANFILES += $(dbusservice_DATA)
 
 -include $(top_srcdir)/git.mk

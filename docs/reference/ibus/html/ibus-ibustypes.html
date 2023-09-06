@@ -375,6 +375,27 @@ or IME can handle surround text.</p>
 </td>
 <td class="enum_member_annotations"> </td>
 </tr>
+<tr>
+<td class="enum_member_name"><p><a name="IBUS-CAP-OSK:CAPS"></a>IBUS_CAP_OSK</p></td>
+<td class="enum_member_description">
+<p>UI is owned by on-screen keyboard.</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="IBUS-CAP-SYNC-PROCESS-KEY:CAPS"></a>IBUS_CAP_SYNC_PROCESS_KEY</p></td>
+<td class="enum_member_description">
+<p>Asynchronous process key events are not
+supported and the <a class="link" href="IBusEngine.html#ibus-engine-forward-key-event" title="ibus_engine_forward_key_event ()"><code class="function">ibus_engine_forward_key_event()</code></a> should not be
+used for the return value of <a class="link" href="IBusEngine.html#IBusEngine-process-key-event" title="The “process-key-event” signal">IBusEngine::<code class="function">process_key_event()</code></a>.</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="IBUS-CAP-SYNC-PROCESS-KEY-V2:CAPS"></a>IBUS_CAP_SYNC_PROCESS_KEY_V2</p></td>
+<td> </td>
+<td> </td>
+</tr>
 </tbody>
 </table></div>
 </div>
@@ -860,6 +881,14 @@ first word of each sentence</p>
 <td class="enum_member_name"><p><a name="IBUS-INPUT-HINT-NO-EMOJI:CAPS"></a>IBUS_INPUT_HINT_NO_EMOJI</p></td>
 <td class="enum_member_description">
 <p>Suggest not offering Emoji support. Since 1.5.24</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="IBUS-INPUT-HINT-PRIVATE:CAPS"></a>IBUS_INPUT_HINT_PRIVATE</p></td>
+<td class="enum_member_description">
+<p>Request that the input method should not
+update personalized data (like typing history). Since 1.5.26</p>
 </td>
 <td class="enum_member_annotations"> </td>
 </tr>

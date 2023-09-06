@@ -8,7 +8,7 @@ path. Note that this is a Debian-specific change and should not be
 upstreamed.
 
 Forwarded: not-needed
-Last-Update: 2019-12-27
+Last-Update: 2023-08-15
 ---
  src/tests/runtest | 11 +++++++----
  1 file changed, 7 insertions(+), 4 deletions(-)
@@ -17,8 +17,8 @@ diff --git a/src/tests/runtest b/src/tests/runtest
 index 1fcc928..71fc993 100755
 --- a/src/tests/runtest
 +++ b/src/tests/runtest
-@@ -37,12 +37,15 @@ ibus-keypress
- test-stress
+@@ -38,12 +38,15 @@ test-stress
+ xkb-latin-layouts
  "
  IBUS_SCHEMA_FILE='org.freedesktop.ibus.gschema.xml'
 -GTK_QUERY_MODULE=gtk-query-immodules-3.0-32
@@ -34,6 +34,6 @@ index 1fcc928..71fc993 100755
 +###if test x"$MACHINE" = xx86_64 ; then
 +###    GTK_QUERY_MODULE=gtk-query-immodules-3.0-64
 +###fi
- 
- retval=0
- 
+ if ! command -v $GTK_QUERY_MODULE &> /dev/null ; then
+     GTK_QUERY_MODULE=gtk-query-immodules-3.0
+ fi

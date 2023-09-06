@@ -588,6 +588,30 @@ justifications.
 </tr>
 <tr>
 <td class="function_type">
+<a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="IBusBus.html#ibus-bus-set-global-shortcut-keys" title="ibus_bus_set_global_shortcut_keys ()">ibus_bus_set_global_shortcut_keys</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="IBusBus.html#ibus-bus-set-global-shortcut-keys-async" title="ibus_bus_set_global_shortcut_keys_async ()">ibus_bus_set_global_shortcut_keys_async</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="IBusBus.html#ibus-bus-set-global-shortcut-keys-async-finish" title="ibus_bus_set_global_shortcut_keys_async_finish ()">ibus_bus_set_global_shortcut_keys_async_finish</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
 <a href="/usr/share/gtk-doc/html/glib/glib-GVariant.html#GVariant"><span class="returnvalue">GVariant</span></a> *
 </td>
 <td class="function_name">
@@ -685,6 +709,11 @@ justifications.
 </tr>
 <tr>
 <td class="signal_type"><span class="returnvalue">void</span></td>
+<td class="signal_name"><a class="link" href="IBusBus.html#IBusBus-global-shortcut-key-responded" title="The “global-shortcut-key-responded” signal">global-shortcut-key-responded</a></td>
+<td class="signal_flags"><a href="/usr/share/gtk-doc/html/gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a></td>
+</tr>
+<tr>
+<td class="signal_type"><span class="returnvalue">void</span></td>
 <td class="signal_name"><a class="link" href="IBusBus.html#IBusBus-name-owner-changed" title="The “name-owner-changed” signal">name-owner-changed</a></td>
 <td class="signal_flags"><a href="/usr/share/gtk-doc/html/gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a></td>
 </tr>
@@ -698,10 +727,16 @@ justifications.
 <col width="150px" class="other_proto_type">
 <col class="other_proto_name">
 </colgroup>
-<tbody><tr>
+<tbody>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="IBusBus.html#IBusBusGlobalBindingType" title="enum IBusBusGlobalBindingType">IBusBusGlobalBindingType</a></td>
+</tr>
+<tr>
 <td class="datatype_keyword">struct</td>
 <td class="function_name"><a class="link" href="IBusBus.html#IBusBus-struct" title="struct IBusBus">IBusBus</a></td>
-</tr></tbody>
+</tr>
+</tbody>
 </table></div>
 </div>
 <div class="refsect1">
@@ -3409,6 +3444,197 @@ ibus_bus_preload_engines_async_finish (<em class="parameter"><code><a class="lin
 </div>
 <hr>
 <div class="refsect2">
+<a name="ibus-bus-set-global-shortcut-keys"></a><h3>ibus_bus_set_global_shortcut_keys ()</h3>
+<pre class="programlisting"><a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+ibus_bus_set_global_shortcut_keys (<em class="parameter"><code><a class="link" href="IBusBus.html" title="IBusBus"><span class="type">IBusBus</span></a> *bus</code></em>,
+                                   <em class="parameter"><code><a class="link" href="IBusBus.html#IBusBusGlobalBindingType" title="enum IBusBusGlobalBindingType"><span class="type">IBusBusGlobalBindingType</span></a> gtype</code></em>,
+                                   <em class="parameter"><code>const <span class="type">IBusProcessKeyEventData</span> *keys</code></em>);</pre>
+<p>Set global shorcut keys for the Wayland session.</p>
+<div class="refsect3">
+<a name="ibus-bus-set-global-shortcut-keys.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>bus</p></td>
+<td class="parameter_description"><p>An <a class="link" href="IBusBus.html" title="IBusBus"><span class="type">IBusBus</span></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>gtype</p></td>
+<td class="parameter_description"><p>A <a class="link" href="IBusBus.html#IBusBusGlobalBindingType" title="enum IBusBusGlobalBindingType"><span class="type">IBusBusGlobalBindingType</span></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>keys</p></td>
+<td class="parameter_description"><p>A <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>-terminated array of <span class="type">IBusProcessKeyEventData</span>.
+keycode is used for the selecting direction and the forward direction
+in case of 0, otherwise the backward direction. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> IBusProcessKeyEventData]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="ibus-bus-set-global-shortcut-keys.returns"></a><h4>Returns</h4>
+<p> <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the global shortcut keys are set. <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a> otherwise.</p>
+</div>
+<p class="since">Since: 1.5.29</p>
+<p class="stability">Stability Level: <acronym title="Unstable interfaces are experimental or transitional. They are typically used to
+give outside developers early access to new or rapidly changing technology, or
+to provide an interim solution to a problem where a more general solution is
+anticipated. No claims are made about either source or binary compatibility from
+one minor release to the next.
+
+The Unstable interface level is a warning that these interfaces are  subject to
+change without warning and should not be used in unbundled products.
+
+Given such caveats, customer impact need not be a factor when considering
+incompatible changes to an Unstable interface in a major or minor release.
+Nonetheless, when such changes are introduced, the changes should still be
+mentioned in the release notes for the affected release.
+"><span class="acronym">Unstable</span></acronym></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ibus-bus-set-global-shortcut-keys-async"></a><h3>ibus_bus_set_global_shortcut_keys_async ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+ibus_bus_set_global_shortcut_keys_async
+                               (<em class="parameter"><code><a class="link" href="IBusBus.html" title="IBusBus"><span class="type">IBusBus</span></a> *bus</code></em>,
+                                <em class="parameter"><code><a class="link" href="IBusBus.html#IBusBusGlobalBindingType" title="enum IBusBusGlobalBindingType"><span class="type">IBusBusGlobalBindingType</span></a> gtype</code></em>,
+                                <em class="parameter"><code>const <span class="type">IBusProcessKeyEventData</span> *keys</code></em>,
+                                <em class="parameter"><code><a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> timeout_msec</code></em>,
+                                <em class="parameter"><code><a href="/usr/share/gtk-doc/html/gio/GCancellable.html#GCancellable-struct"><span class="type">GCancellable</span></a> *cancellable</code></em>,
+                                <em class="parameter"><code><a href="/usr/share/gtk-doc/html/gio/GAsyncResult.html#GAsyncReadyCallback"><span class="type">GAsyncReadyCallback</span></a> callback</code></em>,
+                                <em class="parameter"><code><a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> user_data</code></em>);</pre>
+<p>Sete global shorcut keys for the Wayland session asynchronously.</p>
+<div class="refsect3">
+<a name="ibus-bus-set-global-shortcut-keys-async.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>bus</p></td>
+<td class="parameter_description"><p>An <a class="link" href="IBusBus.html" title="IBusBus"><span class="type">IBusBus</span></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>gtype</p></td>
+<td class="parameter_description"><p>A <a class="link" href="IBusBus.html#IBusBusGlobalBindingType" title="enum IBusBusGlobalBindingType"><span class="type">IBusBusGlobalBindingType</span></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>keys</p></td>
+<td class="parameter_description"><p>A <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>-terminated array of <span class="type">IBusProcessKeyEventData</span>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> IBusProcessKeyEventData]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>timeout_msec</p></td>
+<td class="parameter_description"><p>The timeout in milliseconds or -1 to use the default timeout.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>cancellable</p></td>
+<td class="parameter_description"><p>A <a href="/usr/share/gtk-doc/html/gio/GCancellable.html#GCancellable-struct"><span class="type">GCancellable</span></a> or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>callback</p></td>
+<td class="parameter_description"><p>A <a href="/usr/share/gtk-doc/html/gio/GAsyncResult.html#GAsyncReadyCallback"><span class="type">GAsyncReadyCallback</span></a> to call when the request is satisfied
+or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if you don't care about the result of the method invocation.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>The data to pass to callback.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: 1.5.29</p>
+<p class="stability">Stability Level: <acronym title="Unstable interfaces are experimental or transitional. They are typically used to
+give outside developers early access to new or rapidly changing technology, or
+to provide an interim solution to a problem where a more general solution is
+anticipated. No claims are made about either source or binary compatibility from
+one minor release to the next.
+
+The Unstable interface level is a warning that these interfaces are  subject to
+change without warning and should not be used in unbundled products.
+
+Given such caveats, customer impact need not be a factor when considering
+incompatible changes to an Unstable interface in a major or minor release.
+Nonetheless, when such changes are introduced, the changes should still be
+mentioned in the release notes for the affected release.
+"><span class="acronym">Unstable</span></acronym></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ibus-bus-set-global-shortcut-keys-async-finish"></a><h3>ibus_bus_set_global_shortcut_keys_async_finish ()</h3>
+<pre class="programlisting"><a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+ibus_bus_set_global_shortcut_keys_async_finish
+                               (<em class="parameter"><code><a class="link" href="IBusBus.html" title="IBusBus"><span class="type">IBusBus</span></a> *bus</code></em>,
+                                <em class="parameter"><code><a href="/usr/share/gtk-doc/html/gio/GAsyncResult.html#GAsyncResult-struct"><span class="type">GAsyncResult</span></a> *res</code></em>,
+                                <em class="parameter"><code><a href="/usr/share/gtk-doc/html/glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<p>Finishes an operation started with <a class="link" href="IBusBus.html#ibus-bus-set-global-shortcut-keys-async" title="ibus_bus_set_global_shortcut_keys_async ()"><code class="function">ibus_bus_set_global_shortcut_keys_async()</code></a>.</p>
+<div class="refsect3">
+<a name="ibus-bus-set-global-shortcut-keys-async-finish.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>bus</p></td>
+<td class="parameter_description"><p>An <a class="link" href="IBusBus.html" title="IBusBus"><span class="type">IBusBus</span></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>res</p></td>
+<td class="parameter_description"><p>A <a href="/usr/share/gtk-doc/html/gio/GAsyncResult.html#GAsyncResult-struct"><span class="type">GAsyncResult</span></a> obtained from the <a href="/usr/share/gtk-doc/html/gio/GAsyncResult.html#GAsyncReadyCallback"><span class="type">GAsyncReadyCallback</span></a> passed to
+<a class="link" href="IBusBus.html#ibus-bus-set-global-shortcut-keys-async" title="ibus_bus_set_global_shortcut_keys_async ()"><code class="function">ibus_bus_set_global_shortcut_keys_async()</code></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p>Return location for error or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="ibus-bus-set-global-shortcut-keys-async-finish.returns"></a><h4>Returns</h4>
+<p> <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the global shortcut keys are set. <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a> otherwise.</p>
+</div>
+<p class="since">Since: 1.5.29</p>
+<p class="stability">Stability Level: <acronym title="Unstable interfaces are experimental or transitional. They are typically used to
+give outside developers early access to new or rapidly changing technology, or
+to provide an interim solution to a problem where a more general solution is
+anticipated. No claims are made about either source or binary compatibility from
+one minor release to the next.
+
+The Unstable interface level is a warning that these interfaces are  subject to
+change without warning and should not be used in unbundled products.
+
+Given such caveats, customer impact need not be a factor when considering
+incompatible changes to an Unstable interface in a major or minor release.
+Nonetheless, when such changes are introduced, the changes should still be
+mentioned in the release notes for the affected release.
+"><span class="acronym">Unstable</span></acronym></p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="ibus-bus-get-ibus-property"></a><h3>ibus_bus_get_ibus_property ()</h3>
 <pre class="programlisting"><a href="/usr/share/gtk-doc/html/glib/glib-GVariant.html#GVariant"><span class="returnvalue">GVariant</span></a> *
 ibus_bus_get_ibus_property (<em class="parameter"><code><a class="link" href="IBusBus.html" title="IBusBus"><span class="type">IBusBus</span></a> *bus</code></em>,
@@ -3685,6 +3911,59 @@ ibus_bus_set_ibus_property_async_finish
 <div class="refsect1">
 <a name="IBusBus.other_details"></a><h2>Types and Values</h2>
 <div class="refsect2">
+<a name="IBusBusGlobalBindingType"></a><h3>enum IBusBusGlobalBindingType</h3>
+<p>Type enumeration of IBusBusGlobalBindingType.</p>
+<div class="refsect3">
+<a name="IBusBusGlobalBindingType.members"></a><h4>Members</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="IBUS-BUS-GLOBAL-BINDING-TYPE-ANY:CAPS"></a>IBUS_BUS_GLOBAL_BINDING_TYPE_ANY</p></td>
+<td class="enum_member_description">
+<p>Any types</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="IBUS-BUS-GLOBAL-BINDING-TYPE-IME-SWITCHER:CAPS"></a>IBUS_BUS_GLOBAL_BINDING_TYPE_IME_SWITCHER</p></td>
+<td class="enum_member_description">
+<p>IME switcher</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="IBUS-BUS-GLOBAL-BINDING-TYPE-EMOJI-TYPING:CAPS"></a>IBUS_BUS_GLOBAL_BINDING_TYPE_EMOJI_TYPING</p></td>
+<td class="enum_member_description">
+<p>Emoji typing</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: 1.5.29</p>
+<p class="stability">Stability Level: <acronym title="Unstable interfaces are experimental or transitional. They are typically used to
+give outside developers early access to new or rapidly changing technology, or
+to provide an interim solution to a problem where a more general solution is
+anticipated. No claims are made about either source or binary compatibility from
+one minor release to the next.
+
+The Unstable interface level is a warning that these interfaces are  subject to
+change without warning and should not be used in unbundled products.
+
+Given such caveats, customer impact need not be a factor when considering
+incompatible changes to an Unstable interface in a major or minor release.
+Nonetheless, when such changes are introduced, the changes should still be
+mentioned in the release notes for the affected release.
+"><span class="acronym">Unstable</span></acronym></p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="IBusBus-struct"></a><h3>struct IBusBus</h3>
 <pre class="programlisting">struct IBusBus;</pre>
 <p>An opaque data type representing IBus bus (daemon communication) status.</p>
@@ -3798,6 +4077,55 @@ user_function (<a class="link" href="IBusBus.html" title="IBusBus"><span class="
 <tr>
 <td class="parameter_name"><p>name</p></td>
 <td class="parameter_description"><p>The name of the new global engine.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <a href="/usr/share/gtk-doc/html/gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="IBusBus-global-shortcut-key-responded"></a><h3>The <code class="literal">“global-shortcut-key-responded”</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+user_function (<a class="link" href="IBusBus.html" title="IBusBus"><span class="type">IBusBus</span></a> *bus,
+               <a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#guchar"><span class="type">guchar</span></a>   type,
+               <a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> is_pressed,
+               <a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> is_backward,
+               <a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> user_data)</pre>
+<p>Emitted when global shortcut key is responded.</p>
+<div class="refsect3">
+<a name="IBusBus-global-shortcut-key-responded.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>bus</p></td>
+<td class="parameter_description"><p>The <a class="link" href="IBusBus.html" title="IBusBus"><span class="type">IBusBus</span></a> object which recevied the signal</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>type</p></td>
+<td class="parameter_description"><p>The type of the global shortcut key.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>is_pressed</p></td>
+<td class="parameter_description"><p><a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the key is pressed.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>is_backward</p></td>
+<td class="parameter_description"><p><a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the backward key is pressed.</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>

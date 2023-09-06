@@ -3,7 +3,7 @@
 # ibus - The Input Bus
 #
 # Copyright (c) 2007-2015 Peng Huang <shawn.p.huang@gmail.com>
-# Copyright (c) 2015-2020 Takao Fujiwara <takao.fujiwara1@gmail.com>
+# Copyright (c) 2015-2023 Takao Fujiwara <takao.fujiwara1@gmail.com>
 # Copyright (c) 2007-2017 Red Hat, Inc.
 #
 # This library is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@ if ENABLE_TESTS
 TESTS_DIR = tests
 endif
 
-SUBDIRS = . $(TESTS_DIR)
+SUBDIRS = . compose $(TESTS_DIR)
 
 # libibus = libibus-@IBUS_API_VERSION@.la
 libibus = libibus-1.0.la
@@ -41,20 +41,17 @@ INTROSPECTION_COMPILER_ARGS = \
     $(NULL)
 INTROSPECTION_GIRS =
 CLEANFILES =
-noinst_PROGRAMS =
+noinst_PROGRAMS = gen-internal-compose-table
 
 # C preprocessor flags
 AM_CPPFLAGS =                                           \
     -DG_LOG_DOMAIN=\"IBUS\"                             \
-    @GLIB2_CFLAGS@                                      \
-    @GOBJECT2_CFLAGS@                                   \
-    @GIO2_CFLAGS@                                       \
     -DIBUS_CACHE_DIR=\""$(localstatedir)/cache/ibus"\"  \
     -DIBUS_DATA_DIR=\"$(pkgdatadir)\"                   \
     -DIBUS_DISABLE_DEPRECATION_WARNINGS                 \
     -DIBUS_COMPILATION                                  \
     -DISOCODES_PREFIX=\"$(ISOCODES_PREFIX)\"            \
-    -DX11_DATA_PREFIX=\"$(X11_PREFIX)\"                 \
+    -DX11_LOCALEDATADIR=\"$(X11_LOCALEDATADIR)\"        \
     $(NULL)
 
 # ibus library
@@ -64,6 +61,11 @@ libibus_1_0_la_LIBADD =     \
     @GLIB2_LIBS@            \
     @GOBJECT2_LIBS@         \
     @GIO2_LIBS@             \
+    $(NULL)
+libibus_1_0_la_CFLAGS =     \
+    @GLIB2_CFLAGS@          \
+    @GOBJECT2_CFLAGS@       \
+    @GIO2_CFLAGS@           \
     $(NULL)
 libibus_1_0_la_LDFLAGS =            \
     -no-undefined                   \
@@ -107,10 +109,11 @@ ibus_sources =              \
     ibusxevent.c            \
     ibusxml.c               \
     $(NULL)
-libibus_1_0_la_SOURCES =    \
+libibus_sources =           \
     ibuscomposetable.c      \
     ibusenumtypes.c         \
     ibusmarshalers.c        \
+    ibusresources.c         \
     $(ibus_sources)         \
     $(NULL)
 ibus_marshalers_sources =   \
@@ -120,6 +123,10 @@ ibus_marshalers_sources =   \
 ibus_enumtypes_sources =    \
     ibusenumtypes.c         \
     ibusenumtypes.h         \
+    $(NULL)
+ibus_resources_sources =    \
+    ibusresources.c         \
+    ibusresources.h         \
     $(NULL)
 ibus_headers =              \
     ibus.h                  \
@@ -161,6 +168,7 @@ ibus_headers =              \
     ibusxevent.h            \
     ibusxml.h               \
     $(NULL)
+libibus_1_0_la_SOURCES = $(libibus_sources)
 ibusincludedir = $(includedir)/ibus-@IBUS_API_VERSION@
 ibus_public_headers =       \
     $(ibus_headers)         \
@@ -171,11 +179,11 @@ ibusinclude_HEADERS =       \
     $(ibus_public_headers)  \
     $(NULL)
 ibus_private_headers =          \
-    gtkimcontextsimpleseqs.h    \
     ibuscomposetable.h          \
     ibusemojigen.h              \
     ibusenginesimpleprivate.h   \
     ibusinternal.h              \
+    ibusresources.h             \
     ibusunicodegen.h            \
     keyname-table.h             \
     $(NULL)
@@ -183,9 +191,55 @@ noinst_HEADERS =            \
     $(ibus_private_headers) \
     $(NULL)
 
+if CROSS_COMPILING
+# Avoid libtool when building native libraries
+libnativeibus =
+parser_extra_sources = $(libibus_sources)
+
+glib_cflags = @GLIB_CFLAGS_FOR_BUILD@
+glib_libs = @GLIB_LIBS_FOR_BUILD@
+
+$(noinst_PROGRAMS): CC=$(CC_FOR_BUILD)
+$(noinst_PROGRAMS): CCLD=$(CC_FOR_BUILD)
+$(noinst_PROGRAMS): CFLAGS=$(CFLAGS_FOR_BUILD)
+$(noinst_PROGRAMS): CPPFLAGS=$(CPPFLAGS_FOR_BUILD)
+$(noinst_PROGRAMS): LDFLAGS=$(LDFLAGS_FOR_BUILD)
+else
+libnativeibus = $(libibus)
+parser_extra_sources =
+
+glib_libs =             \
+    @GLIB2_LIBS@        \
+    @GOBJECT2_LIBS@     \
+    @GIO2_LIBS@         \
+    $(NULL)
+glib_cflags =           \
+    @GLIB2_CFLAGS@      \
+    @GOBJECT2_CFLAGS@   \
+    @GIO2_CFLAGS@       \
+    $(NULL)
+endif
+
+gen_internal_compose_table_SOURCES = \
+    gencomposetable.c   \
+    ibuscomposetable.c  \
+    ibuserror.c         \
+    ibuskeynames.c      \
+    ibuskeyuni.c        \
+    ibusenumtypes.h     \
+    $(NULL)
+gen_internal_compose_table_CFLAGS =  \
+    $(AM_CFLAGS)        \
+    $(glib_cflags)      \
+    $(NULL)
+gen_internal_compose_table_LDADD = \
+    $(glib_libs)        \
+    $(NULL)
+
 BUILT_SOURCES =                 \
     $(ibus_marshalers_sources)  \
     $(ibus_enumtypes_sources)   \
+    $(ibus_resources_sources)   \
     $(NULL)
 
 if HAVE_INTROSPECTION
@@ -242,6 +296,28 @@ ibusmarshalers.c: ibusmarshalers.h ibusmarshalers.list
 	$(GLIB_GENMARSHAL) --prefix=_ibus_marshal $(srcdir)/ibusmarshalers.list --body --internal) > $@.tmp && \
 	mv $@.tmp $@
 
+# gen GResource
+ibus.gresources.xml: ibus.gresources.xml.in
+	$(AM_V_GEN) sed -e "s|\@ENDIAN\@|$(ENDIAN)|g" \
+	$< > $@.tmp && \
+	mv $@.tmp $@
+
+compose/sequences-$(ENDIAN)-endian: gen-internal-compose-table
+	$(AM_V_GEN) $(MKDIR_P) $(builddir)/compose && \
+	$(builddir)/gen-internal-compose-table && \
+	mv $(builddir)/sequences-big-endian $(builddir)/compose && \
+	mv $(builddir)/sequences-little-endian $(builddir)/compose
+
+ibusresources.h: ibus.gresources.xml compose/sequences-$(ENDIAN)-endian
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --generate-header --internal \
+	    --target=ibusresources.h --external-data --c-name _ibus \
+	    --manual-register ibus.gresources.xml
+
+ibusresources.c: ibus.gresources.xml compose/sequences-$(ENDIAN)-endian
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --generate-source --internal \
+	    --target=ibusresources.c --c-name _ibus --manual-register \
+	    ibus.gresources.xml
+
 if ENABLE_EMOJI_DICT
 AM_CPPFLAGS += -DENABLE_EMOJI_DICT
 
@@ -296,8 +372,9 @@ dicts/emoji-%.dict: emoji-parser
 	    echo "Skip $$plus_comment $@"; \
 	fi;
 
+# #2523 Should use autotool dependency
 ibusemojigen.h: dicts/emoji-en.dict
-	$(NULL)
+	$(MAKE) $(AM_MAKEFLAGS) $^
 
 # We put dicts/emoji-%.dict as the make target for the parallel build
 # and the make target has to be genarated even if the file size is zero.
@@ -320,20 +397,16 @@ install-data-hook:
 
 emoji_parser_SOURCES =          \
     emoji-parser.c              \
+    $(parser_extra_sources)     \
     $(NULL)
 emoji_parser_CFLAGS =           \
-    $(GLIB2_CFLAGS)             \
-    $(GOBJECT2_CFLAGS)          \
+    $(AM_CFLAGS)                \
+    $(glib_cflags)              \
     $(NULL)
 emoji_parser_LDADD =            \
-    $(libibus)                  \
-    $(GLIB2_LIBS)               \
-    $(GOBJECT2_LIBS)            \
+    $(libnativeibus)            \
+    $(glib_libs)                \
     $(NULL)
-
-clean-local:
-	-rm -rf dicts
-	$(NULL)
 endif
 
 if ENABLE_UNICODE_DICT
@@ -352,7 +425,8 @@ dicts/unicode-names.dict: unicode-parser
 	    echo "Generated $@"; \
 	fi;
 
-dicts/unicode-blocks.dict: unicode-parser
+# #2523 Should use autotool dependency
+dicts/unicode-blocks.dict ibusunicodegen.h: unicode-parser
 	$(AM_V_at)input_file="$(UCD_DIR)/Blocks.txt"; \
 	if test ! -f "$$input_file" ; then \
 	    echo "WARNING: Not found $$input_file" 1>&2; \
@@ -364,27 +438,23 @@ dicts/unicode-blocks.dict: unicode-parser
 	    echo "Generated $@"; \
 	fi;
 
-ibusunicodegen.h: dicts/unicode-blocks.dict
-	$(NULL)
-
 unicode_parser_SOURCES =        \
     unicode-parser.c            \
+    $(parser_extra_sources)     \
     $(NULL)
 unicode_parser_CFLAGS =         \
-    $(GLIB2_CFLAGS)             \
+    $(AM_CFLAGS)                \
+    $(glib_cflags)              \
     $(NULL)
 unicode_parser_LDADD =          \
-    $(GLIB2_LIBS)               \
-    $(libibus)                  \
+    $(glib_libs)                \
+    $(libnativeibus)            \
     $(NULL)
-
-clean-local:
-	-rm -rf dicts
-	$(NULL)
 endif
 
 EXTRA_DIST =                    \
     emoji-parser.c              \
+    ibus.gresources.xml.in      \
     ibusversion.h.in            \
     ibusmarshalers.list         \
     ibusenumtypes.h.template    \
@@ -394,14 +464,29 @@ EXTRA_DIST =                    \
 
 CLEANFILES +=                   \
     $(BUILT_SOURCES)            \
+    ibus.gresources.xml         \
     stamp-ibusmarshalers.h      \
     stamp-ibusenumtypes.h       \
     $(NULL)
 
-DISTCLEANFILES =                \
+MAINTAINERCLEANFILES =          \
     ibusemojigen.h              \
     ibusunicodegen.h            \
+    dicts/emoji-en.dict         \
+    dicts/unicode-blocks.dict   \
+    $(NULL)
+
+DISTCLEANFILES =                \
+    $(MAINTAINERCLEANFILES)     \
     ibusversion.h               \
     $(NULL)
+
+clean-local:
+	-rm -rf dicts;                                                      \
+	if test x"$(srcdir)" != x"$(builddir)" ; then                       \
+	    rm -f  $(builddir)/compose/sequences-big-endian;                \
+	    rm -f  $(builddir)/compose/sequences-little-endian;             \
+	fi;
+	$(NULL)
 
 -include $(top_srcdir)/git.mk

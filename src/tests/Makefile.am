@@ -3,7 +3,7 @@
 # ibus - The Input Bus
 #
 # Copyright (c) 2007-2015 Peng Huang <shawn.p.huang@gmail.com>
-# Copyright (c) 2015-2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
+# Copyright (c) 2015-2023 Takao Fujiwara <takao.fujiwara1@gmail.com>
 # Copyright (c) 2007-2018 Red Hat, Inc.
 #
 # This library is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@ AM_CPPFLAGS = \
     @GLIB2_CFLAGS@                          \
     @GIO2_CFLAGS@                           \
     -DIBUS_DISABLE_DEPRECATION_WARNINGS     \
-    -DX11_DATA_PREFIX=\"$(X11_PREFIX)\"     \
+    -DX11_LOCALEDATADIR=\"$(X11_LOCALEDATADIR)\" \
     -I$(top_srcdir)/src                     \
     -I$(top_builddir)/src                   \
     $(NULL)
@@ -41,8 +41,9 @@ prog_ldadd =\
     $(top_builddir)/src/libibus-@IBUS_API_VERSION@.la                   \
     $(NULL)
 
-noinst_PROGRAMS = $(TESTS)
-TESTS = \
+noinst_PROGRAMS = $(TESTS_C)
+noinst_SCRIPTS = $(TESTS_SCRIPT)
+TESTS_C = \
     ibus-bus                        \
     ibus-config                     \
     ibus-configservice              \
@@ -56,16 +57,25 @@ TESTS = \
     ibus-util                       \
     $(NULL)
 
+TESTS_SCRIPT = \
+    xkb-latin-layouts               \
+    $(NULL)
+
+TESTS = \
+    $(TESTS_C)                      \
+    $(TESTS_SCRIPT)                 \
+    $(NULL)
+
 CLEANFILES =
 
 if ENABLE_ENGINE
-TESTS += ibus-engine-switch
+TESTS_C += ibus-engine-switch
 endif
 
 if ENABLE_GTK3
-TESTS += ibus-compose
+TESTS_C += ibus-compose
 if ENABLE_XTEST
-TESTS += ibus-keypress
+TESTS_C += ibus-keypress
 endif
 endif
 
@@ -88,6 +98,7 @@ test_execs = $(TESTS:ibus-compose=ibus-compose-locales)
 test_metas = $(addsuffix .test, $(test_execs))
 test_sources_DATA = \
     $(test_metas) \
+    ibus-compose.basic \
     ibus-compose.emoji \
     ibus-compose.env \
     $(NULL)
@@ -96,23 +107,33 @@ test_sourcesdir = $(datadir)/installed-tests/ibus
 CLEANFILES += \
     $(test_metas) \
     ibus-desktop-testing-runner \
+    org.freedesktop.IBus.Desktop.Testing.desktop \
     $(NULL)
 
-test_execs_PROGRAMS = $(TESTS)
+test_execs_PROGRAMS = $(TESTS_C)
+test_execs_SCRIPTS = $(TESTS_SCRIPT)
 if ENABLE_GTK3
-test_execs_SCRIPTS = ibus-compose-locales
+test_execs_SCRIPTS += ibus-compose-locales
 CLEANFILES += \
     ibus-compose-locales \
     $(NULL)
 endif
 test_execsdir = $(libexecdir)/installed-tests/ibus
+libexec_SCRIPTS = ibus-desktop-testing-autostart
+
+test_frame_DATA = org.freedesktop.IBus.Desktop.Testing.desktop
+test_framedir = $(pkgdatadir)/tests
+org.freedesktop.IBus.Desktop.Testing.desktop: ibus-desktop-testing.desktop.in
+	$(AM_V_GEN) sed -e "s|\@libexecdir\@|$(libexecdir)|g" \
+	$< > $@.tmp && \
+	mv $@.tmp $@
 endif
 
-$(test_metas): $(test_metas_in) $(test_programs)
+$(test_metas): $(test_metas_in)
 	f=`echo $@ | sed -e 's/\.test//'`; \
 	TEST_EXEC=$(test_execsdir)/$$f; \
-	sed -e "s|@TEST_EXEC[@]|$$TEST_EXEC|g" $(test_metas_in) > $@.tmp; \
-	mv $@.tmp $@; \
+	sed -e "s|@TEST_EXEC[@]|$$TEST_EXEC|g" $(srcdir)/$(test_metas_in) \
+	    > $@.tmp && mv $@.tmp $@; \
 	$(NULL)
 
 ibus-compose-locales: ibus-compose-locales.in
@@ -129,10 +150,14 @@ ibus-desktop-testing-runner: ibus-desktop-testing-runner.in
 
 EXTRA_DIST = \
     $(test_metas_in) \
+    $(TESTS_SCRIPT) \
     runtest \
+    ibus-compose.basic \
     ibus-compose.emoji \
     ibus-compose.env \
     ibus-compose-locales.in \
+    ibus-desktop-testing.desktop.in \
+    ibus-desktop-testing-autostart \
     ibus-desktop-testing-runner.in \
     $(NULL)
 

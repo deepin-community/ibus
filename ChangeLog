@@ -1,3 +1,2776 @@
+commit 8991379c1d0b2da05eeb9b1e3e52faee4901e236
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-22 18:38:39 +0900
+
+    Release 1.5.29-rc1
+
+M	configure.ac
+M	po/ibus10.pot
+
+commit 155c5845ae38f7e732266f2ff52217761475282a
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-22 17:57:38 +0900
+
+    engine: Update simple.xml with xkeyboard-config 2.39
+
+M	engine/simple.xml.in
+
+commit cf3c5c00baa8b230ff1b846119f20ca28771c89a
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-22 17:42:07 +0900
+
+    Set local PKG_CONFIG_PATH
+    
+    BUG=https://github.com/ibus/ibus/issues/2556
+
+M	bindings/vala/Makefile.am
+M	engine/Makefile.am
+M	tools/Makefile.am
+M	ui/gtk3/Makefile.am
+
+commit 96a6850f96087d12f55b555c896aae537c435f0e
+Author: Temuri Doghonadze <temuri.doghonadze@gmail.com>
+Date:   2023-08-22 10:28:40 +0900
+
+    po: Update translation (Georgian)
+    
+    Update po/ka.po at 40.5%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ka/
+    
+    BUG=https://github.com/ibus/ibus/pull/2548
+
+M	po/ka.po
+
+commit 6b62480a4c97253540323f66ccda7604d0403ada
+Author: Luna Jernberg <bittin@reimu.nl>
+Date:   2023-08-22 10:28:38 +0900
+
+    po: Update translation (Swedish)
+    
+    Update po/sv.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/sv/
+    
+    BUG=https://github.com/ibus/ibus/pull/2548
+
+M	po/sv.po
+
+commit 8d7067623c88dbf0f8342efca639fbd63f1be97e
+Author: 김인수 <simmon@nplob.com>
+Date:   2023-08-22 10:28:35 +0900
+
+    po: Update translation (Korean)
+    
+    Update po/ko.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ko/
+    
+    BUG=https://github.com/ibus/ibus/pull/2548
+
+M	po/ko.po
+
+commit 2d841c7465680a61eed4b111e70ce33e4530d235
+Author: Piotr Drąg <piotrdrag@gmail.com>
+Date:   2023-08-22 10:28:33 +0900
+
+    po: Update translation (Polish)
+    
+    Update po/pl.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/pl/
+    
+    BUG=https://github.com/ibus/ibus/pull/2548
+
+M	po/pl.po
+
+commit fc59704645d546b3e7f571c7970b162a0a5973ac
+Author: Yuri Chornoivan <yurchor@ukr.net>
+Date:   2023-08-22 10:28:30 +0900
+
+    po: Update translation (Ukrainian)
+    
+    Update po/uk.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/uk/
+    
+    BUG=https://github.com/ibus/ibus/pull/2548
+
+M	po/uk.po
+
+commit a474d6e2b9d9d51211ab972f0a5fa7173132c71d
+Author: Mike FABIAN <mfabian@redhat.com>
+Date:   2023-08-22 10:28:27 +0900
+
+    po: Update translation (German)
+    
+    Update po/de.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/de/
+    
+    BUG=https://github.com/ibus/ibus/pull/2548
+
+M	po/de.po
+
+commit 86d9bb9a1cbd4ffbd6bc2a4de85cb76a43bc2ced
+Author: Peng Wu <pwu@redhat.com>
+Date:   2023-07-24 14:04:12 +0800
+
+    client/gtk2: Update set_cursor_location function to use Gdk functions
+    
+    For ibus-gtk4, use the Gdk functions to get the inner cursor location.
+    The inner cursor location is translated by XTranslateCoordinates
+    for X Window.
+    For ibus-gtk3, use gdk_window_get_root_coords function to translate the
+    inner cursor location for X Window.
+    In Wayland, the set_cursor_location_relative function is called.
+    In X Window, the set_cursor_location function is called.
+    
+    Fixes: https://github.com/ibus/ibus/commit/d0a47c3
+    Fixes: https://github.com/ibus/ibus/commit/a823161
+    
+    BUG=https://github.com/ibus/ibus/pull/2549
+    BUG=https://gitlab.gnome.org/GNOME/gtk/-/issues/3024#note_987835
+
+M	client/gtk2/ibusimcontext.c
+
+commit 7c61e224d161eed7ac02964005ba182a789de3df
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-18 15:11:07 +0900
+
+    github/hooks: Add a workaround in post-merge
+    
+    Ignore the prevous wrong commit ID 39b6907
+    
+    Fixes: https://github.com/ibus/ibus/commit/5ed9f13
+
+M	.github/hooks/post-merge
+
+commit 5ed9f13883af85378352e9d2cb49e574bd9548d3
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-17 17:36:10 +0900
+
+    github/hooks: Add post-merge
+    
+    You can copy this file to .git/hooks/post-merge with the file permission
+    '0755'.
+    This script is useful not to commit invalid commit IDs every time and
+    leave a temporary version(1.5.00) in source files when a release is
+    bumped.
+    Unfortunately .git/hooks/pre-merge-commit does not run for git merge
+    fast-forwarding and I use post-merge instead as a workaround
+    but post-merge succeeds the last merge so need to run git reset --hard
+    if this script outputs warnings.
+
+M	.github/hooks/commit-msg
+A	.github/hooks/post-merge
+
+commit f05c12dafef83cdd6b0f988d86e4411794c7e44f
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-09 11:35:21 +0900
+
+    github/workflows: Fix Fedora 39 DNF
+    
+    - Check latest gnome-shell-extension-no-overview
+    - Add various configure options
+
+M	.github/workflows/main.yml
+M	autogen.sh
+
+commit e225c1179f5fbd302ab0c4429efaf00fe12742ff
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-08 22:36:32 +0900
+
+    Release 1.5.29-beta2
+
+M	configure.ac
+M	src/ibusbus.h
+M	src/ibusinputcontext.h
+
+commit ad883dc616e865c0b961c826e9e7cba9347a392d
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-08 16:12:55 +0900
+
+    src: Distinguish Arabic XKB and Keypad XKB options
+    
+    Shift-NumLock keys provides U+FEF9 keysym in keypad:pointerkeys XKB
+    options and Shift-t keys provides U+100FEF9 keysym with Arabic layout
+    and IBus internal APIs handles guint16 and cannot recognize the
+    difference.
+    Now the APIs are updated to handle guint.
+    Also libX11 compose file provides the 16bit key sequence only and
+    IBus now provides a pad U+1000000 internally.
+    
+    Seems the pad is added when <Uxxxx> format is used in the compose file.
+    Once the string sequence is converted to guint sequence, IBus
+    hardly to find the padded keysym and IBus uses ibus_keyval_name()
+    if the value has the keysym names or Unicode point but some code
+    points have both keysymnames and Unicode and now IBus prohibits
+    "Pointer_*" keysym names in compose file
+    
+    Add src/tests/ibus-compose.basic test case.
+    
+    To test U0227, Set SGS layout(Samogitian) in xkb/symbols/lt
+    and set XKB option lv3:bksl_switch and Press backslash-a keys.
+    
+    BUG=https://github.com/ibus/ibus/issues/2495
+
+M	src/ibuscomposetable.c
+M	src/ibusenginesimple.c
+M	src/ibusenginesimpleprivate.h
+M	src/tests/Makefile.am
+A	src/tests/ibus-compose.basic
+M	src/tests/ibus-compose.c
+M	src/tests/ibus-compose.env
+M	src/tests/runtest
+
+commit e6c436f8167cb9e8d8bf4971ca84ae30aeab4396
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-03 22:37:18 +0900
+
+    po: Update translation (Japanese)
+    
+    Update po/ja.po at 99%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ja/
+    
+    BUG=https://github.com/ibus/ibus/pull/2548
+
+M	po/ja.po
+
+commit 56a6d2702b916b513c74853225f0e50a4d4965af
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-03 22:34:05 +0900
+
+    po: Update POT file
+    
+    Reviewer: Yuri Chornoivan <yurchor@ukr.net>
+    Reviewer: Adolfo Jayme Barrientos <fitoschido@gmail.com>
+
+M	data/dconf/org.freedesktop.ibus.gschema.xml
+M	po/ibus10.pot
+
+commit 98c6ee7297a72b30e49431061b653ffba1bdbdf7
+Author: Gunnar Hjalmarsson <gunnarhj@ubuntu.com>
+Date:   2023-08-02 16:56:59 +0200
+
+    Fix typo in src/ibusservice.h
+    
+    "class" seems to be a reserved name in C++, so to make it possible to
+    build plasma-desktop, the name "class" in
+    ibus_service_class_free_interfaces() is replaced with "klass" in the
+    same way as in ibus_service_class_add_interfaces().
+    
+    BUG=https://github.com/ibus/ibus/issues/2550
+
+M	src/ibusservice.h
+
+commit 4e644e8dff68c4f7d52c0fe5da8b3f3a89c74328
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-01 23:25:35 +0900
+
+    ui/gtk3: Fix configure --disable-appindicator
+    
+    Seems `automake` runs `valac` for all VALA files as the concept while
+    I could not find such a documentation and I added "#if INDICATOR" in
+    indicator.vala at the moment.
+    
+    BUG=https://github.com/ibus/ibus/issues/2543
+
+M	ui/gtk3/Makefile.am
+M	ui/gtk3/indicator.vala
+M	ui/gtk3/panel.vala
+
+commit d47dc5520145110acc5567e98cd3b0694aa13dde
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-01 23:21:33 +0900
+
+    src/tests: Fix some tests
+    
+    - Delete ua(rstu) in org.freedesktop.ibus.gschema.xml
+    ua(rstu) has been available in xkeyboard-config 2.38 but deleted
+    in 2.39.
+    
+    - Use command -v rather than which in runtest
+    
+    Fixes: https://gitlab.freedesktop.org/xkeyboard-config/xkeyboard-config/-/commit/a9f7e47
+    
+    BUG=https://github.com/ibus/ibus/issues/2542
+    BUG=https://github.com/ibus/ibus/issues/2544
+
+M	data/dconf/org.freedesktop.ibus.gschema.xml
+M	src/tests/runtest
+
+commit cac49dc5623bf718d90a327272701c34133c0a9d
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-01 22:50:42 +0900
+
+    github/hooks: Fix typo in commit-msg
+
+M	.github/hooks/commit-msg
+
+commit 3bbec69dd25499c606eee9def40230f79d3e5765
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-08-01 21:15:01 +0900
+
+    github/hooks: Add commit-msg
+    
+    You can copy this file to .git/hooks/commit-msg with the file permission
+    '0755'.
+    This script is useful not to commit invalid commit IDs every time and
+    leave a temporary version(1.5.00) in source files when a release is
+    bumped.
+
+A	.github/hooks/commit-msg
+
+commit dfad02bb00ecf24a0f3b403c0aa96ad4890bdcb1
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-28 21:04:05 +0900
+
+    Release 1.5.29-beta1
+
+M	configure.ac
+
+commit e9f59d646ed15418171916e52cf12141984de7dd
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-28 00:24:59 +0900
+
+    po: Update translation (Japanese)
+    
+    Update po/ja.po at 99%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ja/
+    
+    BUG=https://github.com/ibus/ibus/pull/2534
+
+M	po/ja.po
+
+commit 01f9a27fc5d1e06da3493d919cfcabf34aa9bf34
+Author: Alan01 <alanmortensen.am@gmail.com>
+Date:   2023-07-28 00:24:54 +0900
+
+    po: Update translation (Danish)
+    
+    BUG=https://github.com/ibus/ibus/pull/2540
+
+M	po/da.po
+
+commit c2a15bc2665ac2d709e45c3bea7b41aa1a9d3034
+Author: Temuri Doghonadze <temuri.doghonadze@gmail.com>
+Date:   2023-07-28 00:24:48 +0900
+
+    po: Update translation (Georgian)
+    
+    Update po/ka.po at 40.8%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ka/
+    
+    BUG=https://github.com/ibus/ibus/pull/2534
+
+M	po/ka.po
+
+commit e468c9e4b74003890f25da42bc35cf97bca2d765
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-27 23:39:18 +0900
+
+    po: Update POT file
+
+M	po/ibus10.pot
+
+commit 2f40eea2a9988a005898b113c5ddbfe66e7d2c70
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-27 22:17:13 +0900
+
+    github/workflows: Add libdbusmenu-gtk3-devel dependency
+    
+    Replace Fedora 37 with Fedora 39
+    
+    BUG=https://github.com/ibus/ibus/pull/2541
+
+M	.github/workflows/main.yml
+
+commit 4a15f66a69f2d1ef203233966fac6eebab909d6c
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-27 17:34:34 +0900
+
+    ui/gtk3: Add notification popup for Plasma Wayland
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+M	ui/gtk3/application.vala
+M	ui/gtk3/panel.vala
+
+commit 0251f2cbba027aba7e3a5822788466c107ec7588
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-26 23:35:01 +0900
+
+    Add Super-semicolon for Emojier shortcut key
+
+M	data/dconf/org.freedesktop.ibus.gschema.xml
+M	ui/gtk3/ibus-emoji.7.in
+
+commit 29520357374c15426ba177d120fe2313ebdd4b9a
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-26 23:34:59 +0900
+
+    ui/gtk3: Fix Emojier on Plasma Wayland
+    
+    Using Wayland popup window requires to share the display with
+    input-method protocol but merging ibus-ui-gtk3 and ibus-extension-gtk3
+    will causes several leaks and now IBus keeps to separate
+    ibus-extension-gtk3 and the Emoji category dialog from ibus-ui-gtk3
+    at the moment. I'd like to fix several Emojier issues later.
+    
+    This way needs to remember the previous input context path before
+    the Emojier is launched since the popup window takes the input focus
+    in the Wayland desktop session but the Wayland input-method version 1
+    always remakes the input context by the focus change so the exact
+    match of input context paths is deleted at the moment.
+    Also Qt applications commit the preedit text with focus-out events
+    so Emojier clears the preedit prefix "e" before Emojier is launched.
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+M	ui/gtk3/panelbinding.vala
+
+commit 7b83a1f0177e7adf54b442b35ec9607c73923992
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-27 22:15:36 +0900
+
+    client/wayland: Fix sync ibus_input_context_process_key_event()
+    
+    Fix the synchronous "ProcessKeyEvent" D-Bus method in ibus-wayland too.
+    Also fix to send the correct keycode to ibus-hangul.
+    
+    Fixes: https://github.com/ibus/ibus/commit/38f09c6
+    
+    BUG=https://github.com/ibus/ibus/issues/2486
+
+M	client/wayland/ibuswaylandim.c
+
+commit 281c9aeb0ad566b1500416ea56f740c1b15ed46f
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-26 23:34:56 +0900
+
+    client/wayland: Implement new process_key_event
+    
+    Currently pressing Ctrl-p causes to infinite key events because
+    the Wayland compositor sends the same key event again with
+    `wl_keyboard_listener.key()` before the async
+    `zwp_input_method_context_v1_key()` and `xkb_state_update_key()`
+    are called.
+    
+    The hybrid async process_key_event will be ported from client/gtk4
+    to client/wayland to fix the issue.
+    
+    Fixes: https://github.com/ibus/ibus/commit/c957c5f
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+M	client/wayland/ibuswaylandim.c
+
+commit 42be272730ca8efc0ca0a1dc1c79cd48f839da34
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-26 23:34:54 +0900
+
+    bus: Handle IME switcher in BusIBusImpl
+    
+    IME Switcher is now managed with the activate input context only in
+    Wayland since the global hotkey is not available and handling the
+    shortcut keys is moved to ibus-daemon from ibus-ui-gtk3.
+    
+    "Since: 1.5.00" is added to C header files to avoid Vala build
+    failures until IBus 1.5.29 will be released.
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+M	bindings/vala/Makefile.am
+A	bindings/vala/glibmacro.vapi
+M	bus/ibusimpl.c
+M	bus/ibusimpl.h
+M	bus/inputcontext.c
+M	bus/marshalers.list
+M	src/ibusbus.c
+M	src/ibusbus.h
+M	src/ibusmarshalers.list
+M	ui/gtk3/Makefile.am
+M	ui/gtk3/application.vala
+M	ui/gtk3/bindingcommon.vala
+M	ui/gtk3/panel.vala
+M	ui/gtk3/switcher.vala
+
+commit 8923456a5d924c640e70e3755ea60aea84246910
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-26 23:34:42 +0900
+
+    ui/gtk3: Enable libdbusmenu in Indicator
+    
+    IBus panel now uses libdbusmenu to settle the panel menu coordiantes
+    in Plasma Wayland desktop session since the Wayland display is required
+    to use the Wayland input-method protocol.
+    
+    Now g_bus_get (G_BUS_TYPE_SESSION) is moved to Indicator to follow
+    the AppIndicator implementation strictly and a new API
+    ibus_service_class_free_interfaces() is added in libibus.so in case
+    IBusService constructor does not need GDBusConnection.
+    
+    Previously GtkMenu absolute cooridiantes are used with Xorg display
+    and AppIndicator "Activate" and "ContextMenu" D-Bus methods are used
+    but now the coordiates are transferred to libdbusmenu and "Menu" D-Bus
+    method is available and the activate menu only is shown by default.
+    
+    The workaround is to use the middle mouse click to toggle the activate
+    and context menus at the moment.
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+M	configure.ac
+M	src/ibusservice.c
+M	src/ibusservice.h
+M	ui/gtk3/Makefile.am
+M	ui/gtk3/indicator.vala
+M	ui/gtk3/notification-item.xml
+M	ui/gtk3/panel.vala
+M	ui/gtk3/property.vala
+
+commit ed552e860c1ae2a5985606cfe02ef388c681e570
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-26 22:54:22 +0900
+
+    ui/gtk3: Add an option to run ibus-daemon
+    
+    Now ibus-ui-gtk3 has an option to launch ibus-daemon in case of no
+    bus connections and also a feature to save a log file of
+    $XDG_CACHE_HOME/wayland.log by default and an option of the verbose log.
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+M	client/wayland/ibuswaylandim.c
+M	ui/gtk3/application.vala
+M	ui/gtk3/ibus-ui-wayland.desktop.in
+
+commit b8ab8001cac770e2e2728761cea4c5b418429796
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-26 22:54:20 +0900
+
+    ui/gtk3: Make GtkMenu with GdkDisplayX11
+    
+    Wayland does not support to put GtkMenu with a specific position
+    but GtkStatusIcon or AppIndicator requires GtkMenu made with
+    GdkDisplayX11 so that it's put at the panel icon.
+    On the other hand, now GdkDisplayWayland is also required to get
+    wl_display for input method protocol.
+    Now GdkMenu is genrated with GdkDisplayX11 but GdkDevice pointer
+    is made with GdkDisplayWayland and the menu is activated only when
+    an input context is focused.
+    
+    So you might need to click a input context in an application window
+    after you click the panel icon to show the panel menus unfortunately.
+    
+    We many need to separate the processes of IBus panel icon and
+    the candidate popup to separate GdkDisplayWayland and GdkDisplayX11.
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+M	ui/gtk3/panel.vala
+
+commit b0f06aef3993796dc85cc8956c9a35e852fe184f
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-26 22:54:18 +0900
+
+    client/gtk2: Connect global-engine-changed signal to switch XKB in Wayland
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+M	client/wayland/ibuswaylandim.c
+
+commit 3f3f0b6b38c227d6201f5d6fb6381923cd4c2ed1
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-26 22:54:17 +0900
+
+    ui/gtk3: Add desktop file for Plasma systemsettings5
+    
+    systemsettings5 "Input Devices" -> "Virtual Keyboard" shows
+    "IBus Wayland" icon in the Plasma Wayland desktop session to
+    launch `ibus-ui-gtk3 --enable-wayland-im` and the panel can
+    be launched with "Apply" button after `ibus-daemon --panel disable &`
+    runs.
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+M	po/POTFILES.in
+M	ui/gtk3/Makefile.am
+A	ui/gtk3/ibus-ui-wayland.desktop.in
+
+commit 6ed5e45c87d1a8508c3a9c33b117e89a2bbb2c5c
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-27 17:33:06 +0900
+
+    ui/gtk3: Call set_overlay_panel with realize signal
+    
+    set_overlay_panel() is available in Wayland input-method protocol
+    and GdkWaylandWindow can provide wl_surface with the realize signal.
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+M	bindings/vala/gdk-wayland.vapi
+M	client/wayland/Makefile.am
+A	client/wayland/ibus-wayland-im-custom.vala
+M	client/wayland/ibuswaylandim.c
+M	client/wayland/ibuswaylandim.h
+M	client/wayland/main.c
+M	ui/gtk3/application.vala
+M	ui/gtk3/bindingcommon.vala
+M	ui/gtk3/candidatepanel.vala
+M	ui/gtk3/emojier.vala
+M	ui/gtk3/handle.vala
+M	ui/gtk3/indicator.vala
+M	ui/gtk3/keybindingmanager.vala
+M	ui/gtk3/panel.vala
+M	ui/gtk3/propertypanel.vala
+
+commit 494448b78511e306089ea172993910295e654219
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-27 22:02:06 +0900
+
+    client/wayland: Generate library to be imported by panel
+    
+    Wayland input-method protocol has set_overlay_panel to set
+    the IBus lookup window near by the text input cursor and
+    the calling Wayland APIs and calling GUI APIs need to be same PID.
+    
+    Now `configure --enable-wayland` by default to include
+    ibuswaylandim.h in C files generated by Vala.
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+A	client/wayland/IBusWaylandIM-1.0.metadata
+M	client/wayland/Makefile.am
+A	client/wayland/ibuswaylandim.c
+A	client/wayland/ibuswaylandim.h
+M	client/wayland/main.c
+M	configure.ac
+M	ui/gtk3/Makefile.am
+M	ui/gtk3/application.vala
+M	ui/gtk3/keybindingmanager.vala
+M	ui/gtk3/propertypanel.vala
+
+commit e379bafaf3c0ae8330c0acc0c30fd995e4fa2279
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-05-04 09:54:46 +0900
+
+    client/wayland: Update Wayland protocol 1.31
+
+M	client/wayland/input-method-unstable-v1-client-protocol.h
+M	client/wayland/input-method-unstable-v1-protocol.c
+
+commit c3667366b03ef3c54060d6de6f961a87cddefd4e
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-05-04 09:54:44 +0900
+
+    ui/gtk3: Revert to disable switching XKB layouts
+    
+    Fixes: https://github.com/ibus/ibus/commit/230fb22
+    Fixes: https://github.com/ibus/ibus/commit/9ad0637
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+M	ui/gtk3/panel.vala
+
+commit 7502abbe7eb4289d0d727e53cdfac572baf405d5
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-12 07:52:21 +0900
+
+    client/x11: Fix sync ibus_input_context_process_key_event()
+    
+    Fix the synchronous "ProcessKeyEvent" D-Bus method in ibus-x11 too.
+    
+    Fixes: https://github.com/ibus/ibus/commit/38f09c6
+    
+    BUG=https://github.com/ibus/ibus/issues/2486
+
+M	client/x11/main.c
+
+commit 38f09c657fd5713e39f698aae43a09a07574f1a6
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-12 07:50:22 +0900
+
+    src: Fix sync ibus_input_context_process_key_event()
+    
+    The synchronous "ProcessKeyEvent" D-Bus method cannot receive
+    "CommitText" and "ForwardKeyEvent" D-Bus signals during calling the method.
+    To resolve the issue, now
+    ibus_input_context_set_post_process_key_event() and
+    ibus_input_context_post_process_key_event() are added newly.
+    
+    ibus_input_context_post_process_key_event() retries "CommitText" and
+    "ForwardKeyEvent" D-Bus signals during calling the "ProcessKeyEvent" D-Bus
+    method and ibus-daemon does not handle those signals.
+    
+    "Since: 1.5.00" is added in header files to available APIs before 1.5.29
+    is released. Will think later how to convert the version comments together
+    when the new version 1.5.29 is committed.
+    
+    BUG=https://github.com/ibus/ibus/issues/2486
+
+M	bus/inputcontext.c
+M	client/gtk2/ibusimcontext.c
+M	src/ibusinputcontext.c
+M	src/ibusinputcontext.h
+
+commit 7237fcc62348a4fe2f4f1347fe62cd5c339a1900
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-12 07:39:27 +0900
+
+    bus: Apply code style to inputcontext.c
+
+M	bus/inputcontext.c
+
+commit 580ea41b303d4f2dc5ccc64d39612c57cd7c5a0e
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-14 10:51:41 +0900
+
+    bus: Fix to declare g_unix_signal_add with glib-unix.h
+    
+    Fixes: https://github.com/ibus/ibus/commit/25a2dfc
+    
+    BUG=https://github.com/ibus/ibus/pull/2499
+
+M	bus/main.c
+
+commit 431c72b2ea1282dace4bf1e332c7d1e7c988a9e3
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-05 19:05:39 +0900
+
+    github/workflows: Delete internal patch since gspawn is fixed
+    
+    BUG=https://github.com/orgs/community/discussions/39646
+
+M	.github/workflows/main.yml
+
+commit 692da9766d53c2467b937cff745ae23923462f1e
+Author: Matt Turner <mattst88@gmail.com>
+Date:   2023-07-05 13:42:08 +0900
+
+    github/workflows: Build with make -j$(nproc)
+    
+    Now that parallel make works, let's make sure it continues to do so.
+    
+    BUG=https://github.com/ibus/ibus/pull/2523
+
+M	.github/workflows/main.yml
+
+commit f25c48a1989be221e98b863c947e52eaf80dc4a3
+Author: Matt Turner <mattst88@gmail.com>
+Date:   2023-07-05 13:41:33 +0900
+
+    src: Fix to build libibus-1.0.la twice
+    
+    The purpose of autotools is to automatically handle dependencies. By
+    calling $(MAKE) manually and without specifying any dependencies below,
+    we are going out of our way to prevent automake from doing its job.
+    
+        ibusunicodegen.h:
+               $(MAKE) $(AM_MAKEFLAGS) dicts/unicode-blocks.dict
+    
+    This avoids a build error whereby libibus-1.0.la is built twice
+    simultaneously, races with itself, and breaks the build.
+    
+        dicts/unicode-blocks.dict ibusunicodegen.h: unicode-parser
+    
+    The two build targets let `make ibusunicodegen.h` try to make
+    `dicts/unicode-blocks.dict` and `ibusunicodegen.h` with unicode-parser.
+    
+    Unlike `ibusunicodegen.h`, we cannot add `ibusemojigen.h` to the rule
+    that produces it (as a side-effect) because the rule is specified with
+    GNU Make syntax:
+    
+        dicts/emoji-%.dict: emoji-parser
+    
+    and doing so yields an error:
+    
+        config.status: error: Something went wrong bootstrapping makefile
+            fragments for automatic dependency tracking.  If GNU make was
+            not used, consider re-running the configure script with
+            MAKE="gmake" (or whatever is necessary).  You can also try
+            re-running configure with the '--disable-dependency-tracking'
+            option to at least be able to build the package (albeit without
+            support for automatic dependency tracking).
+    
+    So instead, add a prerequisite to the rule.
+    
+    Both emoji-parser and unicode-parser has $(libibus) in LDADD
+    and $(libibus) is built before emoji-parser and unicode-parser are
+    built.
+    
+    BUG=https://github.com/ibus/ibus/pull/2523
+
+M	src/Makefile.am
+
+commit be1f1d0da86006b019aaf78781d8c0c9c68fd46d
+Author: Matt Turner <mattst88@gmail.com>
+Date:   2023-07-05 13:33:25 +0900
+
+    src: Fix missing ibusenumtypes.h with parallel build
+    
+    When `./autogen.sh && make -C src ibusresources.c -j2` runs,
+    it causes a build failure due to no ibusenumtypes.h file.
+    
+    The chained dependencies are:
+    ibusresources.c -> compose/sequences-$(ENDIAN)-endian
+    -> gen-internal-compose-table -> gencomposetable.c
+    
+    gencomposetable.c includes ibus.h and it causes no ibusenumtypes.h with
+    the parallel build with multi CPUs.
+    
+    ibusenumtypes.h is in BUILT_SOURCES so it is built (with other files in
+    BUILT_SOURCES) before any other rules.
+    But ibus.h is included by gencomposetable.c which is needed to generate
+    ibusresources.c in BUILT_SOURCES.
+    
+    Since gencomposetable.c is an internal build source file and
+    it doesn't have to include ibus.h but can include each ibus header
+    files.
+    Deleting ibus.h in gencomposetable.c can fix the build failure.
+    
+    BUG=https://github.com/ibus/ibus/pull/2523
+
+M	src/gencomposetable.c
+
+commit 25a2dfc12410fff5f32a3caf793a958d7e41dc4c
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-07-04 22:46:31 +0900
+
+    bus: Avoid to hang the process with SIGUSR1 signal
+    
+    Seems multiple `Xephyr -query` to a remote GDM login session causes
+    to leave the some processes of ibus-daemon even if the Xephyr sessions
+    are terminated and the issue is caused by calling bus_server_quit()
+    with SIGUSR1 signal.
+    
+    I cannot reproduce the issue but calling the unsafe code from a signal
+    handler might lead to hangs and this is another signal connection
+    not to hang ibus-daemon.
+    
+    BUG=https://github.com/ibus/ibus/pull/2499
+
+M	bus/main.c
+
+commit 18f0d9f5f245f92dee086ce57a5bb94e63f1c222
+Author: oreo639 <oreo6391@gmail.com>
+Date:   2023-06-18 11:08:59 +0900
+
+    configure: Fix cross compiling
+    
+    Use AX_PROG_CC_FOR_BUILD to get build CC/CFLAGS/LDFLAGS/etc.
+    Use PKG_PROG_PKG_CONFIG_FOR_BUILD to find build pkg-config binary.
+    
+    https://sourceware.org/autobook/autobook/autobook_143.html#Supporting-Cross-Compiler-in-Make
+    
+    BUG=https://github.com/ibus/ibus/issues/2479
+
+M	configure.ac
+M	m4/Makefile.am
+A	m4/ax_prog_cc_for_build.m4
+A	m4/pkg_config_for_build.m4
+M	src/Makefile.am
+
+commit f0492c86f7c42d35bedff1a1910075617243d1f0
+Author: Matt Turner <mattst88@gmail.com>
+Date:   2023-06-18 10:59:35 +0900
+
+    m4: Update m4 files
+    
+    - Revert .gitignore because m4 files cannot be added
+    - Delete as-version.m4 which has been unused since 2010
+    - Update the latest introspection.m4
+    - Update the latest vapigen.m4
+    
+    Fixes: https://github.com/ibus/ibus/commit/d23bbdd
+    Fixes: https://github.com/ibus/ibus/commit/3b3f56d
+    
+    BUG=https://github.com/ibus/ibus/pull/2527
+
+M	.gitignore
+M	m4/Makefile.am
+D	m4/as-version.m4
+M	m4/introspection.m4
+M	m4/vapigen.m4
+
+commit d23bbdd442e361006e434fff00b6bda3d418b893
+Author: Matt Turner <mattst88@gmail.com>
+Date:   2023-06-11 19:59:20 +0900
+
+    Add a .gitignore file
+    
+    BUG=https://github.com/ibus/ibus/pull/2521
+
+A	.gitignore
+
+commit b97e6669ea8127dd50ce49d061edd4ce579bbb42
+Author: Matt Turner <mattst88@gmail.com>
+Date:   2023-06-11 19:59:18 +0900
+
+    src/ibuscomposetable: Fix unaligned accesses
+    
+    Fixes: https://github.com/ibus/ibus/commit/19ca1065
+    
+    BUG=https://github.com/ibus/ibus/issues/2518
+
+M	src/ibuscomposetable.c
+
+commit 76f2f4a3aa25b399d65c947d76d61d5ae4723bc7
+Author: Matt Turner <mattst88@gmail.com>
+Date:   2023-06-11 19:59:17 +0900
+
+    configure: Run autoupdate
+    
+    Avoids these warnings when running autogen.sh:
+    
+    configure.ac:67: warning: The macro `AC_GNU_SOURCE' is obsolete.
+    configure.ac:67: You should run autoupdate.
+    ./lib/autoconf/specific.m4:311: AC_GNU_SOURCE is expanded from...
+    configure.ac:67: the top level
+    configure.ac:129: warning: The macro `AC_PROG_CC_STDC' is obsolete.
+    configure.ac:129: You should run autoupdate.
+    ./lib/autoconf/c.m4:1671: AC_PROG_CC_STDC is expanded from...
+    configure.ac:129: the top level
+    configure.ac:139: warning: The macro `AM_DISABLE_STATIC' is obsolete.
+    configure.ac:139: You should run autoupdate.
+    m4/ltoptions.m4:260: AM_DISABLE_STATIC is expanded from...
+    configure.ac:139: the top level
+    configure.ac:140: warning: The macro `AC_ISC_POSIX' is obsolete.
+    configure.ac:140: You should run autoupdate.
+    ./lib/autoconf/specific.m4:549: AC_ISC_POSIX is expanded from...
+    configure.ac:140: the top level
+    configure.ac:141: warning: The macro `AC_HEADER_STDC' is obsolete.
+    configure.ac:141: You should run autoupdate.
+    ./lib/autoconf/headers.m4:704: AC_HEADER_STDC is expanded from...
+    configure.ac:141: the top level
+    
+    BUG=https://github.com/ibus/ibus/pull/2519
+
+M	configure.ac
+
+commit 4831ed595b346f1ab9224b44e571532785ca86c7
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-06-11 16:25:56 +0900
+
+    setup: Unselect Add button in Select Input Method dialog
+    
+    After click "More" ListBoxRow cell in the "Select an input method"
+    dialog, "Add" button is sensitive but clicking "Add" button causes
+    a SEGV in enginedialog.py:get_selected_engine() because the more cell
+    has no engine memmber.
+    
+    BUG=rhbz#2213145
+
+M	setup/enginedialog.py
+
+commit 03a486c1ec98647e7f8c7dbb70e6e4d3898c9322
+Author: Emil Velikov <emil.l.velikov@gmail.com>
+Date:   2023-06-11 16:16:40 +0900
+
+    makefile: manage the manpages via AC_CONFIG_FILES()
+    
+    The AC_CONFIG_FILES macro already known how to handle @VERSION@
+    substitution, while also ensuring the input files are in the tarball
+    (EXTRA_DIST) and substituted files are removed on make distclean
+    (CONFIG_CLEAN_FILES).
+    
+    BUG=https://github.com/ibus/ibus/pull/2514
+
+M	bus/Makefile.am
+M	configure.ac
+M	data/dconf/Makefile.am
+M	setup/Makefile.am
+M	tools/Makefile.am
+M	ui/gtk3/Makefile.am
+
+commit 1a25975d9f55f18eab609e4d147dd32689e367f3
+Author: Emil Velikov <emil.l.velikov@gmail.com>
+Date:   2023-06-11 16:16:35 +0900
+
+    makefile: don't gzip the man pages
+    
+    Drop the gzip step from the manpages - distributions already do that as
+    needed. In addition this resolves the final reproducibility issue with
+    ibus.
+    
+    BUG=https://github.com/ibus/ibus/pull/2514
+
+M	bus/Makefile.am
+M	data/dconf/Makefile.am
+M	setup/Makefile.am
+M	tools/Makefile.am
+M	ui/gtk3/Makefile.am
+
+commit 35d7438bbcbd3e30a3b38882e8cbbec8fa64312b
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-05-12 07:57:45 +0900
+
+    po: Update translation (Japanese)
+    
+    https://translate.fedoraproject.org/projects/ibus/ibus/ja/
+    
+    BUG=https://github.com/ibus/ibus/pull/2500
+
+M	po/ja.po
+
+commit 01c941e34b08ad069a244d38ed228ef0b34213a5
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-05-12 07:56:31 +0900
+
+    po: Update POT file
+
+M	po/POTFILES.in
+M	po/ibus10.pot
+
+commit fbbb76fd1665cc4a377043e74cb81afe607a26d4
+Author: Andi Chandler <andi@gowling.com>
+Date:   2023-05-12 07:54:30 +0900
+
+    po: Update translation (English (United Kingdom))
+    
+    Update po/en_GB.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/en_GB/
+    
+    BUG=https://github.com/ibus/ibus/pull/2500
+
+M	po/en_GB.po
+
+commit 310c442b62b569255ffc39bca557920d06881ade
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-05-02 10:00:03 +0900
+
+    ui/gtk3: Add workaround Emojier can be launched
+    
+    gnome-shell 44 prevents ibus from launching Emojier GUI.
+    This workaround can launch the Emojier but still cannot output
+    the selected emoji character to the focused application.
+    
+    So another workaround is needed with this patch.
+    I.e. Type Ctrl-Shift-c keys to copy the seleted emoji instead of
+    Enter key.
+    
+    BUG=https://github.com/ibus/ibus/issues/2509
+    BUG=https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/6518
+
+M	ui/gtk3/emojier.vala
+
+commit 67a0f36de029fe3adc21c90c7fb8669d0d68cbe2
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-04-13 12:22:50 +0900
+
+    src: Generate ibusenumtypes.h for gen-internal-compose-table
+    
+    `make clean` deletes ibusenumtypes.h and ibus.h incudes ibusenumtypes.h
+    and it's required by the gen-internal-compose-table build.
+    
+    BUG=https://github.com/ibus/ibus/issues/2501
+
+M	src/Makefile.am
+
+commit 630f3f73f62a121abb1af5b215d193aec4e0053c
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-04-05 14:28:49 +0900
+
+    configure: Use AC_C_BIGENDIAN for BSD systems
+    
+    NetBSD does not define __BYTE_ORDER and use AC_C_BIGENDIAN instead.
+    
+    BUG=https://github.com/ibus/ibus/pull/2477
+
+M	configure.ac
+
+commit 9553dbf12ec42a58beb671a7039827fbd652e14d
+Author: Izumi Tsutsui <tsutsui@ceres.dti.ne.jp>
+Date:   2023-03-27 19:45:37 +0900
+
+    Portability fixes for preparation of NetBSD CI
+    
+    - Makefile: Ignore errors on $(RM) -r "`uname -i`"
+    
+    - autogen: Replace make with $MAKE
+    
+    - data/dconf: BSD does not support the --tmpdir long option
+                  in mktemp. Also add the cleanup function.
+    
+    BUG=https://github.com/ibus/ibus/pull/2482
+
+M	Makefile.am
+M	autogen.sh
+M	data/dconf/make-dconf-override-db.sh
+
+commit a4007f7d0bdfb98457487c85304188c411e6d991
+Author: Sibo Dong <46512211+dongsibo@users.noreply.github.com>
+Date:   2023-03-23 13:08:12 +0900
+
+    ui/gtk3: Update Emoji shortcut key in ibus-emoji(7)
+    
+    The default Emoji shortcut key was changed but not updated in the
+    ibus-emoji.7 man page.
+    
+    Fixes: https://github.com/ibus/ibus/commit/1520c39
+    
+    BUG=https://github.com/ibus/ibus/pull/2475
+
+M	ui/gtk3/ibus-emoji.7.in
+
+commit 8f706d160631f1ffdbfa16543a38b9d5f91c16ad
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-03-23 13:07:38 +0900
+
+    util/IMdkit: Disable while loop before call ForwardEventMessageProc()
+    
+    Seems ProcessQueue() had a wrong XFree() with async process-key-event.
+    Fixes: https://github.com/ibus/ibus/commit/506ac99
+    
+    BUG=https://github.com/ibus/ibus/issues/2484
+
+M	util/IMdkit/i18nPtHdr.c
+
+commit 497f0c74230a65309e22ce5569060ce48310406b
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-03-23 13:07:30 +0900
+
+    client/x11: Fix Key typing order
+    
+    ibus-x11 now also uses the hybrid process key events with
+    IBUS_ENABLE_SYNC_MODE=2 and it waits for the async API
+    with GSource and g_main_context_iteration() in xim_forward_event().
+    
+    But g_main_context_iteration() calls gdk_event_source_dispatch()
+    and it can call another xim_forward_event() and the callbacks
+    of ibus_input_context_process_key_event_async() can be nested.
+    So if the forwarding API is called out of the callbacks of
+    ibus_input_context_process_key_event_async(), the key events
+    order is swapped due to the delayed return of
+    g_main_context_iteration().
+    
+    To resolve this issue, the forwarding API should be called in
+    the callbacks of ibus_input_context_process_key_event_async().
+    
+    Fixes: https://github.com/ibus/ibus/commit/506ac99
+    
+    BUG=https://github.com/ibus/ibus/issues/2480
+
+M	client/x11/main.c
+
+commit ce5e2bb43ea4c2f5780f4a3bfd7509f812b60afa
+Author: Izumi Tsutsui <tsutsui@ceres.dti.ne.jp>
+Date:   2023-02-28 18:05:29 +0900
+
+    src: Define X11_LOCALEDATADIR for BSD Compose data
+    
+    FreeBSD and NetBSD have X11 locale Compose data directories in
+    ${X11_PREFIX}/lib/X11/locale instead of ${X11_PREFIX}/share/X11/locale:
+    https://github.com/freedesktop/xorg-lib-libX11/blob/20a3f99/configure.ac#L336-L340
+    
+    BUG=https://github.com/ibus/ibus/pull/2478
+
+M	configure.ac
+M	src/Makefile.am
+M	src/gencomposetable.c
+M	src/ibuscomposetable.c
+M	src/ibusenginesimple.c
+M	src/tests/Makefile.am
+M	src/tests/ibus-compose.c
+
+commit 7c8abbe89403c2fcb08e3fda42049a97187e53ab
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-02-28 17:46:10 +0900
+
+    src: Call IBUS_TYPE_EMOJI_DATA in ibus_init()
+    
+    Seems the evaluation of IBUS_EMOJI_DATA() depends on the compiler
+    optimization.
+    
+    BUG=https://github.com/ibus/ibus/issues/2476
+
+M	src/ibusshare.c
+
+commit a140924e437346ebb7cd30c6e4d316ab5d447871
+Author: Simon Deziel <simon@sdeziel.info>
+Date:   2023-02-22 19:05:17 +0900
+
+    src/services: use a shell exec in systemd service files
+    
+    exec sub-command avoids keeping the parent shell around. Refer sh(1)
+    Fedora sh is bash.
+    
+    BUG=https://github.com/ibus/ibus/pull/2453
+
+M	bus/services/org.freedesktop.IBus.session.GNOME.service.in
+M	bus/services/org.freedesktop.IBus.session.generic.service.in
+
+commit bc065f8ced797186dd5a6c2460eea6efe755b16d
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-02-21 11:50:08 +0900
+
+    Release 1.5.28
+    
+    BUG=https://github.com/ibus/ibus/milestone/13?closed=1
+
+M	configure.ac
+
+commit 3c51582f28d3e60e6a58faf2dc94d790d56f9324
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-02-21 11:32:19 +0900
+
+    data/dconf: Update org.freedesktop.ibus.gschema.xml
+    
+    Some variants are deleted with xkeyboard-config 2.38
+    
+    Fixes: 594ec48cf80e8d2f62c5845f2ea0dbd0ebb0a1f8
+
+M	data/dconf/org.freedesktop.ibus.gschema.xml
+
+commit bf8848eb961b59e5f9ad5da78c3f25aa902fbde6
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-02-21 09:44:52 +0900
+
+    src/compose: Update en-US compose with libX11 1.8.4
+
+M	src/compose/sequences-big-endian
+M	src/compose/sequences-little-endian
+
+commit 594ec48cf80e8d2f62c5845f2ea0dbd0ebb0a1f8
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-02-21 09:44:35 +0900
+
+    engine: Update simple.xml with xkeyboard-config 2.38-1
+    
+    - Replace Tamil variants
+    - Replace Indonesian variants
+
+M	engine/simple.xml.in
+
+commit 8f00d67b809036b0b76ae257cfe7e102bc8f1dec
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-02-21 09:44:24 +0900
+
+    src: Update ibusunicodegen.h with Unicode 15.0.0
+
+M	src/ibusunicodegen.h
+
+commit f6eabce4fe693b0716bdee76be5424c084c58c99
+Author: Luis Pixeltux <luis.pardus@gmail.com>
+Date:   2023-02-21 09:03:09 +0900
+
+    po: Update translation (Italian)
+    
+    Update po/it.po at 34.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/it/
+    
+    BUG=https://github.com/ibus/ibus/pull/2444
+
+M	po/it.po
+
+commit 2f897b525df379e4e278161833586b3bb3a0bea3
+Author: Julien Humbert <julroy67@gmail.com>
+Date:   2023-02-21 08:58:08 +0900
+
+    po: Update translation (French)
+    
+    Update po/fr.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/fr/
+    
+    BUG=https://github.com/ibus/ibus/pull/2444
+
+M	po/fr.po
+
+commit 41e33c29154de491104ebdc4b9733ae314e9d442
+Author: 김인수 <simmon@nplob.com>
+Date:   2023-02-21 08:53:21 +0900
+
+    po: Update translation (Korean)
+    
+    Update po/ko.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ko/
+    
+    po: Update translation (Japanese)
+    
+    Update po/ja.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ja/
+    
+    Should not add English "Tangsa" to msgstr yet since the null
+    msgstr is under consideration. Refer the comment line on the msgid.
+    
+    BUG=https://github.com/ibus/ibus/pull/2444
+
+M	po/ja.po
+M	po/ko.po
+
+commit 4b0e4c57afc48ed96e3443d198f7cf2e0e816524
+Author: Alexey Rubtsov <rushills@gmail.com>
+Date:   2023-02-21 08:49:51 +0900
+
+    po: Update translation (Russian)
+    
+    Update po/ru.po at 99.4%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ru/
+    
+    BUG=https://github.com/ibus/ibus/pull/2444
+
+M	po/ru.po
+
+commit f3a99839192b0db4a2b0438ac04cfd4cf94a862f
+Author: Oğuz Ersen <oguz@ersen.moe>
+Date:   2023-02-21 08:47:11 +0900
+
+    po: Update translation (Turkish)
+    
+    Update po/tr.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/tr/
+    
+    BUG=https://github.com/ibus/ibus/pull/2444
+
+M	po/tr.po
+
+commit 8abf3ebdce4009d0c376d5486af48cdd26308e67
+Author: Emilio Herrera <ehespinosa57@gmail.com>
+Date:   2023-02-21 08:43:26 +0900
+
+    po: Update translation (Spanish)
+    
+    Update po/es.po at 98.3%
+    https://translate.fedoraproject.org/projects/ibus/ibus/es/
+    
+    BUG=https://github.com/ibus/ibus/pull/2444
+
+M	po/es.po
+
+commit 382c0349308b518a7a451f930afc6ba115b3e73a
+Author: Temuri Doghonadze <temuri.doghonadze@gmail.com>
+Date:   2023-02-21 08:39:32 +0900
+
+    po: Update translation (Georgian)
+    
+    Update po/ka.po at 40.6%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ka/
+    
+    BUG=https://github.com/ibus/ibus/pull/2444
+
+M	po/LINGUAS
+A	po/ka.po
+
+commit ecfae1678b117c95264e062deddf9562f902c03d
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-02-18 19:52:14 +0900
+
+    Return error if D-Bus set/get property method is failed
+    
+    D-Bus set/get property methods are called from GDBusConnection
+    APIs invoke_set_property_in_idle_cb() and
+    invoke_get_property_in_idle_cb() and the error values cannot be
+    null if the methods are failed.
+    
+    BUG=rhbz#2169205
+
+M	bus/ibusimpl.c
+M	bus/inputcontext.c
+M	src/ibusengine.c
+M	src/ibusenginesimple.c
+M	src/ibusservice.c
+
+commit 2a235c8c33f1de56df4873fe3662d5beb1355715
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-01-25 15:10:50 +0900
+
+    Refactor surrounding text warning & free focus-id tables
+    
+    - Free engine_focus_id_table in bus_ibus_impl_destroy
+    - It would be better to check the function return value at the
+      first calling than the static variable for the surrounding text
+      warnings
+    - Add API comments
+    
+    Fixes: https://github.com/ibus/ibus/commit/39b6907
+    Fixes: https://github.com/ibus/ibus/commit/7bbcce6
+    Fixes: https://github.com/ibus/ibus/commit/19ca106
+    Fixes: https://github.com/ibus/ibus/commit/92771d0
+
+M	bus/ibusimpl.c
+M	client/gtk2/ibusimcontext.c
+M	src/ibuscomposetable.h
+M	src/ibusengine.c
+
+commit bd24be4582f67e278fc85e843d39b81629bf7d9b
+Author: Philippe Rouquier <bonfire-app@wanadoo.fr>
+Date:   2023-01-23 21:04:51 +0900
+
+    Add active-surrounding-text property to IBusEngine
+    
+    When this property is set to TRUE, ibus daemon will update
+    surrounding text on every focus(in/out) event which makes
+    ibus_engine_get_surrounding_text() calls from an engine
+    code unnecessary.
+    This property must be set at construct time.
+    
+    BUG=https://github.com/ibus/ibus/pull/2447
+
+M	bus/engineproxy.c
+M	bus/ibusimpl.c
+M	bus/ibusimpl.h
+M	src/ibusengine.c
+
+commit d190bc32fe0fe780b66100e5461326973ac7a804
+Author: Eberhard Beilharz <eb1@sil.org>
+Date:   2023-01-12 22:24:42 +0900
+
+    configure: Fix texts for surrounding text
+    
+    The options and corresponding texts for surrounding-text were mixed
+    up. This change makes them consistent with the text for other
+    options.
+    
+    BUG=https://github.com/ibus/ibus/pull/2438
+
+M	configure.ac
+
+commit ae696351c8a37ca15512b7fb9f4d5fe187890962
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-01-06 08:16:36 +0900
+
+    src/compose: Add en-US compose table with libX11 1.7.3.1
+
+M	src/compose/sequences-big-endian
+M	src/compose/sequences-little-endian
+
+commit 19ca10651890ce0d88ec613de0e8930090105dc8
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-01-06 00:01:27 +0900
+
+    src: Convert gtk_compose_seqs_compact to GResource
+    
+    en-US Compose table had been a compact array with a special
+    algorithm but now it's converted to the general compose table
+    similar to other language compose tables and saved to GResource.
+
+M	configure.ac
+M	src/Makefile.am
+A	src/compose/Makefile.am
+A	src/compose/sequences-big-endian
+A	src/compose/sequences-little-endian
+A	src/gencomposetable.c
+D	src/gtkimcontextsimpleseqs.h
+A	src/ibus.gresources.xml.in
+M	src/ibuscomposetable.c
+M	src/ibuscomposetable.h
+M	src/ibusenginesimple.c
+M	src/ibusenginesimpleprivate.h
+M	src/ibusshare.c
+
+commit f3a7772e47cefcaf839f11248aeb1349b4e36f68
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2023-01-06 00:00:23 +0900
+
+    github/workflows: Fix CI on PR
+
+M	.github/workflows/main.yml
+M	autogen.sh
+
+commit a3a9bd30f5d8658f4de2d30190f680e7636b3948
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-12-02 18:26:26 +0900
+
+    Add action file for CI
+    
+    Replace Travis CI with GitHub action CI.
+
+A	.github/workflows/main.yml
+
+commit 2555fa9781ccb40445d8a344ec180ff654e0c5f1
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-12-02 13:41:39 +0900
+
+    src/tests: Fix Connection refused in ibus-bus
+    
+    ibus-bus is failed in Ubuntu 22.04 under GitHub action + Docer
+    with the warning of:
+    "Unable to connect to ibus: Could not connect: Connection refused"
+    during ibus_bus_new_async()'s callback if IBus socket file is
+    deleted after ibus_bus_exit_async()'s callback is called.
+
+M	src/tests/ibus-bus.c
+
+commit 2719e936cc1f1f26f414b339a7f4f0e48331732f
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-11-22 21:47:01 +0900
+
+    src/tests: Fallback gtk-query-immodules-3.0 for Ubuntu 22.04
+
+M	src/tests/runtest
+
+commit 506ac9993d5166196b7c4e9bfa9fb0f9d3792ffa
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-11-10 18:38:05 +0900
+
+    client/x11: Implement new process_key_event for ibus-x11
+    
+    The new process_key_event is ported from GTK4 to X11 because
+    hangul maintainers wish to delete forward_key_event as much as possible
+    and currently we could apply forward_key_event to the sync mode only
+    and the new process_key_event is a new async key event process in X11
+    and hangul might disable forward_key_event by default.
+    
+    Now the definition of IBUS_CAP_SYNC_PROCESS_KEY_V2 capability is changed
+    to set only if the sync mode.
+    
+    Also switch a heavy GMainLoop to the light GSource.
+    
+    Fixes: https://github.com/ibus/ibus/commit/c957c5f
+
+M	client/gtk2/ibusimcontext.c
+M	client/x11/main.c
+M	src/ibustypes.h
+
+commit cd621f8b82c80a174cd880cb27f27d7ccb9cb4d4
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-11-03 08:36:17 +0900
+
+    ui/gtk3/switcher: Avoid to unref m_engines with double run
+    
+    m_engines could be a buffer overflow if switcher.run() is called
+    again and m_engines is unrefed durling showing the swicher popup.
+    
+    BUG=rhbz#2081055
+
+M	ui/gtk3/switcher.vala
+
+commit ddead515d9d53fc692af252f610b009660494e21
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-09-21 21:08:33 +0900
+
+    client/gtk2: Update surrounding text properties by focus in
+    
+    ibus_input_context_set_surrounding_text() should be succeeded
+    if input contexts are different so that ibus engines can
+    update surrounding text properties with focus in event.
+    
+    When an input context is created newly, RequireSurroundingText D-Bus
+    signal could not be received yet and set_surrounding_text() is failed.
+    Now "require-surrounding-text" signal is added to IBusInputContext
+    and clients can call set_surrounding_text() later.
+    
+    BUG=https://github.com/ibus/ibus/issues/2423
+
+M	client/gtk2/ibusimcontext.c
+M	src/ibusinputcontext.c
+
+commit 781119be4f646f06197badb73398a41d5acca787
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-09-21 21:08:31 +0900
+
+    client/gtk2: Update capabilities if "retrieve-surrounding" is failed
+    
+    Some engine developers wish to update the capabilities if emitting
+    "retrieve-surrounding" signal is failed so that engines disable the
+    surrounding text feature but I had deleted the logic with #2054 since
+    the second typing could be succeeded.
+    Asking all applications the second typing would not be a good condition
+    and the special issue should be fixed in firefox.
+    
+    Fixes: https://github.com/ibus/ibus/commit/7b3b8c8b0c
+    
+    BUG=https://github.com/ibus/ibus/issues/2054
+    BUG=https://github.com/ibus/ibus/issues/2354
+
+M	client/gtk2/ibusimcontext.c
+
+commit 8d0abbcbcef9a4fda706c70f12f4f596728bf90b
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-09-21 21:08:29 +0900
+
+    client/gtk2: Stop many warnings of surrounding text
+    
+    Surrounding text is requested by ibus_im_context_filter_keypress()
+    and the no supported warning could be output many times.
+    Now the warning is output one time by input context but
+    brower applicaations do not use GtkWidget for the input context
+    so the warning is output by instance but not input context.
+    
+    BUG=https://github.com/ibus/ibus/issues/2418
+
+M	client/gtk2/ibusimcontext.c
+
+commit babad7839ba6d72609c717d647bb2928724b4cc3
+Author: Izumi Tsutsui <tsutsui@ceres.dti.ne.jp>
+Date:   2022-09-06 17:08:43 +0900
+
+    tools: Check libdl for dlclose() properly in configure
+    
+    BUG=https://github.com/ibus/ibus/pull/2442
+
+M	configure.ac
+M	tools/Makefile.am
+
+commit e144b12c1f18ec91ddcbb5d491387d78075318f4
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-08-23 00:29:37 +0900
+
+    Release 1.5.27
+
+M	configure.ac
+
+commit ef9bd3b1c8e2ed122b064abb59fc6e121e23bb59
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-08-23 00:26:57 +0900
+
+    engine: Update simple.xml with xkeyboard-config 2.36
+
+M	engine/simple.xml.in
+
+commit 1520c39d0d6036da725fcecd932883be3f3d3575
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-08-18 16:24:23 +0900
+
+    data/dconf: Revert Emoji shoftcut key to Super-space
+    
+    IBus provides the D-Bus method to override IBus emoji UI and i think
+    Super-period is better than Ctrl-period for the emoji shortcut key to
+    compare MS-Window, Macintosh. IBus emoji UI connects to the input method
+    and provides the language emoji annotations.
+    
+    Seems moving GTK Cotrol-period to gnome-shell Suer-period is difficult
+    at present.
+    
+    BUG=https://github.com/ibus/ibus/issues/2390
+    BUG=https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/5728
+
+M	data/dconf/org.freedesktop.ibus.gschema.xml
+
+commit d47dbfada41aa4fb5df9f7cffe873786fc4849cc
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-07-25 17:22:21 +0900
+
+    client/x11: Enhance Xutf8TextListToTextProperty
+    
+    XCompoundTextStyle depends on the current locale and some locales fail
+    to to get the compound text style.
+    If Xutf8TextListToTextProperty() fails, now ibus-x11 tries to get
+    the compound text style with UTF-8 encoding.
+    
+    BUG=https://github.com/ibus/ibus/issues/2422
+
+M	client/x11/main.c
+
+commit 00a78d6d0bc1d964cdd50959bcc37f340678dab4
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-07-20 14:30:20 +0900
+
+    po: Update translation (Japanese)
+    
+    Update po/uk.po at 98.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ja/
+    
+    BUG=https://github.com/ibus/ibus/pull/2416
+
+M	po/ja.po
+
+commit 742091bc69df68ee4d0e1d9c8faa4539c9201ed8
+Author: Yuri Chornoivan <yurchor@ukr.net>
+Date:   2022-07-04 12:18:53 +0200
+
+    po: Update translation (Ukrainian)
+    
+    Update po/uk.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/uk/
+    
+    BUG=https://github.com/ibus/ibus/pull/2416
+
+M	po/uk.po
+
+commit ced5bfb08d84c686fbee9f488f7787a2dd3aa9a5
+Author: Oğuz Ersen <oguz@ersen.moe>
+Date:   2022-07-04 12:18:52 +0200
+
+    po: Update translation (Turkish)
+    
+    Update po/tr.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/tr/
+    
+    BUG=https://github.com/ibus/ibus/pull/2416
+
+M	po/tr.po
+
+commit d8107131b936f82b103a0aad14fad457d66d77bc
+Author: 김인수 <simmon@nplob.com>
+Date:   2022-07-04 12:18:52 +0200
+
+    po: Update translation (Korean)
+    
+    Update po/ko.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ko/
+    
+    BUG=https://github.com/ibus/ibus/pull/2416
+
+M	po/ko.po
+
+commit 1f4fe9f8cf97f6e8357c59f083c55cbd8670c4bf
+Author: Mike FABIAN <mfabian@redhat.com>
+Date:   2022-07-04 12:18:52 +0200
+
+    po: Update translation (German)
+    
+    Update po/de.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/de/
+    
+    BUG=https://github.com/ibus/ibus/pull/2416
+
+M	po/de.po
+
+commit e78c545e490ba2b5869e733ae1ffa35b2be2d80e
+Author: Piotr Drąg <piotrdrag@gmail.com>
+Date:   2022-07-04 12:18:52 +0200
+
+    po: Update translation (Polish)
+    
+    Update po/pl.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/pl/
+    
+    BUG=https://github.com/ibus/ibus/pull/2416
+
+M	po/pl.po
+
+commit e88651efc0ebaa0cbddb568fa400906e43fbb486
+Author: H A <contact+fedora@hen.ee>
+Date:   2022-07-04 12:18:50 +0200
+
+    po: Update translation (Estonian)
+    
+    Update po/et.po at 27.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/et/
+    
+    BUG=https://github.com/ibus/ibus/pull/2416
+
+M	po/et.po
+
+commit db2ef5d08ec61df156ca13beb63df7f7fed38829
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-07-20 14:06:21 +0900
+
+    tools: Revise ibus im-module help message
+
+M	po/ibus10.pot
+M	tools/ibusimmodule.c
+
+commit 82e38d9e1c06e7fdc0816fe08f4021b8c1cdff10
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-07-20 11:25:26 +0900
+
+    engine: Delete xkb:latam:*:* in denylist.txt
+    
+    BUG=https://github.com/ibus/ibus/issues/2412
+
+M	engine/Makefile.am
+M	engine/denylist.txt
+
+commit fee26c6b45de307cfdcb1bf9cc75e3df45ee82b2
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-07-20 11:10:11 +0900
+
+    tools: Fix to add -ldl LDADD
+    
+    -ldl option is needed for dlclose() in Ubuntu.
+    
+    Also move the docs build order to the last.
+    
+    Also unset G_MESSAGES_DEBUG for gsettings in xkb-latin-layouts.
+    gsettings cannot get the key value when G_MESSAGES_DEBUG is enabled.
+
+M	Makefile.am
+M	src/tests/xkb-latin-layouts
+M	tools/Makefile.am
+
+commit 92771d0e2cc7e5c12dc4312eff2a106b860deb77
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-07-19 22:58:33 +0900
+
+    src/ibusengine: Add focus_in_id()/focus_out_id() class methods
+    
+    IBusEngine constructor now has a 'has-focus-id' property and if it's %TRUE,
+    IBusEngine::focus_in_id()/focus_out_id() are called instaed of
+    IBusEngine::focus_in()/focus_out() and the class method has an object_path
+    argument for the unique input context ID and a client argument for
+    the client application type likes ibus-gtk, ibus-gtk4, xim.
+
+M	bus/engineproxy.c
+M	bus/engineproxy.h
+M	bus/ibusimpl.c
+M	bus/ibusimpl.h
+M	bus/inputcontext.c
+M	src/ibusengine.c
+M	src/ibusengine.h
+M	src/ibusmarshalers.list
+
+commit c957c5f6ba07074a8fb56c978c27873c1cfe0783
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-07-19 22:58:24 +0900
+
+    client/gtk2: Implement new process_key_event for GTK4
+
+M	client/gtk2/ibusimcontext.c
+M	src/ibustypes.h
+
+commit 965567d7fd26b6c045cc59adcccbe978abe1dfc4
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-07-19 22:58:15 +0900
+
+    tools: Add ibus im-module command
+    
+    ibus im-module command can retrive gtk-im-module value from an
+    instance of GtkIMMultiContext.
+    The GTK version can be specified by --type option and the default
+    is --type=gtk3 and GTK3 im-ibus.so is dlopened.
+
+M	client/gtk2/ibusim.c
+M	client/gtk4/ibusim.c
+M	po/ibus10.pot
+A	tools/IBusIMModule-1.0.metadata
+M	tools/Makefile.am
+M	tools/ibus.1.in
+A	tools/ibusimmodule.c
+A	tools/ibusimmodule.h
+M	tools/main.vala
+
+commit ab0d176477b17b1981879005846aaedc588f79cc
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-07-19 22:58:09 +0900
+
+    tools: Enable ibus restart in GNOME desktop
+    
+    If ibus-daemon is called via systemd, IBus restart API cannot restart
+    ibus-daemon but just terminates it.
+    Now ibus restart command checks the systemd avaiability and restart
+    ibus-daemon via systemd.
+    ibus start command is also added to launch ibus-daemon with systemd.
+    
+    BUG=https://github.com/ibus/ibus/issues/2407
+
+M	po/ibus10.pot
+M	tools/Makefile.am
+M	tools/ibus.1.in
+M	tools/main.vala
+
+commit 79e446ec99691d62ec2110c728e69da4c889eee2
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-07-19 22:40:39 +0900
+
+    travis: Move git master to main branch
+
+M	.travis.yml
+
+commit b94f0c1cea5d0e423fef3bcc13b23f212f04c930
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-07-07 08:13:57 +0900
+
+    src: Add IBUS_CAP_OSK to IBusCapabilite
+    
+    Some IMEs' behavior is different between the on-screen keyboard and
+    the direct physical keyboard and this flag is useful for the IMEs.
+    
+    Also fix src/ibusaccelgroup.c for gtkdoc-mkhtml.
+    If the API comment of IBusCapabilite is updated, XML & HTML files
+    are rebuilt and gtk-doc-1.33.2 no longer accepts HTML tags in
+    the comments.
+
+M	src/ibusaccelgroup.c
+M	src/ibustypes.h
+
+commit 9ad063746ec3d919217ae18acce2d4768bcfca05
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-06-20 21:01:31 +0900
+
+    ui/gtk3: Hide XKB engine but enable it in Plasma Wayland
+    
+    IBus just cannot defer key events to the secondary input methods
+    to switch XKB keymaps in Plasma Wayland because IBus has to handle the
+    compose keys before defer the key events.
+    
+    Also update the POT file.
+    
+    BUG=rhbz#2088656
+
+M	data/dconf/org.freedesktop.ibus.gschema.xml
+M	po/ibus10.pot
+M	ui/gtk3/panel.vala
+
+commit ff99828cb60915318ed0f40998a1a23d5dea42c7
+Author: Hollow Man <hollowman@opensuse.org>
+Date:   2022-01-26 11:19:40 +0800
+
+    Add tooltip text for use custom icon and theme
+    
+    BUG=https://github.com/ibus/ibus/pull/2327
+    
+    Signed-off-by: Hollow Man <hollowman@opensuse.org>
+
+M	setup/setup.ui
+
+commit addab9fdc7f98c172b6fcb1e24faa133368bdaf3
+Author: Hollow Man <hollowman@opensuse.org>
+Date:   2022-01-26 10:03:04 +0800
+
+    Revert support for choosing GTK themes dark variant
+    
+    So that the theme list won't get too messy
+    
+    BUG=https://github.com/ibus/ibus/pull/2327
+    
+    Signed-off-by: Hollow Man <hollowman@opensuse.org>
+
+M	setup/main.py
+M	ui/gtk3/bindingcommon.vala
+
+commit 233a3f4d4d3dc6782e74db5bf4e7c28fae729bc9
+Author: Hollow Man <hollowman@opensuse.org>
+Date:   2022-01-26 09:35:11 +0800
+
+    Add functionality to change IBus panel themes with available GTK themes
+    
+    To allow IBus to have their own control of themes.
+    
+    https://gitlab.gnome.org/GNOME/gnome-tweaks/-/blob/b9badc47b92dd73f8cedbd2efc66cbaf3ea25773/gtweak/tweaks/tweak_group_appearance.py#L69
+    
+    BUG=https://github.com/ibus/ibus/pull/2327
+    
+    Signed-off-by: Hollow Man <hollowman@opensuse.org>
+
+M	data/dconf/org.freedesktop.ibus.gschema.xml
+M	setup/main.py
+M	setup/setup.ui
+M	ui/gtk3/bindingcommon.vala
+M	ui/gtk3/panel.vala
+M	ui/gtk3/panelbinding.vala
+
+commit 9f62a40b0ddf4413c4e2d5f7346a6ef09bc2f44e
+Author: Naïm Favier <n@monade.li>
+Date:   2022-06-03 15:15:59 +0900
+
+    configure: Use our own prefix to look up systemd user services dir
+    
+    BUG=https://github.com/ibus/ibus/pull/2388
+    BUG=https://github.com/NixOS/nixpkgs/pull/164105#discussion_r826011775
+
+M	configure.ac
+
+commit 16df64edadc21f50906e5442b73425b9256fbf65
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-05-25 23:07:33 +0900
+
+    src/tests: Add xkb-latin-layouts case
+    
+    BUG=https://github.com/ibus/ibus/issues/2404
+
+M	.travis.yml
+M	src/tests/Makefile.am
+M	src/tests/runtest
+A	src/tests/xkb-latin-layouts
+
+commit bca7bf0f97230806a26f53c798050408108cfb3d
+Author: Mike FABIAN <mfabian@redhat.com>
+Date:   2022-05-25 23:07:24 +0900
+
+    data/dconf: Update xkb-latin-layouts in gschema
+    
+    Add more keyboard layouts which cannot produce ASCII to
+    data/dconf/org.freedesktop.ibus.gschema.xml
+    Remove "mal" and "mkd", there are no such layouts.
+    
+    BUG=https://github.com/ibus/ibus/issues/2404
+
+M	data/dconf/org.freedesktop.ibus.gschema.xml
+
+commit 3e5fab4991f4e2e22b56cf57d4dfb779a1d1977c
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-05-20 20:54:59 +0900
+
+    client/gtk2: Revert CCedilla change for pt-BR
+    
+    gtk_im_context_simple_add_table() is deprecated in GTK4.
+    I decide to delete gtk_im_context_simple_add_table() here because
+    the change 03c9e591430c62354bbf26ef7bd4a2e6acfb7c8f is no longer needed
+    because IBusEngineSimple has implemented to load pt_br compose key
+    by locale.
+    
+    Fixes: 03c9e591430c62354bbf26ef7bd4a2e6acfb7c8f
+    
+    BUG=chromium-os:11421
+    BUG=http://codereview.appspot.com/3989060
+
+M	client/gtk2/ibusimcontext.c
+
+commit 8711dc83225a7fade3ba67ab796ecb03b38406ff
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-05-20 20:54:58 +0900
+
+    client/gtk2/ibusimcontext: keycode - 8 for gtk3 keycode generation
+    
+    Since IBus keycode subtracts 8 from Linux keycode, keycodes from
+    gdk_keymap_get_entries_for_keyval() also have to be subtracted 8.
+    The keycodes will add 8 when they bring back the GDK event loop.
+
+M	client/gtk2/ibusimcontext.c
+
+commit 47303a6f85a7d2601929bd3c87196d27243d2dd7
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-05-20 20:54:54 +0900
+
+    src/tests: Run ibus-daemon from CI even if GNOME desktop
+    
+    gnome-shell no longer launch ibus-daemon because gnome-session
+    launches ibus-daemon with IBus systemd file.
+    This is a workaround to call ibus-daemon after GNOME fails to
+    launch ibus-daemon since CI does not use graphical-session.target
+    systemd service.
+    
+    BUG=https://gitlab.gnome.org/GNOME/gdm/-/issues/777
+
+M	src/tests/ibus-desktop-testing-runner.in
+
+commit f3d7aa960b29dda7a5ace7a22ae6de33e2acdcaa
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-05-05 00:19:27 +0900
+
+    po: Update translation (Japanese)
+    
+    Update po/uk.po at 98.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ja/
+    
+    BUG=https://github.com/ibus/ibus/pull/2399
+
+M	po/ja.po
+
+commit 2c262cbdd016faca84bf7df9b11d443cd07308b4
+Author: Yuri Chornoivan <yurchor@ukr.net>
+Date:   2022-05-04 23:35:49 +0900
+
+    po: Update translation (Ukrainian)
+    
+    Update po/uk.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/uk/
+    
+    BUG=https://github.com/ibus/ibus/pull/2399
+
+M	po/uk.po
+
+commit 8ec7eff589328ca31f6ac06dbd011f750c9aea4a
+Author: Nathan <nathan95@live.it>
+Date:   2022-05-04 23:33:39 +0900
+
+    po: Update translation (Italian)
+    
+    Update po/it.po at 32.3%
+    https://translate.fedoraproject.org/projects/ibus/ibus/it/
+    
+    BUG=https://github.com/ibus/ibus/pull/2399
+
+M	po/it.po
+
+commit 5f85888daa35bd4d96b48f7e497079fb5a86f483
+Author: A S Alam <amanpreet.alam@gmail.com>
+Date:   2022-05-04 23:31:10 +0900
+
+    po: Update translation (Punjabi)
+    
+    Update po/pa.po at 38.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/pa/
+    
+    BUG=https://github.com/ibus/ibus/pull/2399
+
+M	po/pa.po
+
+commit f7c045ec56606b72158addac55e6526bfba1327f
+Author: 김인수 <simmon@nplob.com>
+Date:   2022-05-04 23:09:15 +0900
+
+    po: Update translation (Korean)
+    
+    Update po/ko.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ko/
+    
+    BUG=https://github.com/ibus/ibus/pull/2399
+
+M	po/ko.po
+
+commit b4723eb1688f396f6309d034b7c5d2815ead4b94
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-05-04 20:58:21 +0900
+
+    travis: Add libnotify-dev
+
+M	.travis.yml
+
+commit 9d0f3c53f5ef1d6e4a62e99309b3af547e668366
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-05-04 19:14:57 +0900
+
+    po: Update POT file with unicode-ucd 14.0.0
+    
+    XKB engine notification for Plasma Wayland is also added.
+
+M	po/ibus10.pot
+M	ui/gtk3/panel.vala
+
+commit 230fb226de17ddd1292e749df5b7a66bf1f1c23f
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-05-04 19:14:51 +0900
+
+    ui/gtk3: Disable XKB engines in Plasma Wayland
+    
+    Currently ibus-ui-gtk3 runs the setxkbmap command internally to set
+    the XKB keymaps from XKB engines but setxkbmap does not work in Wayland
+    session.
+    The IBus XKB engines are disabled at the moment in Plamsa Wayland
+    and ibus-ui-gtk3 asks users to use systemsettings5.
+    
+    Will use libinput and libxkbcommon later but it would be better
+    to implement IBus in Plamsa Wayland compositor.
+    
+    BUG=https://github.com/ibus/ibus/issues/2408
+
+M	configure.ac
+M	ui/gtk3/Makefile.am
+M	ui/gtk3/panel.vala
+
+commit f1c456d26053c32634ecf436bd0082a2910d0b9e
+Author: Mitsuya Shibata <mty.shibata@gmail.com>
+Date:   2022-04-10 17:10:01 +0900
+
+    bus/services: Fix bashisms in org.freedesktop.IBus.session.GNOME.service
+    
+    The "[[ ... ]]" is bash's compound command not in POSIX sh. This style
+    is problematic in Xorg session in environments where sh is not bash,
+    suach as Debian and Ubuntu.
+    
+    BUG=https://github.com/ibus/ibus/issues/2397
+
+M	bus/services/org.freedesktop.IBus.session.GNOME.service.in
+
+commit 17648f0522910480b6c5dd4f5356ca1f6c160bf5
+Author: Carlos Garnacho <carlosg@gnome.org>
+Date:   2022-03-29 22:48:19 +0200
+
+    src: Fix refcounting issues
+    
+    Commit 5a455b1ead attempted to fix both GLib warnings around
+    floating references and other presumed refcounting issues. However
+    it missed 2 kinds of bugs:
+    
+    - The places that take an IBusText created from a static string
+      were made to avoid freeing it afterwards, but the staticness refers
+      to the string content, not the object itself.
+    - The places that are documented to emit signals on floating object
+      references used to do the following after signal emission:
+    
+      if (g_object_is_floating (object))
+        g_object_unref (object)
+    
+      And did possibly trigger GLib warnings were changed to:
+    
+      if (g_object_is_floating (object))
+        g_object_sink_ref (object);
+      g_object_unref (object);
+    
+      Which fixes the GLib warning for floating references, but do
+      unintendedly steal one reference away for non floating references.
+    
+    This commit is essentially a revert of commit 5a455b1ead, but
+    addressing both things differently:
+    
+    - All label/tooltip/symbol IBusText properties in IBusProperty do
+      now always sink the reference of the stored object.
+    
+    - All places documented as maybe using objects with a floating reference
+      on signals changed to doing:
+    
+      if (g_object_is_floating (object)) {
+        g_object_ref_sink (object);
+        g_object_unref (object);
+      }
+    
+      So the floating reference is owned and unreferenced without warnings,
+      but already owned references are left unchanged.
+    
+    This addresses the possible GLib warnings, fixes the possible double
+    unrefs happening on IBusText used in signals, and fixes the missing
+    unrefs on IBusText objects created from static strings.
+    
+    BUG=https://github.com/ibus/ibus/issues/2393
+    BUG=https://github.com/ibus/ibus/issues/2387
+
+M	src/ibusinputcontext.c
+M	src/ibusproperty.c
+
+commit 6a70ab0338206bd1c7d01a4e1874ea0ee5b3a9d3
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-03-14 14:13:26 +0900
+
+    Release 1.5.26
+
+M	configure.ac
+
+commit 20c5dc9c5d649357bb556b85e79f493b476c6622
+Author: Zayed Al-Saidi <zayed.alsaidi@gmail.com>
+Date:   2022-03-14 10:33:59 +0900
+
+    po: Update translation (Arabic)
+    
+    Update po/ar.po at 35.4%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ar/
+    
+    BUG=https://github.com/ibus/ibus/pull/2338
+
+M	po/ar.po
+
+commit 0e522c40750a2bb1d58354469734c7681dd89bc8
+Author: Abdullah Albaroty <albaroty@gmail.com>
+Date:   2022-03-14 10:33:56 +0900
+
+    po: Update translation (Arabic)
+    
+    Update po/ar.po at 35.4%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ar/
+    
+    BUG=https://github.com/ibus/ibus/pull/2338
+
+M	po/ar.po
+
+commit a1528a0a46d45827e110f1fa6361cab7f0152f79
+Author: Jordi Mas <jmas@softcatala.org>
+Date:   2022-03-14 10:33:54 +0900
+
+    po: Update translation (Catalan)
+    
+    Update po/ca.po at 88.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ca/
+    
+    BUG=https://github.com/ibus/ibus/pull/2338
+
+M	po/ca.po
+
+commit 58fe1e56b270e80c3950a880090893b56f5e02ab
+Author: Oğuz Ersen <oguzersen@protonmail.com>
+Date:   2022-03-14 10:33:51 +0900
+
+    po: Update translation (Turkish)
+    
+    Update po/tr.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/tr/
+    
+    BUG=https://github.com/ibus/ibus/pull/2338
+
+M	po/tr.po
+
+commit 0199dde0d9ba472e4611226cb61f15cfa9b52db5
+Author: Dingzhong Chen <wsxy162@gmail.com>
+Date:   2022-03-14 10:33:49 +0900
+
+    po: Update translation (Chinese (Simplified) (zh_CN))
+    
+    Update po/zh_CN.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/zh_CN/
+    
+    BUG=https://github.com/ibus/ibus/pull/2338
+
+M	po/zh_CN.po
+
+commit 6df55eb2d9cac7a34ddd934bb45aebb72bcd0ca0
+Author: simmon <simmon@nplob.com>
+Date:   2022-03-14 10:33:46 +0900
+
+    po: Update translation (Korean)
+    
+    Update po/ko.po at 100.0%
+    https://translate.fedoraproject.org/projects/ibus/ibus/ko/
+    
+    BUG=https://github.com/ibus/ibus/pull/2338
+
+M	po/ko.po
+
+commit e77f80cf7c8a9f9b759abc0da013020719e038db
+Author: Jan Kuparinen <copper_fin@hotmail.com>
+Date:   2022-03-14 10:33:43 +0900
+
+    po: Update translation (Finnish)
+    
+    Update po/fi.po at 20.7%
+    https://translate.fedoraproject.org/projects/ibus/ibus/fi/
+    
+    BUG=https://github.com/ibus/ibus/pull/2338
+
+M	po/fi.po
+
+commit 9bf9ef0126a6dd5b1d0de9ac3320eb030472631f
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-03-14 10:33:40 +0900
+
+    src: Update ibusunicodegen.h with unicode-ucd 14.0.0
+
+M	src/ibusunicodegen.h
+
+commit a3c07241f3225f9259c8aa576fa0a3fa4ab3ca82
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-03-14 10:33:34 +0900
+
+    engine: Update simple.xml with xkeyboard-config 2.35.1
+
+M	engine/simple.xml.in
+
+commit 1f27521425051b5af74d0a74e8689b114d9e5903
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-03-14 10:31:21 +0900
+
+    ui/gtk3: Check XDG_SESSION_DESKTOP for Plasma desktop
+    
+    If ibus-dameon is launched from systemd, XDG_CURRENT_DESKTOP
+    environment variable could be set after ibus-dameon would be
+    launched and XDG_CURRENT_DESKTOP could be "(null)".
+    But XDG_SESSION_DESKTOP can be set with systemd's PAM.
+
+M	ui/gtk3/panel.vala
+
+commit df664b1f18a9c630ccd884f8ff698abf6cbb1578
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-03-01 19:23:25 +0900
+
+    src/ibusenginesimple: Support GTK4 coompose file
+    
+    Load $XDG_CONFIG_HOME/gtk-4.0/Compose
+
+M	src/ibusenginesimple.c
+
+commit 19377ad22d8145ea431e5de51f047061c98f8d21
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-03-01 18:26:21 +0900
+
+    src/ibuscompose: Check algorithm dead key by 9 length
+    
+    This change fixes the D-Bus timeout by a long compose preedit text.
+    check_normalize_nfc() calculates the factorical of the compse preedit
+    length and assigne the value to an INT variable and it could excceed
+    the MAX_INT.
+    Probably I think the length of the compose algorizhm dead key would be
+    enough 9. I.e. 9! == 46320 <= SHRT_MAX == 32767
+    
+    BUG=https://github.com/ibus/ibus/issues/2385
+
+M	src/ibuscomposetable.c
+
+commit a82bda58a45470c4be0f3db21eaddc73a230807f
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-02-18 12:04:09 +0900
+
+    src/tests: Fix typos
+    
+    - test_metas_in location
+    - Check ibus processes in CI
+    - Fix libexec path
+
+M	src/tests/Makefile.am
+M	src/tests/ibus-desktop-testing-autostart
+M	src/tests/ibus-desktop-testing.desktop.in
+
+commit 5cfe838715097d61b50da55f80bcff2c698ca885
+Author: Changwoo Ryu <cwryu@debian.org>
+Date:   2022-02-18 09:07:02 +0900
+
+    client/gtk2/ibusimcontext: Fix forward key keycode for GTK4
+    
+    When a keycode is provided (!= 0) for a forwarded key event, convert it to a
+    GTK keycode before passing it to gtk_im_context_filter_key().
+    
+    Also free GdkKeymapKey after gdk_display_map_keyval() is called.
+    
+    BUG=https://github.com/ibus/ibus/issues/2380
+    BUG=https://github.com/ibus/ibus/issues/2382
+
+M	client/gtk2/ibusimcontext.c
+
+commit b5423f0cff78e627fec12378bfcc70efa79e9379
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-02-17 20:15:38 +0900
+
+    src/services: Add org.freedesktop.IBus.session.generic.service
+    
+    Move bus/*.service.in & src/*.service.in into bus/services
+    
+    BUG=https://github.com/ibus/ibus/pull/2381
+
+M	bus/Makefile.am
+A	bus/services/Makefile.am
+R100	bus/org.freedesktop.IBus.service.in	bus/services/org.freedesktop.IBus.service.in
+R095	src/org.freedesktop.IBus.session.GNOME.service.in	bus/services/org.freedesktop.IBus.session.GNOME.service.in
+A	bus/services/org.freedesktop.IBus.session.generic.service.in
+M	configure.ac
+M	src/Makefile.am
+
+commit a076b388d856aeb4c8f8317dd6cd9dd6d61fe9ac
+Author: Carlos Garnacho <carlosg@gnome.org>
+Date:   2020-11-04 10:48:45 +0100
+
+    src, client/x11: Add systemd unit file
+    
+    This so far depends on GNOME targets, and is thus just usable there.
+    Other DEs wishing to use systemd and ibus will need to add the
+    necessary dependencies where applicable.
+    
+    There are 2 scenarios here:
+    - On X11 sessions, ibus-daemon will be launched with --xim parameter,
+      so ibus-x11 is started with it.
+    - On Wayland sessions, ibus-daemon will be started without XIM support,
+      ibus-x11 will be launched and tear down together with all other
+      session X11 services while Xwayland is running.
+    
+    For the second part of the second situation, additionally install
+    a script at /etc/xdg/Xwayland-session.d, which takes care of X11
+    service initialization together with the Xwayland instance.
+    
+    BUG=https://github.com/ibus/ibus/pull/2377
+
+A	client/x11/10-ibus-x11.in
+M	client/x11/Makefile.am
+M	configure.ac
+M	src/Makefile.am
+A	src/org.freedesktop.IBus.session.GNOME.service.in
+
+commit c69b61aa66239e1b13c9764b2d3bf6f02d086785
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-02-04 15:08:36 +0900
+
+    src: Fix ibus_key_event_from_string for gobject-introspection
+    
+    BUG=https://github.com/ibus/ibus/issues/2330
+
+M	src/ibusshare.h
+
+commit dfd3fbf26fa4b5ff20512b166a8dd321afc10344
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-02-03 17:31:08 +0900
+
+    bus: Do not mkdir abstract unix socket
+    
+    IBus ran mkdir for unix abstract sockets for --address=unix:abstract
+    but should not need to mkdir.
+    
+    BUG=https://github.com/ibus/ibus/issues/2363
+
+M	bus/server.c
+
+commit 787b564982d17017cb35ab87b71b6a16d7440387
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-02-03 14:34:34 +0900
+
+    bus: mkdir socket dirs instead of socket paths
+    
+    IBus ran mkdir for socket paths for --address=unix:path
+    but should does the socket directories instead.
+    
+    BUG=https://github.com/ibus/ibus/issues/2363
+
+M	bus/server.c
+
+commit 0f1485bfa687386f26ef5909c123e0ae2e3e11b9
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-02-03 14:03:30 +0900
+
+    src: Add IBUS_INPUT_HINT_PRIVATE for browser private mode
+    
+    GTK4 added GTK_INPUT_HINT_PRIVATE recently for Web brower
+    private or guest mode.
+    
+    BUG=https://github.com/ibus/ibus/issues/2315
+
+M	src/ibustypes.h
+
+commit ad95015dc411f84dd9b8869e596e4707cd2ccd2b
+Author: Sibo Dong <46512211+dongsibo@users.noreply.github.com>
+Date:   2022-02-02 19:18:02 +0900
+
+    ui/gtk3: Update man page for Emoji shortcut key
+    
+    The default Emoji shortcut key was changed but not updated in
+    the ibus-emoji.7 man page.
+    
+    BUG=https://github.com/ibus/ibus/pull/2353
+
+M	ui/gtk3/ibus-emoji.7.in
+
+commit 5a455b1ead5d72483952356ddfe25b9e3b637e6f
+Author: Eberhard Beilharz <eb1@sil.org>
+Date:   2021-10-13 19:00:47 +0200
+
+    Fix unref problems with floating references
+    
+    When running with debug-enabled GLIB there are several critical
+    errors output: "A floating object ... was finalized. This means
+    that someone called g_object_unref() on an object that had only
+    a floating reference; the initial floating reference is not
+    owned by anyone and must be removed with g_object_ref_sink()."
+    
+    This change fixes this by calling `g_object_ref_sink()` before
+    `g_object_unref()` if we have a floating reference.
+    
+    It also fixes another related problem where we called
+    `g_object_unref()` on a static IBusText string (created with
+    `ibus_text_new_from_static_string()`) for which the API documentation
+    says not to free.
+    
+    BUG=https://github.com/ibus/ibus/pull/2359
+
+M	src/ibusinputcontext.c
+M	src/ibusproperty.c
+
+commit d9ff2bb6b04a7cf7d99f4e9832b4b8905858178c
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-01-20 16:41:37 +0900
+
+    data/dconf: Add Ctrl-semicolon to Emoji shortcut key
+    
+    period key is needed Shift key in French keyboard and Ctrl-period does
+    not work.
+    Add Ctrl-semicolon in org.freedesktop.ibus.panel.emoji.hotkey to fix
+    the problem.
+    
+    BUG=https://github.com/ibus/ibus/issues/2360
+
+M	data/dconf/org.freedesktop.ibus.gschema.xml
+
+commit 0e118e7e57caaa298e367ed99f2051ba47a35f81
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-01-20 16:33:11 +0900
+
+    data/dconf: Change XKB layout string color in panel
+    
+    Replace '#415099' with '#51a2da' in XKB layout string color
+    
+    BUG=https://github.com/ibus/ibus/issues/2364
+
+M	data/dconf/org.freedesktop.ibus.gschema.xml
+
+commit f5757ada54edaa7d2e3ea948d340cdf48064e30c
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2022-01-06 11:20:26 +0900
+
+    ibusenginesimple: Fix to send char position at update_preedit_text
+    
+    ibus_engine_update_preedit_text() should send the character position
+    instead of the byte position.
+    
+    BUG=https://github.com/ibus/ibus/issues/2368
+
+M	src/ibusenginesimple.c
+
+commit 675b94f63a2bce5554c9bb28a03462ed70933bec
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2021-12-03 00:07:49 +0900
+
+    travis: Add autopint dependency
+
+M	.travis.yml
+
+commit 104148bcdada1f8f22ef905c930f9944f3e99a63
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2021-12-02 23:53:28 +0900
+
+    src: Disable emoji shortcut key with no-emoji hint
+    
+    BUG=https://gitlab.gnome.org/GNOME/gtk/-/issues/4337
+
+M	src/ibusengine.c
+
+commit 2bc47f09832073c87ccdf1060bd93ff95878685a
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2021-12-02 23:52:36 +0900
+
+    autogen: Delete gnome-autogen dependency
+    
+    You may like to call ./autogen.sh --enable-gtk-doc with your custom
+    configure options.
+    Also set SAVE_DIST_FILE=1 by default
+
+M	.travis.yml
+M	autogen.sh
+M	src/Makefile.am
+
+commit be179342cc6273abb8710546a18e80afd69f3e86
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2021-12-02 23:39:57 +0900
+
+    travis: Fix bindings/pygobject/test-override-ibus.py
+    
+    Recently Travis default python was changed to version 2 in Ubuntu focal
+    and I have to specify python3 in configure.
+
+M	.travis.yml
+
+commit cfcc6f194cfc95ab0cf1b3b719d77321c249a83b
+Author: Naïm Favier <n@monade.li>
+Date:   2021-11-16 00:33:37 +0100
+
+    src/ibuscomposetable: invalidate cache based on symlink mtime too
+    
+    When the compose file is a symbolic link, take the link itself's
+    modification time into account (in addition to its target's) in
+    determining whether to invalidate the compose cache.
+    
+    This is useful e.g. on NixOS systems where the compose file might point
+    to a store path with an irrelevant modification time, and we want the
+    cache to expire when the symlink itself changes.
+    
+    BUG=https://github.com/ibus/ibus/pull/2362
+
+M	src/ibuscomposetable.c
+
+commit d53d31d2dbab00e13e23862cf2bf88da532b9465
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2021-11-17 22:54:00 +0900
+
+    travis: git config pull.rebase false
+    
+    `git pull` fails with local commits
+
+M	.travis.yml
+
+commit 28acfd433b3df1673b7c7177915c027ce48c061e
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2021-11-05 07:22:34 +0900
+
+    ui/gtk2: Deprecate gettext.bind_textdomain_codeset() since Python 3.8
+    
+    setup/i18n.py is a symlink of ui/gtk2/i18n.py
+    env PYTHONWARNINGS='d' ibus-setup
+    
+    BUG=https://github.com/ibus/ibus/issues/2276
+
+M	ui/gtk2/i18n.py
+
+commit acc5570511698c7b5cc037eb81be2c4be52a824f
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2021-10-29 12:56:49 +0900
+
+    ui/gtk3: Erase Emojier preedit/lookup popup between applications
+    
+    It would be better to erase Emojier popup window when users change
+    the input focus between applications. But it hasn't been implemented
+    because the focus-out/in events also happen when the Emojier popup window
+    is launching or rebuilding to the category list in GNOME Wayland.
+    The focus-out/in events do not happen in Xorg desktops with the rebuilding
+    GUI because GTK popup window causes focus-in/out evnets in Wayland.
+    
+    Now I'm convinced with several issues and added a little complicated logic
+    to erase Emojier popup window with the focus changes between input contexts
+    to handle focus-in/out events in Wayland.
+    
+    BUG=rhbz#1942970
+
+M	ui/gtk3/emojier.vala
+M	ui/gtk3/emojierapp.vala
+M	ui/gtk3/panelbinding.vala
+
+commit 51e3295659dd9178b98fb266da5abcb750805be8
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2021-09-10 00:39:25 +0900
+
+    src/tests: Add --screendump option in ibus-desktop-testing-runner
+    
+    The screendump is useful in CI to if check gnome-shell-extension-no-overview
+    works.
+    Also add ibus-desktop-testing-autostart to get the debug info in CI.
+    You can copy ibus-desktop-testing.desktop to $HOME/.config/autostart
+    if CI fails.
+
+M	src/tests/Makefile.am
+A	src/tests/ibus-desktop-testing-autostart
+M	src/tests/ibus-desktop-testing-runner.in
+A	src/tests/ibus-desktop-testing.desktop.in
+
+commit 6b979e7897c8c4316d0345c1ede5bcbcb5b64cd8
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2021-09-10 00:39:17 +0900
+
+    client/gtk2/ibusimcontext: Fix a key event loop with forwarding keys
+    
+    _ibus_context_forward_key_event_cb() caused a key event loop in
+    _key_snooper_cb() with key release events.
+
+M	client/gtk2/ibusimcontext.c
+
+commit fbea5441fc53ae1d5533bed1ee53009141cf905a
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2021-09-10 00:09:26 +0900
+
+    Fix build errors in Ubuntu focal
+    
+    - Ubuntu focal uses glib 2.64.6 which does not include errno.h
+      so config.h includes errno.h as the workaround.
+    - make autogen.sh not to delete dist files in Travis
+    - Call $(PYTHON) for gensimple.py for Ubuntu python3
+    - Add a code review in src/ibuscomposetable.c
+    
+    BUG=https://github.com/ibus/ibus/pull/2348
+
+M	.travis.yml
+M	autogen.sh
+M	configure.ac
+M	engine/Makefile.am
+M	src/ibuscomposetable.c
+M	src/ibusregistry.c
+M	src/ibusshare.c
+
+commit 4957d1468db4fc5ed30c3ae1f2afac9e51b329d6
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2021-09-06 20:25:52 +0900
+
+    client/gtk2/ibusimcontext: Calculate keycode from keysym in GTK3 forward-key-event
+    
+    IBus GTK3 mode also calculates keycode from keysym if keycode == 0
+    with forward-key-event signal to follow GTK4.
+
+M	client/gtk2/ibusimcontext.c
+
+commit 5487a6baa4b22605ba8197ca1a0fa43c91d57786
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2021-09-06 20:23:59 +0900
+
+    client/gtk2/ibusimcontext: Implement clear preedit for GTK4
+    
+    IBus IM module uses synchornized key processes for GTK4 and the timing
+    of the GTK reset siginal may work with focus-in/out between windows.
+    (I don't test GTK4 firefox and terminal yet and the verification is not
+    completed.)
+    So ibus_im_context_clear_preedit_text() is now called with the GTK4 reset
+    siginal.
+    ibus_im_context_clear_preedit_text() works with ibus-setup-anthy ->
+    "Conversion" tab -> "Behavior on Focus Out" pull down menu.
+    
+    BUG=https://github.com/ibus/ibus/issues/2334
+
+M	client/gtk2/ibusimcontext.c
+
+commit ecca9db0d9750e8a4803758302510999084ff1b2
+Author: Eberhard Beilharz <eb1@sil.org>
+Date:   2021-08-31 15:38:45 +0200
+
+    Update URLS
+    
+    IBus got moved to GitHub. This changes the remaining URLs that
+    still pointed to the old site. Also fixed a typo.
+    
+    BUG=https://github.com/ibus/ibus/pull/2342
+
+M	bindings/vala/test/enchant.vala
+M	setup/ibus-setup.1.in
+M	src/tests/ibus-inputcontext.c
+M	ui/gtk2/gtkpanel.xml.in
+M	ui/gtk2/panel.py
+
+commit 936a0e76df79d92a8bdc03e9205330fb84a2083e
+Author: Alynx Zhou <alynx.zhou@gmail.com>
+Date:   2021-09-01 12:04:12 +0900
+
+    client/gtk2/ibusimcontext: Fix wrong cursor location in gtk3 apps
+    
+    If you apply this patch in your tarball, please also apply this to
+    client/gtk3/ibusimcontext.c besides client/gtk2/ibusimcontext.c .
+    
+    BUG=https://github.com/ibus/ibus/issues/2337
+
+M	client/gtk2/ibusimcontext.c
+
 commit cfb263f04f82a83dd94f6eedcd5017d40a4a1a05
 Author: fujiwarat <takao.fujiwara1@gmail.com>
 Date:   2021-08-20 09:44:49 +0900

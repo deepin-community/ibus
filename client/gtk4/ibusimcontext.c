@@ -2,8 +2,8 @@
 /* vim:set et sts=4: */
 /* ibus - The Input Bus
  * Copyright (C) 2008-2013 Peng Huang <shawn.p.huang@gmail.com>
- * Copyright (C) 2015-2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
- * Copyright (C) 2008-2021 Red Hat, Inc.
+ * Copyright (C) 2015-2023 Takao Fujiwara <takao.fujiwara1@gmail.com>
+ * Copyright (C) 2008-2023 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,7 @@
 
 #include <string.h>
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 #include <ibus.h>
 #include "ibusimcontext.h"
@@ -111,13 +112,13 @@ static guint    _signal_delete_surrounding_id = 0;
 static guint    _signal_retrieve_surrounding_id = 0;
 
 #if GTK_CHECK_VERSION (3, 98, 4)
-static gboolean _use_sync_mode = TRUE;
+static char _use_sync_mode = 1;
 #else
 static const gchar *_no_snooper_apps = NO_SNOOPER_APPS;
 static gboolean _use_key_snooper = ENABLE_SNOOPER;
 static guint    _key_snooper_id = 0;
 
-static gboolean _use_sync_mode = FALSE;
+static char _use_sync_mode = 0;
 #endif
 
 static const gchar *_discard_password_apps  = "";
@@ -213,7 +214,7 @@ static gboolean _slave_delete_surrounding_cb
                                              gint                offset_from_cursor,
                                              guint               nchars,
                                              IBusIMContext      *context);
-static void     _request_surrounding_text   (IBusIMContext      *context);
+static gboolean _request_surrounding_text   (IBusIMContext      *context);
 static void     _create_fake_input_context  (void);
 static gboolean _set_content_type           (IBusIMContext      *context);
 
@@ -366,17 +367,26 @@ ibus_im_context_commit_event (IBusIMContext *ibusimcontext,
         g_signal_emit (ibusimcontext, _signal_commit_id, 0, text->text);
         g_object_unref (text);
         _request_surrounding_text (ibusimcontext);
+#if !GTK_CHECK_VERSION (3, 98, 4)
+        /* Avoid a loop with _ibus_context_forward_key_event_cb() */
+        event->state |= IBUS_HANDLED_MASK;
+#endif
         return TRUE;
     }
    return FALSE;
 }
 
-struct _ProcessKeyEventData {
+typedef struct {
     GdkEvent *event;
     IBusIMContext *ibusimcontext;
-};
+} ProcessKeyEventData;
 
-typedef struct _ProcessKeyEventData ProcessKeyEventData;
+typedef struct {
+    int       count;
+    guint     count_cb_id;
+    gboolean  retval;
+} ProcessKeyEventReplyData;
+
 
 static void
 _process_key_event_done (GObject      *object,
@@ -391,12 +401,12 @@ _process_key_event_done (GObject      *object,
     IBusIMContext *ibusimcontext = data->ibusimcontext;
 #endif
     GError *error = NULL;
+    gboolean retval;
 
     g_slice_free (ProcessKeyEventData, data);
-    gboolean retval = ibus_input_context_process_key_event_async_finish (
-            context,
-            res,
-            &error);
+    retval = ibus_input_context_process_key_event_async_finish (context,
+                                                                res,
+                                                                &error);
 
     if (error != NULL) {
         g_warning ("Process Key Event failed: %s.", error->message);
@@ -426,6 +436,140 @@ _process_key_event_done (GObject      *object,
     gdk_event_free (event);
 #endif
 }
+
+
+static void
+_process_key_event_reply_done (GObject      *object,
+                               GAsyncResult *res,
+                               gpointer      user_data)
+{
+    IBusInputContext *context = (IBusInputContext *)object;
+    ProcessKeyEventReplyData *data = (ProcessKeyEventReplyData *)user_data;
+    GError *error = NULL;
+    gboolean retval = ibus_input_context_process_key_event_async_finish (
+            context,
+            res,
+            &error);
+    if (error != NULL) {
+        g_warning ("Process Key Event failed: %s.", error->message);
+        g_error_free (error);
+    }
+    g_return_if_fail (data);
+    data->retval = retval;
+    data->count = 0;
+    g_source_remove (data->count_cb_id);
+}
+
+
+static gboolean
+_process_key_event_count_cb (gpointer user_data)
+{
+    ProcessKeyEventReplyData *data = (ProcessKeyEventReplyData *)user_data;
+    g_return_val_if_fail (data, G_SOURCE_REMOVE);
+    if (!data->count)
+        return G_SOURCE_REMOVE;
+    /* Wait for about 10 secs. */
+    if (data->count++ == 10000) {
+        data->count = 0;
+        return G_SOURCE_REMOVE;
+    }
+    return G_SOURCE_CONTINUE;
+}
+
+
+static gboolean
+_process_key_event_sync (IBusInputContext *context,
+                         guint             keyval,
+                         guint             keycode,
+                         guint             state)
+{
+    gboolean retval;
+
+    g_assert (IBUS_IS_INPUT_CONTEXT (context));
+    retval = ibus_input_context_process_key_event (context,
+                                                   keyval,
+                                                   keycode - 8,
+                                                   state);
+    ibus_input_context_post_process_key_event (context);
+    return retval;
+}
+
+
+static gboolean
+_process_key_event_async (IBusInputContext *context,
+                          guint             keyval,
+                          guint             keycode,
+                          guint             state,
+                          GdkEvent         *event,
+                          IBusIMContext    *ibusimcontext)
+{
+    ProcessKeyEventData *data = g_slice_new0 (ProcessKeyEventData);
+
+    g_assert (event);
+    if (!data) {
+        g_warning ("Cannot allocate async data");
+        return _process_key_event_sync (context, keyval, keycode, state);
+    }
+#if GTK_CHECK_VERSION (3, 98, 4)
+    data->event = gdk_event_ref (event);
+#else
+    data->event = gdk_event_copy (event);
+#endif
+    data->ibusimcontext = ibusimcontext;
+    ibus_input_context_process_key_event_async (context,
+            keyval,
+            keycode - 8,
+            state,
+            -1,
+            NULL,
+            _process_key_event_done,
+            data);
+
+    return TRUE;
+}
+
+
+static gboolean
+_process_key_event_hybrid_async (IBusInputContext *context,
+                                 guint             keyval,
+                                 guint             keycode,
+                                 guint             state)
+{
+    GSource *source = g_timeout_source_new (1);
+    ProcessKeyEventReplyData *data = NULL;
+    gboolean retval = FALSE;
+
+    if (source)
+        data = g_slice_new0 (ProcessKeyEventReplyData);
+    if (!data) {
+        g_warning ("Cannot wait for the reply of the process key event.");
+        retval = _process_key_event_sync (context, keyval, keycode, state);
+        if (source)
+            g_source_destroy (source);
+        return retval;
+    }
+    data->count = 1;
+    g_source_attach (source, NULL);
+    g_source_unref (source);
+    data->count_cb_id = g_source_get_id (source);
+    ibus_input_context_process_key_event_async (context,
+            keyval,
+            keycode - 8,
+            state,
+            -1,
+            NULL,
+            _process_key_event_reply_done,
+            data);
+    g_source_set_callback (source, _process_key_event_count_cb, data, NULL);
+    while (data->count)
+        g_main_context_iteration (NULL, TRUE);
+    /* #2498 Checking source->ref_count might cause Nautilus hang up
+     */
+    retval = data->retval;
+    g_slice_free (ProcessKeyEventReplyData, data);
+    return retval;
+}
+
 
 static gboolean
 _process_key_event (IBusInputContext *context,
@@ -458,30 +602,23 @@ _process_key_event (IBusInputContext *context,
 #endif
     keycode = hardware_keycode;
 
-    if (_use_sync_mode) {
-        retval = ibus_input_context_process_key_event (context,
-            keyval,
-            keycode - 8,
-            state);
+    switch (_use_sync_mode) {
+    case 1: {
+        retval = _process_key_event_sync (context, keyval, keycode, state);
+        break;
     }
-    else {
-        ProcessKeyEventData *data = g_slice_new0 (ProcessKeyEventData);
-#if GTK_CHECK_VERSION (3, 98, 4)
-        data->event = gdk_event_ref (event);
-#else
-        data->event = gdk_event_copy ((GdkEvent *)event);
-#endif
-        data->ibusimcontext = ibusimcontext;
-        ibus_input_context_process_key_event_async (context,
-            keyval,
-            keycode - 8,
-            state,
-            -1,
-            NULL,
-            _process_key_event_done,
-            data);
-
-        retval = TRUE;
+    case 2: {
+        retval = _process_key_event_hybrid_async (context,
+                                                  keyval, keycode, state);
+        break;
+    }
+    default: {
+        retval = _process_key_event_async (context,
+                                           keyval, keycode, state,
+                                           (GdkEvent *)event,
+                                           ibusimcontext);
+        break;
+    }
     }
 
     /* GTK4 does not provide gtk_key_snooper_install() and also
@@ -503,26 +640,19 @@ _process_key_event (IBusInputContext *context,
  * context->caps has IBUS_CAP_SURROUNDING_TEXT and the current IBus
  * engine needs surrounding-text.
  */
-static void
+static gboolean
 _request_surrounding_text (IBusIMContext *context)
 {
+    gboolean return_value = TRUE;
     if (context &&
         (context->caps & IBUS_CAP_SURROUNDING_TEXT) != 0 &&
         context->ibuscontext != NULL &&
         ibus_input_context_needs_surrounding_text (context->ibuscontext)) {
-        gboolean return_value;
         IDEBUG ("requesting surrounding text");
         g_signal_emit (context, _signal_retrieve_surrounding_id, 0,
                        &return_value);
-        if (!return_value) {
-            /* #2054 firefox::IMContextWrapper::GetCurrentParagraph() could
-             * fail with the first typing on firefox but it succeeds with
-             * the second typing.
-             */
-            g_warning ("%s has no capability of surrounding-text feature",
-                       g_get_prgname ());
-        }
     }
+    return return_value;
 }
 
 static gboolean
@@ -643,12 +773,15 @@ _key_snooper_cb (GtkWidget   *widget,
 
     } while (0);
 
-    if (ibusimcontext != NULL) {
+    if (ibusimcontext != NULL && event->type == GDK_KEY_PRESS) {
         /* "retrieve-surrounding" signal sometimes calls unref by
          * gtk_im_multicontext_get_slave() because priv->context_id is not
          * the latest than global_context_id in GtkIMMulticontext.
          * Since _focus_im_context is gotten by the focus_in event,
          * it would be good to call ref here.
+         *
+         * Most release key events would be redundant from
+         * _ibus_context_forward_key_event_cb ().
          */
         g_object_ref (ibusimcontext);
         _request_surrounding_text (ibusimcontext);
@@ -657,7 +790,7 @@ _key_snooper_cb (GtkWidget   *widget,
 
     retval = _process_key_event (ibuscontext, event, ibusimcontext);
 
-    if (ibusimcontext != NULL) {
+    if (ibusimcontext != NULL && event->type == GDK_KEY_PRESS) {
         /* unref ibusimcontext could call ibus_im_context_finalize here
          * because "retrieve-surrounding" signal could call unref.
          */
@@ -669,22 +802,45 @@ _key_snooper_cb (GtkWidget   *widget,
 #endif
 
 static gboolean
-_get_boolean_env(const gchar *name,
-                 gboolean     defval)
+_get_boolean_env (const gchar *name,
+                  gboolean     defval)
 {
     const gchar *value = g_getenv (name);
 
     if (value == NULL)
-      return defval;
+        return defval;
 
     if (g_strcmp0 (value, "") == 0 ||
         g_strcmp0 (value, "0") == 0 ||
         g_strcmp0 (value, "false") == 0 ||
         g_strcmp0 (value, "False") == 0 ||
-        g_strcmp0 (value, "FALSE") == 0)
-      return FALSE;
+        g_strcmp0 (value, "FALSE") == 0) {
+        return FALSE;
+    }
 
     return TRUE;
+}
+
+static char
+_get_char_env (const gchar *name,
+               char         defval)
+{
+    const gchar *value = g_getenv (name);
+
+    if (value == NULL)
+        return defval;
+
+    if (g_strcmp0 (value, "") == 0 ||
+        g_strcmp0 (value, "0") == 0 ||
+        g_strcmp0 (value, "false") == 0 ||
+        g_strcmp0 (value, "False") == 0 ||
+        g_strcmp0 (value, "FALSE") == 0) {
+        return 0;
+    } else if (!g_strcmp0 (value, "2")) {
+        return 2;
+    }
+
+    return 1;
 }
 
 static void
@@ -770,11 +926,59 @@ ibus_im_context_class_init (IBusIMContextClass *class)
     g_assert (_signal_retrieve_surrounding_id != 0);
 
 #if GTK_CHECK_VERSION (3, 98, 4)
-    _use_sync_mode = _get_boolean_env ("IBUS_ENABLE_SYNC_MODE", TRUE);
+    /* IBus GtkIMModule, QtIMModlue, ibus-x11, ibus-wayland are called as
+     * IBus clients.
+     * Each GTK application, each QT application, Xorg server, Wayland
+     * comppsitor are called as IBus event owners here.
+     *
+     * The IBus client processes the key events between the IBus event owner
+     * and the IBus daemon and the procedure step is to:
+     *
+     * receive the key event from the IBus event owner and forward the
+     * event to the IBus daemon with the "ProcessKeyEvent" D-Bus method at
+     * first,
+     *
+     * receive the return value from the IBus daemon with the "ProessKeyEvent"
+     * D-Bus method and forward the value to the IBus event owner secondly and
+     * the return value includes if the key event is processed normally or not.
+     *
+     * The procedure behavior can be changed by the "IBUS_ENABLE_SYNC_MODE"
+     * environment variable with the synchronous procedure or asynchronous
+     * one and value is:
+     *
+     * 1: Synchronous process key event:
+     *    Wait for the return of the IBus "ProcessKeyEvent" D-Bus method
+     *    synchronously and forward the return value to the IBus event owner
+     *    synchronously.
+     * 0: Asynchronous process key event:
+     *    Return to the IBus event owner as the key event is processed normally
+     *    at first as soon as the IBus client receives the event from the
+     *    IBus event owner and also forward the event to the IBus daemon with
+     *    the "ProcessKeyEvent" D-Bus method and wait for the return value of
+     *    the D-Bus method *asynchronously*.
+     *    If the return value indicates the key event is disposed by IBus,
+     *    the IBus client does not perform anything. Otherwise the IBus client
+     *    forwards the key event with the gdk_event_put() in GTK3,
+     *    gtk_im_context_filter_key() in GTK4, IMForwardEvent() in XIM API.
+     * 2: Hybrid asynchronous process key event:
+     *    Wait for the return of the IBus "ProcessKeyEvent" D-Bus method
+     *    *asynchronously* with a GSource loop and forward the return value
+     *    to the IBus event owner synchronously. So IBus clients perform
+     *    virtually synchronously to cover problems of IBus synchronous APIs.
+     *
+     * The purpose of the asynchronous process is that each IBus input
+     * method can process the key events without D-Bus timeout and also
+     * the IBus synchronous process has a problem that the IBus
+     * "ProcessKeyEvent" D-Bus method cannot send the commit-text and
+     * forwar-key-event D-Bus signals until the D-Bus method is finished.
+     *
+     * Relative issues: #1713, #2486
+     */
+    _use_sync_mode = _get_char_env ("IBUS_ENABLE_SYNC_MODE", 1);
 #else
     _use_key_snooper = !_get_boolean_env ("IBUS_DISABLE_SNOOPER",
                                           !(ENABLE_SNOOPER));
-    _use_sync_mode = _get_boolean_env ("IBUS_ENABLE_SYNC_MODE", FALSE);
+    _use_sync_mode = (char)_get_char_env ("IBUS_ENABLE_SYNC_MODE", 0);
 #endif
     _use_discard_password = _get_boolean_env ("IBUS_DISCARD_PASSWORD", FALSE);
 
@@ -867,33 +1071,6 @@ ibus_im_context_class_fini (IBusIMContextClass *class)
     g_bus_unwatch_name (_daemon_name_watch_id);
 }
 
-/* Copied from gtk+2.0-2.20.1/modules/input/imcedilla.c to fix crosbug.com/11421.
- * Overwrite the original Gtk+'s compose table in gtk+-2.x.y/gtk/gtkimcontextsimple.c. */
-
-/* The difference between this and the default input method is the handling
- * of C+acute - this method produces C WITH CEDILLA rather than C WITH ACUTE.
- * For languages that use CCedilla and not acute, this is the preferred mapping,
- * and is particularly important for pt_BR, where the us-intl keyboard is
- * used extensively.
- */
-static guint16 cedilla_compose_seqs[] = {
-#ifdef DEPRECATED_GDK_KEYSYMS
-  GDK_dead_acute,	GDK_C,	0,	0,	0,	0x00C7,	/* LATIN_CAPITAL_LETTER_C_WITH_CEDILLA */
-  GDK_dead_acute,	GDK_c,	0,	0,	0,	0x00E7,	/* LATIN_SMALL_LETTER_C_WITH_CEDILLA */
-  GDK_Multi_key,	GDK_apostrophe,	GDK_C,  0,      0,      0x00C7, /* LATIN_CAPITAL_LETTER_C_WITH_CEDILLA */
-  GDK_Multi_key,	GDK_apostrophe,	GDK_c,  0,      0,      0x00E7, /* LATIN_SMALL_LETTER_C_WITH_CEDILLA */
-  GDK_Multi_key,	GDK_C,  GDK_apostrophe,	0,      0,      0x00C7, /* LATIN_CAPITAL_LETTER_C_WITH_CEDILLA */
-  GDK_Multi_key,	GDK_c,  GDK_apostrophe,	0,      0,      0x00E7, /* LATIN_SMALL_LETTER_C_WITH_CEDILLA */
-#else
-  GDK_KEY_dead_acute,	GDK_KEY_C,	0,	0,	0,	0x00C7,	/* LATIN_CAPITAL_LETTER_C_WITH_CEDILLA */
-  GDK_KEY_dead_acute,	GDK_KEY_c,	0,	0,	0,	0x00E7,	/* LATIN_SMALL_LETTER_C_WITH_CEDILLA */
-  GDK_KEY_Multi_key,	GDK_KEY_apostrophe,	GDK_KEY_C,  0,      0,      0x00C7, /* LATIN_CAPITAL_LETTER_C_WITH_CEDILLA */
-  GDK_KEY_Multi_key,	GDK_KEY_apostrophe,	GDK_KEY_c,  0,      0,      0x00E7, /* LATIN_SMALL_LETTER_C_WITH_CEDILLA */
-  GDK_KEY_Multi_key,	GDK_KEY_C,  GDK_KEY_apostrophe,	0,      0,      0x00C7, /* LATIN_CAPITAL_LETTER_C_WITH_CEDILLA */
-  GDK_KEY_Multi_key,	GDK_KEY_c,  GDK_KEY_apostrophe,	0,      0,      0x00E7, /* LATIN_SMALL_LETTER_C_WITH_CEDILLA */
-#endif
-};
-
 static void
 ibus_im_context_init (GObject *obj)
 {
@@ -929,10 +1106,6 @@ ibus_im_context_init (GObject *obj)
 
     // Create slave im context
     ibusimcontext->slave = gtk_im_context_simple_new ();
-    gtk_im_context_simple_add_table (GTK_IM_CONTEXT_SIMPLE (ibusimcontext->slave),
-                                     cedilla_compose_seqs,
-                                     4,
-                                     G_N_ELEMENTS (cedilla_compose_seqs) / (4 + 2));
 
     g_signal_connect (ibusimcontext->slave,
                       "commit",
@@ -1270,6 +1443,8 @@ ibus_im_context_reset (GtkIMContext *context)
          * IBus uses button-press-event instead until GTK is fixed.
          * https://gitlab.gnome.org/GNOME/gtk/issues/1534
          */
+        if (_use_sync_mode != 0)
+            ibus_im_context_clear_preedit_text (ibusimcontext);
         ibus_input_context_reset (ibusimcontext->ibuscontext);
     }
     gtk_im_context_reset (ibusimcontext->slave);
@@ -1383,7 +1558,7 @@ ibus_im_context_set_client_window (GtkIMContext *context,
 
     if (ibusimcontext->client_window) {
 #if !GTK_CHECK_VERSION (3, 98, 4)
-        if (ibusimcontext->use_button_press_event)
+        if (ibusimcontext->use_button_press_event && _use_sync_mode == 0)
             _connect_button_press_event (ibusimcontext, FALSE);
 #endif
         g_object_unref (ibusimcontext->client_window);
@@ -1393,7 +1568,7 @@ ibus_im_context_set_client_window (GtkIMContext *context,
     if (client != NULL) {
         ibusimcontext->client_window = g_object_ref (client);
 #if !GTK_CHECK_VERSION (3, 98, 4)
-        if (!ibusimcontext->use_button_press_event)
+        if (!ibusimcontext->use_button_press_event && _use_sync_mode == 0)
             _connect_button_press_event (ibusimcontext, TRUE);
 #endif
     }
@@ -1438,8 +1613,13 @@ static gboolean
 _set_cursor_location_internal (IBusIMContext *ibusimcontext)
 {
     GdkRectangle area;
+    GdkDisplay *display = NULL;
 #if GTK_CHECK_VERSION (3, 98, 4)
     GtkWidget *root;
+    GtkNative *native;
+    graphene_point_t p;
+    int tx = 0, ty = 0;
+    double nx = 0., ny = 0.;
 #endif
 
     if(ibusimcontext->client_window == NULL ||
@@ -1449,100 +1629,72 @@ _set_cursor_location_internal (IBusIMContext *ibusimcontext)
 
     area = ibusimcontext->cursor_area;
 
-#ifdef GDK_WINDOWING_WAYLAND
 #if GTK_CHECK_VERSION (3, 98, 4)
     root = GTK_WIDGET (gtk_widget_get_root (ibusimcontext->client_window));
-     /* FIXME: GTK_STYLE_CLASS_TITLEBAR is available in GTK3 but not GTK4.
-      * gtk_css_boxes_get_content_rect() is available in GTK4 but it's an
-      * internal API and calculate the window edge 32 in GTK3.
-      */
-    area.y += 32;
-    area.width = 50; /* FIXME: Why 50 meets the cursor position? */
-    area.height = gtk_widget_get_height (root);
-    area.height += 32;
-    if (GDK_IS_WAYLAND_DISPLAY (gdk_display_get_default ())) {
-        ibus_input_context_set_cursor_location_relative (
-            ibusimcontext->ibuscontext,
-            area.x,
-            area.y,
-            area.width,
-            area.height);
-        return FALSE;
+    /* Translates the given point in client_window coordinates to coordinates
+       relative to root coordinate system. */
+    if (!gtk_widget_compute_point (ibusimcontext->client_window,
+                                   root,
+                                   &GRAPHENE_POINT_INIT (area.x, area.y),
+                                   &p)) {
+        graphene_point_init (&p, area.x, area.y);
     }
-#else
-    if (GDK_IS_WAYLAND_DISPLAY (gdk_display_get_default ())) {
-        gdouble px, py;
-        GdkWindow *parent;
-        GdkWindow *window = ibusimcontext->client_window;
 
-        while ((parent = gdk_window_get_effective_parent (window)) != NULL) {
-            gdk_window_coords_to_parent (window, area.x, area.y, &px, &py);
-            area.x = px;
-            area.y = py;
-            window = parent;
-        }
+    native = gtk_widget_get_native (ibusimcontext->client_window);
+    /* Translates from the surface coordinates into the widget coordinates. */
+    gtk_native_get_surface_transform (native, &nx, &ny);
 
-        _set_rect_scale_factor_with_window (&area,
-                                            ibusimcontext->client_window);
-        ibus_input_context_set_cursor_location_relative (
-            ibusimcontext->ibuscontext,
-            area.x,
-            area.y,
-            area.width,
-            area.height);
-        return FALSE;
-    }
-#endif
-#endif
-
-#if GTK_CHECK_VERSION (3, 98, 4)
-#elif GTK_CHECK_VERSION (2, 91, 0)
-    area.y += gdk_window_get_height (ibusimcontext->client_window);
-#else
-    if (area.x == -1 && area.y == -1 && area.width == 0 && area.height == 0) {
-        gint w, h;
-        gdk_drawable_get_size (ibusimcontext->client_window, &w, &h);
-        area.y += h;
-        area.x = 0;
-    }
-#endif
-
-#if GTK_CHECK_VERSION (3, 98, 4)
-#if defined(GDK_WINDOWING_X11)
-    GdkDisplay *display = gtk_widget_get_display (ibusimcontext->client_window);
+    display = gtk_widget_get_display (ibusimcontext->client_window);
     if (GDK_IS_X11_DISPLAY (display)) {
-        Display *xdisplay = gdk_x11_display_get_xdisplay (display);
-        Window root_window = gdk_x11_display_get_xrootwindow (display);
-        GtkNative *native = gtk_widget_get_native (
-                ibusimcontext->client_window);
-        GdkSurface *surface = gtk_native_get_surface (native);
-        /* The window is the toplevel window but not the inner text widget.
-         * Unfortunatelly GTK4 cannot get the coordinate of the text widget.
-         */
-        Window window = gdk_x11_surface_get_xid (surface);
+        GdkSurface *surface = gtk_native_get_surface
+            (gtk_widget_get_native (ibusimcontext->client_window));
         Window child;
-        int x, y;
-        XTranslateCoordinates (xdisplay, window, root_window,
-                               0, 0, &x, &y, &child);
-        XWindowAttributes xwa;
-        XGetWindowAttributes (xdisplay, window, &xwa);
-        area.x = x - xwa.x + area.x;
-        area.y = y - xwa.y + area.y;
-        area.width = 50; /* FIXME: Why 50 meets the cursor position? */
-        area.height = xwa.height;
+        int scale_factor = gtk_widget_get_scale_factor
+            (ibusimcontext->client_window);
+
+        XTranslateCoordinates (GDK_DISPLAY_XDISPLAY (display),
+                               GDK_SURFACE_XID (surface),
+                               gdk_x11_display_get_xrootwindow (display),
+                               0, 0, &tx, &ty,
+                               &child);
+
+        tx = tx / scale_factor;
+        ty = ty / scale_factor;
     }
-#endif
+
+    area.x = p.x + nx + tx;
+    area.y = p.y + ny + ty;
 #else
     gdk_window_get_root_coords (ibusimcontext->client_window,
                                 area.x, area.y,
                                 &area.x, &area.y);
 #endif
+
     _set_rect_scale_factor_with_window (&area, ibusimcontext->client_window);
-    ibus_input_context_set_cursor_location (ibusimcontext->ibuscontext,
-                                            area.x,
-                                            area.y,
-                                            area.width,
-                                            area.height);
+
+#ifdef GDK_WINDOWING_WAYLAND
+#if !GTK_CHECK_VERSION (3, 98, 4)
+    display = gdk_window_get_display (ibusimcontext->client_window);
+#endif
+
+    if (GDK_IS_WAYLAND_DISPLAY (display)) {
+        ibus_input_context_set_cursor_location_relative (ibusimcontext->ibuscontext,
+                                                         area.x,
+                                                         area.y,
+                                                         area.width,
+                                                         area.height);
+
+    } else {
+#endif
+        ibus_input_context_set_cursor_location (ibusimcontext->ibuscontext,
+                                                area.x,
+                                                area.y,
+                                                area.width,
+                                                area.height);
+#ifdef GDK_WINDOWING_WAYLAND
+    }
+#endif
+
     return FALSE;
 }
 
@@ -1933,14 +2085,20 @@ _ibus_context_forward_key_event_cb (IBusInputContext  *ibuscontext,
 #if GTK_CHECK_VERSION (3, 98, 4)
     int group = 0;
     g_return_if_fail (GTK_IS_IM_CONTEXT (ibusimcontext));
-    if (keycode == 0 && ibusimcontext->client_window) {
-        GdkDisplay *display = gtk_widget_get_display (ibusimcontext->client_window);
+    if (keycode != 0) {
+        keycode += 8; // to GTK keycode
+    } else if (ibusimcontext->client_window) {
+        GdkDisplay *display =
+                gtk_widget_get_display (ibusimcontext->client_window);
         GdkKeymapKey *keys = NULL;
         gint n_keys = 0;
-        if (!gdk_display_map_keyval (display, keyval, &keys, &n_keys))
+        if (gdk_display_map_keyval (display, keyval, &keys, &n_keys)) {
+            keycode = keys->keycode;
+            group = keys->group;
+            g_free (keys);
+        } else {
             g_warning ("Failed to parse keycode from keyval %x", keyval);
-       keycode = keys->keycode;
-       group = keys->group;
+        }
     }
     gtk_im_context_filter_key (
         GTK_IM_CONTEXT (ibusimcontext),
@@ -1952,6 +2110,20 @@ _ibus_context_forward_key_event_cb (IBusInputContext  *ibuscontext,
         (GdkModifierType)state,
         group);
 #else
+    if (keycode == 0 && ibusimcontext->client_window) {
+        GdkDisplay *display =
+                gdk_window_get_display (ibusimcontext->client_window);
+        GdkKeymap *keymap = gdk_keymap_get_for_display (display);
+        GdkKeymapKey *keys = NULL;
+        gint n_keys = 0;
+        if (gdk_keymap_get_entries_for_keyval (keymap, keyval, &keys, &n_keys))
+            keycode = keys->keycode;
+        else
+            g_warning ("Failed to parse keycode from keyval %x", keyval);
+        /* _create_gdk_event() will add 8 to keycode. */
+        if (keycode != 0)
+            keycode -= 8;
+    }
     GdkEventKey *event = _create_gdk_event (ibusimcontext, keyval, keycode, state);
     gdk_event_put ((GdkEvent *)event);
     gdk_event_free ((GdkEvent *)event);
@@ -1991,7 +2163,8 @@ _ibus_context_update_preedit_text_cb (IBusInputContext  *ibuscontext,
 
 #if !GTK_CHECK_VERSION (3, 98, 4)
     if (!ibusimcontext->use_button_press_event &&
-        mode == IBUS_ENGINE_PREEDIT_COMMIT) {
+        mode == IBUS_ENGINE_PREEDIT_COMMIT &&
+        _use_sync_mode == 0) {
         if (ibusimcontext->client_window) {
             _connect_button_press_event (ibusimcontext, TRUE);
         }
@@ -2092,6 +2265,35 @@ _ibus_context_hide_preedit_text_cb (IBusInputContext *ibuscontext,
 }
 
 static void
+_ibus_warn_no_support_surrounding_text (IBusIMContext *context)
+{
+    /* Engines can disable the surrounding text feature with
+     * the updated capabilities.
+     */
+    if (context->caps & IBUS_CAP_SURROUNDING_TEXT) {
+        context->caps &= ~IBUS_CAP_SURROUNDING_TEXT;
+        ibus_input_context_set_capabilities (context->ibuscontext,
+                                             context->caps);
+    }
+    g_warning ("%s has no capability of surrounding-text feature",
+               g_get_prgname ());
+}
+
+static void
+_ibus_context_require_surrounding_text_cb (IBusInputContext *ibuscontext,
+                                           IBusIMContext    *ibusimcontext)
+{
+    IDEBUG ("%s", __FUNCTION__);
+    g_assert (ibusimcontext->ibuscontext == ibuscontext);
+    if (!_request_surrounding_text (ibusimcontext))
+        _ibus_warn_no_support_surrounding_text (ibusimcontext);
+    g_signal_handlers_disconnect_by_func (
+            ibusimcontext->ibuscontext,
+            G_CALLBACK (_ibus_context_require_surrounding_text_cb),
+            ibusimcontext);
+}
+
+static void
 _ibus_context_destroy_cb (IBusInputContext *ibuscontext,
                           IBusIMContext    *ibusimcontext)
 {
@@ -2130,7 +2332,10 @@ _create_input_context_done (IBusBus       *bus,
         g_error_free (error);
     }
     else {
+        gboolean requested_surrounding_text = FALSE;
         ibus_input_context_set_client_commit_preedit (context, TRUE);
+        if (_use_sync_mode == 1)
+            ibus_input_context_set_post_process_key_event (context, TRUE);
         ibusimcontext->ibuscontext = context;
 
         g_signal_connect (ibusimcontext->ibuscontext,
@@ -2161,7 +2366,8 @@ _create_input_context_done (IBusBus       *bus,
                           G_CALLBACK (_ibus_context_destroy_cb),
                           ibusimcontext);
 
-        ibus_input_context_set_capabilities (ibusimcontext->ibuscontext, ibusimcontext->caps);
+        ibus_input_context_set_capabilities (ibusimcontext->ibuscontext,
+                                             ibusimcontext->caps);
 
         if (ibusimcontext->has_focus) {
             /* The time order is _create_input_context() ->
@@ -2173,6 +2379,19 @@ _create_input_context_done (IBusBus       *bus,
 
             ibus_input_context_focus_in (ibusimcontext->ibuscontext);
             _set_cursor_location_internal (ibusimcontext);
+            if (ibus_input_context_needs_surrounding_text (
+                        ibusimcontext->ibuscontext)) {
+                if (!_request_surrounding_text (ibusimcontext))
+                    _ibus_warn_no_support_surrounding_text (ibusimcontext);
+                requested_surrounding_text = TRUE;
+            }
+        }
+        if (!requested_surrounding_text) {
+            g_signal_connect (
+                    ibusimcontext->ibuscontext,
+                    "require-surrounding-text",
+                    G_CALLBACK (_ibus_context_require_surrounding_text_cb),
+                    ibusimcontext);
         }
 
         if (!g_queue_is_empty (ibusimcontext->events_queue)) {
@@ -2198,6 +2417,8 @@ _create_input_context_done (IBusBus       *bus,
 static void
 _create_input_context (IBusIMContext *ibusimcontext)
 {
+    gchar *prgname = g_strdup (g_get_prgname());
+    gchar *client_name;
     IDEBUG ("%s", __FUNCTION__);
 
     g_assert (ibusimcontext->ibuscontext == NULL);
@@ -2206,11 +2427,24 @@ _create_input_context (IBusIMContext *ibusimcontext)
 
     ibusimcontext->cancellable = g_cancellable_new ();
 
+    if (!prgname)
+        prgname = g_strdup_printf ("(%d)", getpid ());
+    client_name = g_strdup_printf ("%s:%s",
+#if GTK_CHECK_VERSION (3, 98, 4)
+                                   "gtk4-im",
+#elif GTK_CHECK_VERSION (2, 91, 0)
+                                   "gtk3-im",
+#else
+                                   "gtk-im",
+#endif
+                                   prgname);
+    g_free (prgname);
     ibus_bus_create_input_context_async (_bus,
-            "gtk-im", -1,
+            client_name, -1,
             ibusimcontext->cancellable,
             (GAsyncReadyCallback)_create_input_context_done,
             g_object_ref (ibusimcontext));
+    g_free (client_name);
 }
 
 /* Callback functions for slave context */
@@ -2326,7 +2560,8 @@ _create_fake_input_context_done (IBusBus       *bus,
                       G_CALLBACK (_ibus_fake_context_destroy_cb),
                       NULL);
 
-    guint32 caps = IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_FOCUS | IBUS_CAP_SURROUNDING_TEXT;
+    guint32 caps = IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_FOCUS
+                   | IBUS_CAP_SURROUNDING_TEXT;
     ibus_input_context_set_capabilities (_fake_context, caps);
 
     /* focus in/out the fake context */

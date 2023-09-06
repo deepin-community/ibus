@@ -17,6 +17,52 @@
 #  include <gio/gunixfdlist.h>
 #endif
 
+#ifdef G_ENABLE_DEBUG
+#define g_marshal_value_peek_boolean(v)  g_value_get_boolean (v)
+#define g_marshal_value_peek_char(v)     g_value_get_schar (v)
+#define g_marshal_value_peek_uchar(v)    g_value_get_uchar (v)
+#define g_marshal_value_peek_int(v)      g_value_get_int (v)
+#define g_marshal_value_peek_uint(v)     g_value_get_uint (v)
+#define g_marshal_value_peek_long(v)     g_value_get_long (v)
+#define g_marshal_value_peek_ulong(v)    g_value_get_ulong (v)
+#define g_marshal_value_peek_int64(v)    g_value_get_int64 (v)
+#define g_marshal_value_peek_uint64(v)   g_value_get_uint64 (v)
+#define g_marshal_value_peek_enum(v)     g_value_get_enum (v)
+#define g_marshal_value_peek_flags(v)    g_value_get_flags (v)
+#define g_marshal_value_peek_float(v)    g_value_get_float (v)
+#define g_marshal_value_peek_double(v)   g_value_get_double (v)
+#define g_marshal_value_peek_string(v)   (char*) g_value_get_string (v)
+#define g_marshal_value_peek_param(v)    g_value_get_param (v)
+#define g_marshal_value_peek_boxed(v)    g_value_get_boxed (v)
+#define g_marshal_value_peek_pointer(v)  g_value_get_pointer (v)
+#define g_marshal_value_peek_object(v)   g_value_get_object (v)
+#define g_marshal_value_peek_variant(v)  g_value_get_variant (v)
+#else /* !G_ENABLE_DEBUG */
+/* WARNING: This code accesses GValues directly, which is UNSUPPORTED API.
+ *          Do not access GValues directly in your code. Instead, use the
+ *          g_value_get_*() functions
+ */
+#define g_marshal_value_peek_boolean(v)  (v)->data[0].v_int
+#define g_marshal_value_peek_char(v)     (v)->data[0].v_int
+#define g_marshal_value_peek_uchar(v)    (v)->data[0].v_uint
+#define g_marshal_value_peek_int(v)      (v)->data[0].v_int
+#define g_marshal_value_peek_uint(v)     (v)->data[0].v_uint
+#define g_marshal_value_peek_long(v)     (v)->data[0].v_long
+#define g_marshal_value_peek_ulong(v)    (v)->data[0].v_ulong
+#define g_marshal_value_peek_int64(v)    (v)->data[0].v_int64
+#define g_marshal_value_peek_uint64(v)   (v)->data[0].v_uint64
+#define g_marshal_value_peek_enum(v)     (v)->data[0].v_long
+#define g_marshal_value_peek_flags(v)    (v)->data[0].v_ulong
+#define g_marshal_value_peek_float(v)    (v)->data[0].v_float
+#define g_marshal_value_peek_double(v)   (v)->data[0].v_double
+#define g_marshal_value_peek_string(v)   (v)->data[0].v_pointer
+#define g_marshal_value_peek_param(v)    (v)->data[0].v_pointer
+#define g_marshal_value_peek_boxed(v)    (v)->data[0].v_pointer
+#define g_marshal_value_peek_pointer(v)  (v)->data[0].v_pointer
+#define g_marshal_value_peek_object(v)   (v)->data[0].v_pointer
+#define g_marshal_value_peek_variant(v)  (v)->data[0].v_pointer
+#endif /* !G_ENABLE_DEBUG */
+
 typedef struct
 {
   GDBusArgInfo parent_struct;
@@ -151,6 +197,548 @@ _g_value_equal (const GValue *a, const GValue *b)
   return ret;
 }
 
+static void
+_g_dbus_codegen_marshal_BOOLEAN__OBJECT_STRING (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectStringFunc)
+       (void *data1,
+        GDBusMethodInvocation *arg_method_invocation,
+        const gchar *arg_client_name,
+        void *data2);
+  _GDbusCodegenMarshalBoolean_ObjectStringFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+  gboolean v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 3);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalBoolean_ObjectStringFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  v_return =
+    callback (data1,
+              g_marshal_value_peek_object (param_values + 1),
+              g_marshal_value_peek_string (param_values + 2),
+              data2);
+
+  g_value_set_boolean (return_value, v_return);
+}
+
+static void
+_g_dbus_codegen_marshal_VOID__UINT_UINT_UINT (
+    GClosure     *closure,
+    GValue       *return_value G_GNUC_UNUSED,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef void (*_GDbusCodegenMarshalVoid_UintUintUintFunc)
+       (void *data1,
+        guint arg_keyval,
+        guint arg_keycode,
+        guint arg_state,
+        void *data2);
+  _GDbusCodegenMarshalVoid_UintUintUintFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+
+  g_return_if_fail (n_param_values == 4);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalVoid_UintUintUintFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  callback (data1,
+            g_marshal_value_peek_uint (param_values + 1),
+            g_marshal_value_peek_uint (param_values + 2),
+            g_marshal_value_peek_uint (param_values + 3),
+            data2);
+}
+
+static void
+_g_dbus_codegen_marshal_VOID__VARIANT_UINT_BOOLEAN (
+    GClosure     *closure,
+    GValue       *return_value G_GNUC_UNUSED,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef void (*_GDbusCodegenMarshalVoid_VariantUintBooleanFunc)
+       (void *data1,
+        GVariant *arg_text,
+        guint arg_cursor_pos,
+        gboolean arg_visible,
+        void *data2);
+  _GDbusCodegenMarshalVoid_VariantUintBooleanFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+
+  g_return_if_fail (n_param_values == 4);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalVoid_VariantUintBooleanFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  callback (data1,
+            g_marshal_value_peek_variant (param_values + 1),
+            g_marshal_value_peek_uint (param_values + 2),
+            g_marshal_value_peek_boolean (param_values + 3),
+            data2);
+}
+
+static void
+_g_dbus_codegen_marshal_VOID__VARIANT_UINT_BOOLEAN_UINT (
+    GClosure     *closure,
+    GValue       *return_value G_GNUC_UNUSED,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef void (*_GDbusCodegenMarshalVoid_VariantUintBooleanUintFunc)
+       (void *data1,
+        GVariant *arg_text,
+        guint arg_cursor_pos,
+        gboolean arg_visible,
+        guint arg_mode,
+        void *data2);
+  _GDbusCodegenMarshalVoid_VariantUintBooleanUintFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+
+  g_return_if_fail (n_param_values == 5);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalVoid_VariantUintBooleanUintFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  callback (data1,
+            g_marshal_value_peek_variant (param_values + 1),
+            g_marshal_value_peek_uint (param_values + 2),
+            g_marshal_value_peek_boolean (param_values + 3),
+            g_marshal_value_peek_uint (param_values + 4),
+            data2);
+}
+
+static void
+_g_dbus_codegen_marshal_VOID__VARIANT_BOOLEAN (
+    GClosure     *closure,
+    GValue       *return_value G_GNUC_UNUSED,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef void (*_GDbusCodegenMarshalVoid_VariantBooleanFunc)
+       (void *data1,
+        GVariant *arg_text,
+        gboolean arg_visible,
+        void *data2);
+  _GDbusCodegenMarshalVoid_VariantBooleanFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+
+  g_return_if_fail (n_param_values == 3);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalVoid_VariantBooleanFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  callback (data1,
+            g_marshal_value_peek_variant (param_values + 1),
+            g_marshal_value_peek_boolean (param_values + 2),
+            data2);
+}
+
+static void
+_g_dbus_codegen_marshal_BOOLEAN__OBJECT_UINT_UINT_UINT (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectUintUintUintFunc)
+       (void *data1,
+        GDBusMethodInvocation *arg_method_invocation,
+        guint arg_keyval,
+        guint arg_keycode,
+        guint arg_state,
+        void *data2);
+  _GDbusCodegenMarshalBoolean_ObjectUintUintUintFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+  gboolean v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 5);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalBoolean_ObjectUintUintUintFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  v_return =
+    callback (data1,
+              g_marshal_value_peek_object (param_values + 1),
+              g_marshal_value_peek_uint (param_values + 2),
+              g_marshal_value_peek_uint (param_values + 3),
+              g_marshal_value_peek_uint (param_values + 4),
+              data2);
+
+  g_value_set_boolean (return_value, v_return);
+}
+
+static void
+_g_dbus_codegen_marshal_BOOLEAN__OBJECT_INT_INT_INT_INT (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectIntIntIntIntFunc)
+       (void *data1,
+        GDBusMethodInvocation *arg_method_invocation,
+        gint arg_x,
+        gint arg_y,
+        gint arg_w,
+        gint arg_h,
+        void *data2);
+  _GDbusCodegenMarshalBoolean_ObjectIntIntIntIntFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+  gboolean v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 6);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalBoolean_ObjectIntIntIntIntFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  v_return =
+    callback (data1,
+              g_marshal_value_peek_object (param_values + 1),
+              g_marshal_value_peek_int (param_values + 2),
+              g_marshal_value_peek_int (param_values + 3),
+              g_marshal_value_peek_int (param_values + 4),
+              g_marshal_value_peek_int (param_values + 5),
+              data2);
+
+  g_value_set_boolean (return_value, v_return);
+}
+
+static void
+_g_dbus_codegen_marshal_BOOLEAN__OBJECT_VARIANT (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectVariantFunc)
+       (void *data1,
+        GDBusMethodInvocation *arg_method_invocation,
+        GVariant *arg_coordinates,
+        void *data2);
+  _GDbusCodegenMarshalBoolean_ObjectVariantFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+  gboolean v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 3);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalBoolean_ObjectVariantFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  v_return =
+    callback (data1,
+              g_marshal_value_peek_object (param_values + 1),
+              g_marshal_value_peek_variant (param_values + 2),
+              data2);
+
+  g_value_set_boolean (return_value, v_return);
+}
+
+static void
+_g_dbus_codegen_marshal_BOOLEAN__OBJECT_UINT (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectUintFunc)
+       (void *data1,
+        GDBusMethodInvocation *arg_method_invocation,
+        guint arg_n_strokes,
+        void *data2);
+  _GDbusCodegenMarshalBoolean_ObjectUintFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+  gboolean v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 3);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalBoolean_ObjectUintFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  v_return =
+    callback (data1,
+              g_marshal_value_peek_object (param_values + 1),
+              g_marshal_value_peek_uint (param_values + 2),
+              data2);
+
+  g_value_set_boolean (return_value, v_return);
+}
+
+static void
+_g_dbus_codegen_marshal_BOOLEAN__OBJECT (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectFunc)
+       (void *data1,
+        GDBusMethodInvocation *arg_method_invocation,
+        void *data2);
+  _GDbusCodegenMarshalBoolean_ObjectFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+  gboolean v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 2);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalBoolean_ObjectFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  v_return =
+    callback (data1,
+              g_marshal_value_peek_object (param_values + 1),
+              data2);
+
+  g_value_set_boolean (return_value, v_return);
+}
+
+static void
+_g_dbus_codegen_marshal_BOOLEAN__OBJECT_STRING_UINT (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectStringUintFunc)
+       (void *data1,
+        GDBusMethodInvocation *arg_method_invocation,
+        const gchar *arg_name,
+        guint arg_state,
+        void *data2);
+  _GDbusCodegenMarshalBoolean_ObjectStringUintFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+  gboolean v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 4);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalBoolean_ObjectStringUintFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  v_return =
+    callback (data1,
+              g_marshal_value_peek_object (param_values + 1),
+              g_marshal_value_peek_string (param_values + 2),
+              g_marshal_value_peek_uint (param_values + 3),
+              data2);
+
+  g_value_set_boolean (return_value, v_return);
+}
+
+static void
+_g_dbus_codegen_marshal_BOOLEAN__OBJECT_VARIANT_UINT_UINT (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectVariantUintUintFunc)
+       (void *data1,
+        GDBusMethodInvocation *arg_method_invocation,
+        GVariant *arg_text,
+        guint arg_cursor_pos,
+        guint arg_anchor_pos,
+        void *data2);
+  _GDbusCodegenMarshalBoolean_ObjectVariantUintUintFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+  gboolean v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 5);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalBoolean_ObjectVariantUintUintFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  v_return =
+    callback (data1,
+              g_marshal_value_peek_object (param_values + 1),
+              g_marshal_value_peek_variant (param_values + 2),
+              g_marshal_value_peek_uint (param_values + 3),
+              g_marshal_value_peek_uint (param_values + 4),
+              data2);
+
+  g_value_set_boolean (return_value, v_return);
+}
+
 /* ------------------------------------------------------------------------
  * Code for interface org.freedesktop.IBus.Portal
  * ------------------------------------------------------------------------
@@ -263,6 +851,19 @@ ibus_dbus_portal_override_properties (GObjectClass *klass G_GNUC_UNUSED, guint p
 }
 
 
+inline static void
+ibus_dbus_portal_method_marshal_create_input_context (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_STRING (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
 
 /**
  * IBusDbusPortal:
@@ -293,7 +894,7 @@ ibus_dbus_portal_default_init (IBusDbusPortalIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-Portal.CreateInputContext">CreateInputContext()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_portal_complete_create_input_context() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_portal_complete_create_input_context() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -303,7 +904,7 @@ ibus_dbus_portal_default_init (IBusDbusPortalIface *iface)
     G_STRUCT_OFFSET (IBusDbusPortalIface, handle_create_input_context),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_portal_method_marshal_create_input_context,
     G_TYPE_BOOLEAN,
     2,
     G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_STRING);
@@ -1076,6 +1677,30 @@ ibus_dbus_portal_skeleton_new (void)
  *
  * This section contains code for working with the <link linkend="gdbus-interface-org-freedesktop-IBus-InputContext.top_of_page">org.freedesktop.IBus.InputContext</link> D-Bus interface in C.
  */
+
+enum
+{
+  IBUS_DBUS__INPUT_CONTEXT_COMMIT_TEXT,
+  IBUS_DBUS__INPUT_CONTEXT_FORWARD_KEY_EVENT,
+  IBUS_DBUS__INPUT_CONTEXT_UPDATE_PREEDIT_TEXT,
+  IBUS_DBUS__INPUT_CONTEXT_UPDATE_PREEDIT_TEXT_WITH_MODE,
+  IBUS_DBUS__INPUT_CONTEXT_SHOW_PREEDIT_TEXT,
+  IBUS_DBUS__INPUT_CONTEXT_HIDE_PREEDIT_TEXT,
+  IBUS_DBUS__INPUT_CONTEXT_UPDATE_AUXILIARY_TEXT,
+  IBUS_DBUS__INPUT_CONTEXT_SHOW_AUXILIARY_TEXT,
+  IBUS_DBUS__INPUT_CONTEXT_HIDE_AUXILIARY_TEXT,
+  IBUS_DBUS__INPUT_CONTEXT_UPDATE_LOOKUP_TABLE,
+  IBUS_DBUS__INPUT_CONTEXT_SHOW_LOOKUP_TABLE,
+  IBUS_DBUS__INPUT_CONTEXT_HIDE_LOOKUP_TABLE,
+  IBUS_DBUS__INPUT_CONTEXT_PAGE_UP_LOOKUP_TABLE,
+  IBUS_DBUS__INPUT_CONTEXT_PAGE_DOWN_LOOKUP_TABLE,
+  IBUS_DBUS__INPUT_CONTEXT_CURSOR_UP_LOOKUP_TABLE,
+  IBUS_DBUS__INPUT_CONTEXT_CURSOR_DOWN_LOOKUP_TABLE,
+  IBUS_DBUS__INPUT_CONTEXT_REGISTER_PROPERTIES,
+  IBUS_DBUS__INPUT_CONTEXT_UPDATE_PROPERTY,
+};
+
+static unsigned IBUS_DBUS__INPUT_CONTEXT_SIGNALS[18] = { 0 };
 
 /* ---- Introspection data for org.freedesktop.IBus.InputContext ---- */
 
@@ -2131,6 +2756,409 @@ ibus_dbus_input_context_override_properties (GObjectClass *klass, guint property
 }
 
 
+inline static void
+ibus_dbus_input_context_signal_marshal_commit_text (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VARIANT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_forward_key_event (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_VOID__UINT_UINT_UINT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_update_preedit_text (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_VOID__VARIANT_UINT_BOOLEAN (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_update_preedit_text_with_mode (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_VOID__VARIANT_UINT_BOOLEAN_UINT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_show_preedit_text (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VOID (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_hide_preedit_text (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VOID (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_update_auxiliary_text (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_VOID__VARIANT_BOOLEAN (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_show_auxiliary_text (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VOID (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_hide_auxiliary_text (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VOID (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_update_lookup_table (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_VOID__VARIANT_BOOLEAN (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_show_lookup_table (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VOID (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_hide_lookup_table (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VOID (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_page_up_lookup_table (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VOID (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_page_down_lookup_table (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VOID (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_cursor_up_lookup_table (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VOID (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_cursor_down_lookup_table (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VOID (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_register_properties (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VARIANT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_signal_marshal_update_property (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  g_cclosure_marshal_VOID__VARIANT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_process_key_event (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_UINT_UINT_UINT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_set_cursor_location (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_INT_INT_INT_INT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_set_cursor_location_relative (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_INT_INT_INT_INT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_process_hand_writing_event (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_VARIANT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_cancel_hand_writing (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_UINT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_focus_in (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_focus_out (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_reset (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_set_capabilities (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_UINT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_property_activate (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_STRING_UINT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_set_engine (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_STRING (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_get_engine (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
+inline static void
+ibus_dbus_input_context_method_marshal_set_surrounding_text (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_VARIANT_UINT_UINT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
 
 /**
  * IBusDbusInputContext:
@@ -2195,7 +3223,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.ProcessKeyEvent">ProcessKeyEvent()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_process_key_event() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_process_key_event() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2205,7 +3233,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_process_key_event),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_process_key_event,
     G_TYPE_BOOLEAN,
     4,
     G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_UINT);
@@ -2221,7 +3249,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.SetCursorLocation">SetCursorLocation()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_set_cursor_location() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_set_cursor_location() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2231,7 +3259,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_set_cursor_location),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_set_cursor_location,
     G_TYPE_BOOLEAN,
     5,
     G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
@@ -2247,7 +3275,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.SetCursorLocationRelative">SetCursorLocationRelative()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_set_cursor_location_relative() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_set_cursor_location_relative() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2257,7 +3285,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_set_cursor_location_relative),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_set_cursor_location_relative,
     G_TYPE_BOOLEAN,
     5,
     G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
@@ -2270,7 +3298,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.ProcessHandWritingEvent">ProcessHandWritingEvent()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_process_hand_writing_event() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_process_hand_writing_event() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2280,7 +3308,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_process_hand_writing_event),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_process_hand_writing_event,
     G_TYPE_BOOLEAN,
     2,
     G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_VARIANT);
@@ -2293,7 +3321,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.CancelHandWriting">CancelHandWriting()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_cancel_hand_writing() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_cancel_hand_writing() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2303,7 +3331,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_cancel_hand_writing),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_cancel_hand_writing,
     G_TYPE_BOOLEAN,
     2,
     G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_UINT);
@@ -2315,7 +3343,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.FocusIn">FocusIn()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_focus_in() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_focus_in() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2325,7 +3353,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_focus_in),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_focus_in,
     G_TYPE_BOOLEAN,
     1,
     G_TYPE_DBUS_METHOD_INVOCATION);
@@ -2337,7 +3365,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.FocusOut">FocusOut()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_focus_out() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_focus_out() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2347,7 +3375,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_focus_out),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_focus_out,
     G_TYPE_BOOLEAN,
     1,
     G_TYPE_DBUS_METHOD_INVOCATION);
@@ -2359,7 +3387,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.Reset">Reset()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_reset() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_reset() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2369,7 +3397,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_reset),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_reset,
     G_TYPE_BOOLEAN,
     1,
     G_TYPE_DBUS_METHOD_INVOCATION);
@@ -2382,7 +3410,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.SetCapabilities">SetCapabilities()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_set_capabilities() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_set_capabilities() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2392,7 +3420,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_set_capabilities),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_set_capabilities,
     G_TYPE_BOOLEAN,
     2,
     G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_UINT);
@@ -2406,7 +3434,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.PropertyActivate">PropertyActivate()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_property_activate() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_property_activate() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2416,7 +3444,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_property_activate),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_property_activate,
     G_TYPE_BOOLEAN,
     3,
     G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_STRING, G_TYPE_UINT);
@@ -2429,7 +3457,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.SetEngine">SetEngine()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_set_engine() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_set_engine() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2439,7 +3467,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_set_engine),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_set_engine,
     G_TYPE_BOOLEAN,
     2,
     G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_STRING);
@@ -2451,7 +3479,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.GetEngine">GetEngine()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_get_engine() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_get_engine() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2461,7 +3489,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_get_engine),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_get_engine,
     G_TYPE_BOOLEAN,
     1,
     G_TYPE_DBUS_METHOD_INVOCATION);
@@ -2476,7 +3504,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-InputContext.SetSurroundingText">SetSurroundingText()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_set_surrounding_text() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_input_context_complete_set_surrounding_text() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -2486,7 +3514,7 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
     G_STRUCT_OFFSET (IBusDbusInputContextIface, handle_set_surrounding_text),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_input_context_method_marshal_set_surrounding_text,
     G_TYPE_BOOLEAN,
     4,
     G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_VARIANT, G_TYPE_UINT, G_TYPE_UINT);
@@ -2501,15 +3529,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("commit-text",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, commit_text),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    1, G_TYPE_VARIANT);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_COMMIT_TEXT] =
+    g_signal_new ("commit-text",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, commit_text),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_commit_text,
+      G_TYPE_NONE,
+      1, G_TYPE_VARIANT);
 
   /**
    * IBusDbusInputContext::forward-key-event:
@@ -2522,15 +3551,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("forward-key-event",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, forward_key_event),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    3, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_UINT);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_FORWARD_KEY_EVENT] =
+    g_signal_new ("forward-key-event",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, forward_key_event),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_forward_key_event,
+      G_TYPE_NONE,
+      3, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_UINT);
 
   /**
    * IBusDbusInputContext::update-preedit-text:
@@ -2543,15 +3573,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("update-preedit-text",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, update_preedit_text),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    3, G_TYPE_VARIANT, G_TYPE_UINT, G_TYPE_BOOLEAN);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_UPDATE_PREEDIT_TEXT] =
+    g_signal_new ("update-preedit-text",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, update_preedit_text),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_update_preedit_text,
+      G_TYPE_NONE,
+      3, G_TYPE_VARIANT, G_TYPE_UINT, G_TYPE_BOOLEAN);
 
   /**
    * IBusDbusInputContext::update-preedit-text-with-mode:
@@ -2565,15 +3596,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("update-preedit-text-with-mode",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, update_preedit_text_with_mode),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    4, G_TYPE_VARIANT, G_TYPE_UINT, G_TYPE_BOOLEAN, G_TYPE_UINT);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_UPDATE_PREEDIT_TEXT_WITH_MODE] =
+    g_signal_new ("update-preedit-text-with-mode",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, update_preedit_text_with_mode),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_update_preedit_text_with_mode,
+      G_TYPE_NONE,
+      4, G_TYPE_VARIANT, G_TYPE_UINT, G_TYPE_BOOLEAN, G_TYPE_UINT);
 
   /**
    * IBusDbusInputContext::show-preedit-text:
@@ -2583,15 +3615,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("show-preedit-text",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, show_preedit_text),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    0);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_SHOW_PREEDIT_TEXT] =
+    g_signal_new ("show-preedit-text",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, show_preedit_text),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_show_preedit_text,
+      G_TYPE_NONE,
+      0);
 
   /**
    * IBusDbusInputContext::hide-preedit-text:
@@ -2601,15 +3634,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("hide-preedit-text",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, hide_preedit_text),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    0);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_HIDE_PREEDIT_TEXT] =
+    g_signal_new ("hide-preedit-text",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, hide_preedit_text),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_hide_preedit_text,
+      G_TYPE_NONE,
+      0);
 
   /**
    * IBusDbusInputContext::update-auxiliary-text:
@@ -2621,15 +3655,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("update-auxiliary-text",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, update_auxiliary_text),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    2, G_TYPE_VARIANT, G_TYPE_BOOLEAN);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_UPDATE_AUXILIARY_TEXT] =
+    g_signal_new ("update-auxiliary-text",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, update_auxiliary_text),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_update_auxiliary_text,
+      G_TYPE_NONE,
+      2, G_TYPE_VARIANT, G_TYPE_BOOLEAN);
 
   /**
    * IBusDbusInputContext::show-auxiliary-text:
@@ -2639,15 +3674,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("show-auxiliary-text",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, show_auxiliary_text),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    0);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_SHOW_AUXILIARY_TEXT] =
+    g_signal_new ("show-auxiliary-text",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, show_auxiliary_text),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_show_auxiliary_text,
+      G_TYPE_NONE,
+      0);
 
   /**
    * IBusDbusInputContext::hide-auxiliary-text:
@@ -2657,15 +3693,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("hide-auxiliary-text",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, hide_auxiliary_text),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    0);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_HIDE_AUXILIARY_TEXT] =
+    g_signal_new ("hide-auxiliary-text",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, hide_auxiliary_text),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_hide_auxiliary_text,
+      G_TYPE_NONE,
+      0);
 
   /**
    * IBusDbusInputContext::update-lookup-table:
@@ -2677,15 +3714,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("update-lookup-table",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, update_lookup_table),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    2, G_TYPE_VARIANT, G_TYPE_BOOLEAN);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_UPDATE_LOOKUP_TABLE] =
+    g_signal_new ("update-lookup-table",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, update_lookup_table),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_update_lookup_table,
+      G_TYPE_NONE,
+      2, G_TYPE_VARIANT, G_TYPE_BOOLEAN);
 
   /**
    * IBusDbusInputContext::show-lookup-table:
@@ -2695,15 +3733,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("show-lookup-table",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, show_lookup_table),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    0);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_SHOW_LOOKUP_TABLE] =
+    g_signal_new ("show-lookup-table",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, show_lookup_table),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_show_lookup_table,
+      G_TYPE_NONE,
+      0);
 
   /**
    * IBusDbusInputContext::hide-lookup-table:
@@ -2713,15 +3752,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("hide-lookup-table",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, hide_lookup_table),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    0);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_HIDE_LOOKUP_TABLE] =
+    g_signal_new ("hide-lookup-table",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, hide_lookup_table),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_hide_lookup_table,
+      G_TYPE_NONE,
+      0);
 
   /**
    * IBusDbusInputContext::page-up-lookup-table:
@@ -2731,15 +3771,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("page-up-lookup-table",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, page_up_lookup_table),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    0);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_PAGE_UP_LOOKUP_TABLE] =
+    g_signal_new ("page-up-lookup-table",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, page_up_lookup_table),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_page_up_lookup_table,
+      G_TYPE_NONE,
+      0);
 
   /**
    * IBusDbusInputContext::page-down-lookup-table:
@@ -2749,15 +3790,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("page-down-lookup-table",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, page_down_lookup_table),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    0);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_PAGE_DOWN_LOOKUP_TABLE] =
+    g_signal_new ("page-down-lookup-table",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, page_down_lookup_table),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_page_down_lookup_table,
+      G_TYPE_NONE,
+      0);
 
   /**
    * IBusDbusInputContext::cursor-up-lookup-table:
@@ -2767,15 +3809,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("cursor-up-lookup-table",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, cursor_up_lookup_table),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    0);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_CURSOR_UP_LOOKUP_TABLE] =
+    g_signal_new ("cursor-up-lookup-table",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, cursor_up_lookup_table),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_cursor_up_lookup_table,
+      G_TYPE_NONE,
+      0);
 
   /**
    * IBusDbusInputContext::cursor-down-lookup-table:
@@ -2785,15 +3828,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("cursor-down-lookup-table",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, cursor_down_lookup_table),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    0);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_CURSOR_DOWN_LOOKUP_TABLE] =
+    g_signal_new ("cursor-down-lookup-table",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, cursor_down_lookup_table),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_cursor_down_lookup_table,
+      G_TYPE_NONE,
+      0);
 
   /**
    * IBusDbusInputContext::register-properties:
@@ -2804,15 +3848,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("register-properties",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, register_properties),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    1, G_TYPE_VARIANT);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_REGISTER_PROPERTIES] =
+    g_signal_new ("register-properties",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, register_properties),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_register_properties,
+      G_TYPE_NONE,
+      1, G_TYPE_VARIANT);
 
   /**
    * IBusDbusInputContext::update-property:
@@ -2823,15 +3868,16 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
    *
    * On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.
    */
-  g_signal_new ("update-property",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (IBusDbusInputContextIface, update_property),
-    NULL,
-    NULL,
-    g_cclosure_marshal_generic,
-    G_TYPE_NONE,
-    1, G_TYPE_VARIANT);
+  IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_UPDATE_PROPERTY] =
+    g_signal_new ("update-property",
+      G_TYPE_FROM_INTERFACE (iface),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (IBusDbusInputContextIface, update_property),
+      NULL,
+      NULL,
+      ibus_dbus_input_context_signal_marshal_update_property,
+      G_TYPE_NONE,
+      1, G_TYPE_VARIANT);
 
   /* GObject properties for D-Bus properties: */
   /**
@@ -2869,6 +3915,8 @@ ibus_dbus_input_context_default_init (IBusDbusInputContextIface *iface)
 GVariant *
 ibus_dbus_input_context_get_content_type (IBusDbusInputContext *object)
 {
+  g_return_val_if_fail (IBUS_DBUS_IS_INPUT_CONTEXT (object), NULL);
+
   return IBUS_DBUS_INPUT_CONTEXT_GET_IFACE (object)->get_content_type (object);
 }
 
@@ -2920,6 +3968,8 @@ ibus_dbus_input_context_set_content_type (IBusDbusInputContext *object, GVariant
 GVariant *
 ibus_dbus_input_context_get_client_commit_preedit (IBusDbusInputContext *object)
 {
+  g_return_val_if_fail (IBUS_DBUS_IS_INPUT_CONTEXT (object), NULL);
+
   return IBUS_DBUS_INPUT_CONTEXT_GET_IFACE (object)->get_client_commit_preedit (object);
 }
 
@@ -2968,7 +4018,7 @@ ibus_dbus_input_context_emit_commit_text (
     IBusDbusInputContext *object,
     GVariant *arg_text)
 {
-  g_signal_emit_by_name (object, "commit-text", arg_text);
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_COMMIT_TEXT], 0, arg_text);
 }
 
 /**
@@ -2987,7 +4037,7 @@ ibus_dbus_input_context_emit_forward_key_event (
     guint arg_keycode,
     guint arg_state)
 {
-  g_signal_emit_by_name (object, "forward-key-event", arg_keyval, arg_keycode, arg_state);
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_FORWARD_KEY_EVENT], 0, arg_keyval, arg_keycode, arg_state);
 }
 
 /**
@@ -3006,7 +4056,7 @@ ibus_dbus_input_context_emit_update_preedit_text (
     guint arg_cursor_pos,
     gboolean arg_visible)
 {
-  g_signal_emit_by_name (object, "update-preedit-text", arg_text, arg_cursor_pos, arg_visible);
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_UPDATE_PREEDIT_TEXT], 0, arg_text, arg_cursor_pos, arg_visible);
 }
 
 /**
@@ -3027,7 +4077,7 @@ ibus_dbus_input_context_emit_update_preedit_text_with_mode (
     gboolean arg_visible,
     guint arg_mode)
 {
-  g_signal_emit_by_name (object, "update-preedit-text-with-mode", arg_text, arg_cursor_pos, arg_visible, arg_mode);
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_UPDATE_PREEDIT_TEXT_WITH_MODE], 0, arg_text, arg_cursor_pos, arg_visible, arg_mode);
 }
 
 /**
@@ -3040,7 +4090,7 @@ void
 ibus_dbus_input_context_emit_show_preedit_text (
     IBusDbusInputContext *object)
 {
-  g_signal_emit_by_name (object, "show-preedit-text");
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_SHOW_PREEDIT_TEXT], 0);
 }
 
 /**
@@ -3053,7 +4103,7 @@ void
 ibus_dbus_input_context_emit_hide_preedit_text (
     IBusDbusInputContext *object)
 {
-  g_signal_emit_by_name (object, "hide-preedit-text");
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_HIDE_PREEDIT_TEXT], 0);
 }
 
 /**
@@ -3070,7 +4120,7 @@ ibus_dbus_input_context_emit_update_auxiliary_text (
     GVariant *arg_text,
     gboolean arg_visible)
 {
-  g_signal_emit_by_name (object, "update-auxiliary-text", arg_text, arg_visible);
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_UPDATE_AUXILIARY_TEXT], 0, arg_text, arg_visible);
 }
 
 /**
@@ -3083,7 +4133,7 @@ void
 ibus_dbus_input_context_emit_show_auxiliary_text (
     IBusDbusInputContext *object)
 {
-  g_signal_emit_by_name (object, "show-auxiliary-text");
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_SHOW_AUXILIARY_TEXT], 0);
 }
 
 /**
@@ -3096,7 +4146,7 @@ void
 ibus_dbus_input_context_emit_hide_auxiliary_text (
     IBusDbusInputContext *object)
 {
-  g_signal_emit_by_name (object, "hide-auxiliary-text");
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_HIDE_AUXILIARY_TEXT], 0);
 }
 
 /**
@@ -3113,7 +4163,7 @@ ibus_dbus_input_context_emit_update_lookup_table (
     GVariant *arg_table,
     gboolean arg_visible)
 {
-  g_signal_emit_by_name (object, "update-lookup-table", arg_table, arg_visible);
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_UPDATE_LOOKUP_TABLE], 0, arg_table, arg_visible);
 }
 
 /**
@@ -3126,7 +4176,7 @@ void
 ibus_dbus_input_context_emit_show_lookup_table (
     IBusDbusInputContext *object)
 {
-  g_signal_emit_by_name (object, "show-lookup-table");
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_SHOW_LOOKUP_TABLE], 0);
 }
 
 /**
@@ -3139,7 +4189,7 @@ void
 ibus_dbus_input_context_emit_hide_lookup_table (
     IBusDbusInputContext *object)
 {
-  g_signal_emit_by_name (object, "hide-lookup-table");
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_HIDE_LOOKUP_TABLE], 0);
 }
 
 /**
@@ -3152,7 +4202,7 @@ void
 ibus_dbus_input_context_emit_page_up_lookup_table (
     IBusDbusInputContext *object)
 {
-  g_signal_emit_by_name (object, "page-up-lookup-table");
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_PAGE_UP_LOOKUP_TABLE], 0);
 }
 
 /**
@@ -3165,7 +4215,7 @@ void
 ibus_dbus_input_context_emit_page_down_lookup_table (
     IBusDbusInputContext *object)
 {
-  g_signal_emit_by_name (object, "page-down-lookup-table");
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_PAGE_DOWN_LOOKUP_TABLE], 0);
 }
 
 /**
@@ -3178,7 +4228,7 @@ void
 ibus_dbus_input_context_emit_cursor_up_lookup_table (
     IBusDbusInputContext *object)
 {
-  g_signal_emit_by_name (object, "cursor-up-lookup-table");
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_CURSOR_UP_LOOKUP_TABLE], 0);
 }
 
 /**
@@ -3191,7 +4241,7 @@ void
 ibus_dbus_input_context_emit_cursor_down_lookup_table (
     IBusDbusInputContext *object)
 {
-  g_signal_emit_by_name (object, "cursor-down-lookup-table");
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_CURSOR_DOWN_LOOKUP_TABLE], 0);
 }
 
 /**
@@ -3206,7 +4256,7 @@ ibus_dbus_input_context_emit_register_properties (
     IBusDbusInputContext *object,
     GVariant *arg_props)
 {
-  g_signal_emit_by_name (object, "register-properties", arg_props);
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_REGISTER_PROPERTIES], 0, arg_props);
 }
 
 /**
@@ -3221,7 +4271,7 @@ ibus_dbus_input_context_emit_update_property (
     IBusDbusInputContext *object,
     GVariant *arg_prop)
 {
-  g_signal_emit_by_name (object, "update-property", arg_prop);
+  g_signal_emit (object, IBUS_DBUS__INPUT_CONTEXT_SIGNALS[IBUS_DBUS__INPUT_CONTEXT_UPDATE_PROPERTY], 0, arg_prop);
 }
 
 /**
@@ -6065,7 +7115,7 @@ ibus_dbus_input_context_skeleton_get_content_type (IBusDbusInputContext *object)
   IBusDbusInputContextSkeleton *skeleton = IBUS_DBUS_INPUT_CONTEXT_SKELETON (object);
   GVariant *value;
   g_mutex_lock (&skeleton->priv->lock);
-  value = g_value_get_variant (&(skeleton->priv->properties[0]));
+  value = g_marshal_value_peek_variant (&(skeleton->priv->properties[0]));
   g_mutex_unlock (&skeleton->priv->lock);
   return value;
 }
@@ -6076,7 +7126,7 @@ ibus_dbus_input_context_skeleton_get_client_commit_preedit (IBusDbusInputContext
   IBusDbusInputContextSkeleton *skeleton = IBUS_DBUS_INPUT_CONTEXT_SKELETON (object);
   GVariant *value;
   g_mutex_lock (&skeleton->priv->lock);
-  value = g_value_get_variant (&(skeleton->priv->properties[1]));
+  value = g_marshal_value_peek_variant (&(skeleton->priv->properties[1]));
   g_mutex_unlock (&skeleton->priv->lock);
   return value;
 }
@@ -6223,6 +7273,19 @@ ibus_dbus_service_override_properties (GObjectClass *klass G_GNUC_UNUSED, guint 
 }
 
 
+inline static void
+ibus_dbus_service_method_marshal_destroy (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
 
 /**
  * IBusDbusService:
@@ -6252,7 +7315,7 @@ ibus_dbus_service_default_init (IBusDbusServiceIface *iface)
    *
    * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-freedesktop-IBus-Service.Destroy">Destroy()</link> D-Bus method.
    *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_service_complete_destroy() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call ibus_dbus_service_complete_destroy() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
    *
    * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
    */
@@ -6262,7 +7325,7 @@ ibus_dbus_service_default_init (IBusDbusServiceIface *iface)
     G_STRUCT_OFFSET (IBusDbusServiceIface, handle_destroy),
     g_signal_accumulator_true_handled,
     NULL,
-    g_cclosure_marshal_generic,
+      ibus_dbus_service_method_marshal_destroy,
     G_TYPE_BOOLEAN,
     1,
     G_TYPE_DBUS_METHOD_INVOCATION);

@@ -8,6 +8,7 @@ can detect when the panel service properties are changed.
 Needed for Unity (indicator-keyboard)
 
 Bug-Ubuntu: https://bugs.launchpad.net/bugs/1290881
+Forwarded: not-needed
 ---
  src/ibuspanelservice.c | 46 ++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 46 insertions(+)

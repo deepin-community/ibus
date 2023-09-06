@@ -3,7 +3,7 @@
  * ibus - The Input Bus
  *
  * Copyright(c) 2018 Peng Huang <shawn.p.huang@gmail.com>
- * Copyright(c) 2018-2019 Takao Fujwiara <takao.fujiwara1@gmail.com>
+ * Copyright(c) 2018-2023 Takao Fujwiara <takao.fujiwara1@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,8 @@
 /* This file depends on keybindingmanager.vala */
 
 class BindingCommon {
+    public static Gdk.X11.Display m_xdisplay;
+    public static bool m_default_is_xdisplay;
     public enum KeyEventFuncType {
         ANY,
         IME_SWITCHER,
@@ -97,8 +99,15 @@ class BindingCommon {
                                     ftype);
         keybindings.append(keybinding);
 
-        keybinding_manager.bind(switch_keysym, switch_modifiers,
-                                handler_normal);
+        bool is_wayland = false;
+#if USE_GDK_WAYLAND
+        if (!BindingCommon.default_is_xdisplay())
+            is_wayland = true;
+#endif
+        if (!is_wayland) {
+            keybinding_manager.bind(switch_keysym, switch_modifiers,
+                                    handler_normal);
+        }
         if (ftype == KeyEventFuncType.EMOJI_TYPING) {
             return;
         }
@@ -116,7 +125,7 @@ class BindingCommon {
                                     ftype);
         keybindings.append(keybinding);
 
-        if (ftype == KeyEventFuncType.IME_SWITCHER) {
+        if (!is_wayland && ftype == KeyEventFuncType.IME_SWITCHER) {
             keybinding_manager.bind(switch_keysym, switch_modifiers,
                                     handler_reverse);
         }
@@ -140,10 +149,9 @@ class BindingCommon {
         }
     }
 
-    public static void
-    set_custom_font(GLib.Settings?       settings_panel,
-                    GLib.Settings?       settings_emoji,
-                    ref Gtk.CssProvider? css_provider) {
+    public static void set_custom_font(GLib.Settings?       settings_panel,
+                                       GLib.Settings?       settings_emoji,
+                                       ref Gtk.CssProvider? css_provider) {
         Gdk.Display display = Gdk.Display.get_default();
         Gdk.Screen screen = (display != null) ?
                 display.get_default_screen() : null;
@@ -211,5 +219,66 @@ class BindingCommon {
                 screen,
                 css_provider,
                 Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+    }
+
+    public static void set_custom_theme(GLib.Settings? settings_panel) {
+        if (settings_panel == null)
+            return;
+
+        bool use_custom_theme = settings_panel.get_boolean("use-custom-theme");
+        string custom_theme = settings_panel.get_string("custom-theme");
+
+        Gtk.Settings gtk_settings = Gtk.Settings.get_default();
+
+        if (use_custom_theme == false)
+            custom_theme = "";
+
+        if (custom_theme == null || custom_theme == "")
+            gtk_settings.reset_property("gtk-theme-name");
+        else
+            gtk_settings.gtk_theme_name = custom_theme;
+    }
+
+    public static void set_custom_icon(GLib.Settings? settings_panel) {
+        if (settings_panel == null)
+            return;
+
+        bool use_custom_icon = settings_panel.get_boolean("use-custom-icon");
+        string custom_icon = settings_panel.get_string("custom-icon");
+
+        Gtk.Settings gtk_settings = Gtk.Settings.get_default();
+
+        if (use_custom_icon == false)
+            custom_icon = "";
+
+        if (custom_icon == null || custom_icon == "")
+            gtk_settings.reset_property("gtk-icon-theme-name");
+        else
+            gtk_settings.gtk_icon_theme_name = custom_icon;
+    }
+
+    public static bool default_is_xdisplay() {
+        if (m_xdisplay == null)
+            get_xdisplay();
+        return m_default_is_xdisplay;
+    }
+
+    public static Gdk.X11.Display get_xdisplay() {
+        if (m_xdisplay != null)
+            return m_xdisplay;
+        var display = Gdk.Display.get_default();
+        Type instance_type = display.get_type();
+        Type x11_type = typeof(Gdk.X11.Display);
+        if (instance_type.is_a(x11_type)) {
+            m_default_is_xdisplay = true;
+            m_xdisplay = (Gdk.X11.Display)display;
+            return m_xdisplay;
+        }
+        Gdk.set_allowed_backends("x11");
+        // Call _gdk_display_manager_add_display() internally.
+        m_xdisplay =
+                (Gdk.X11.Display)Gdk.DisplayManager.get().open_display(null);
+        Gdk.set_allowed_backends("*");
+        return m_xdisplay;
     }
 }

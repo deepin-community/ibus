@@ -230,12 +230,24 @@ justifications.
 <col width="300px" class="properties_name">
 <col width="200px" class="properties_flags">
 </colgroup>
-<tbody><tr>
+<tbody>
+<tr>
+<td class="property_type"><a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a></td>
+<td class="property_name"><a class="link" href="IBusEngine.html#IBusEngine--active-surrounding-text" title="The “active-surrounding-text” property">active-surrounding-text</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
 <td class="property_type">
 <span class="type">char</span> *</td>
 <td class="property_name"><a class="link" href="IBusEngine.html#IBusEngine--engine-name" title="The “engine-name” property">engine-name</a></td>
 <td class="property_flags">Read / Write / Construct Only</td>
-</tr></tbody>
+</tr>
+<tr>
+<td class="property_type"><a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a></td>
+<td class="property_name"><a class="link" href="IBusEngine.html#IBusEngine--has-focus-id" title="The “has-focus-id” property">has-focus-id</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+</tbody>
 </table></div>
 </div>
 <div class="refsect1">
@@ -284,7 +296,17 @@ justifications.
 </tr>
 <tr>
 <td class="signal_type"><span class="returnvalue">void</span></td>
+<td class="signal_name"><a class="link" href="IBusEngine.html#IBusEngine-focus-in-id" title="The “focus-in-id” signal">focus-in-id</a></td>
+<td class="signal_flags"><a href="/usr/share/gtk-doc/html/gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a></td>
+</tr>
+<tr>
+<td class="signal_type"><span class="returnvalue">void</span></td>
 <td class="signal_name"><a class="link" href="IBusEngine.html#IBusEngine-focus-out" title="The “focus-out” signal">focus-out</a></td>
+<td class="signal_flags"><a href="/usr/share/gtk-doc/html/gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a></td>
+</tr>
+<tr>
+<td class="signal_type"><span class="returnvalue">void</span></td>
+<td class="signal_name"><a class="link" href="IBusEngine.html#IBusEngine-focus-out-id" title="The “focus-out-id” signal">focus-out-id</a></td>
 <td class="signal_flags"><a href="/usr/share/gtk-doc/html/gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a></td>
 </tr>
 <tr>
@@ -1167,12 +1189,37 @@ ibus_engine_get_name (<em class="parameter"><code><a class="link" href="IBusEngi
 <div class="refsect1">
 <a name="IBusEngine.property-details"></a><h2>Property Details</h2>
 <div class="refsect2">
+<a name="IBusEngine--active-surrounding-text"></a><h3>The <code class="literal">“active-surrounding-text”</code> property</h3>
+<pre class="programlisting">  “active-surrounding-text”  <a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a></pre>
+<p>When this property is set to <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a>, "RequireSurroundingText" D-Bus
+signal will be called by ibus-daemon on every focus-in/out event, with
+no need for the engine to call <a class="link" href="IBusEngine.html#ibus-engine-get-surrounding-text" title="ibus_engine_get_surrounding_text ()"><code class="function">ibus_engine_get_surrounding_text()</code></a>.
+This property can only be set at construct time.</p>
+<p>Owner: IBusEngine</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: FALSE</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="IBusEngine--engine-name"></a><h3>The <code class="literal">“engine-name”</code> property</h3>
 <pre class="programlisting">  “engine-name”              <span class="type">char</span> *</pre>
-<p>engine name.</p>
+<p>Name of this IBusEngine.</p>
 <p>Owner: IBusEngine</p>
 <p>Flags: Read / Write / Construct Only</p>
 <p>Default value: "noname"</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="IBusEngine--has-focus-id"></a><h3>The <code class="literal">“has-focus-id”</code> property</h3>
+<pre class="programlisting">  “has-focus-id”             <a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a></pre>
+<p>Use <a class="link" href="IBusEngine.html#IBusEngine-focus-in-id" title="The “focus-in-id” signal">IBusEngine::<code class="function">focus_in_id()</code></a>/<code class="function">focus_out_id()</code> class method insteads of
+<code class="function">focus_in()</code>/<code class="function">focus_out()</code> class methods when this property is set to <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a>.
+Otherwise, use <a class="link" href="IBusEngine.html#IBusEngine-focus-in" title="The “focus-in” signal">IBusEngine::<code class="function">focus_in()</code></a>/focus_out class methods.
+This property can only be set at construct time.</p>
+<p>See also: IBusEngine::focus-in-id</p>
+<p>Owner: IBusEngine</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: FALSE</p>
 </div>
 </div>
 <div class="refsect1">
@@ -1443,6 +1490,80 @@ in extended class to receive this signal.</p>
 </div>
 <hr>
 <div class="refsect2">
+<a name="IBusEngine-focus-in-id"></a><h3>The <code class="literal">“focus-in-id”</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+user_function (<a class="link" href="IBusEngine.html" title="IBusEngine"><span class="type">IBusEngine</span></a> *engine,
+               <span class="type">char</span>       *object_path,
+               <span class="type">char</span>       *client,
+               <a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>    user_data)</pre>
+<p>Emitted when the client application get the focus.
+Implement the member function IBusEngineClass::focus_in
+in extended class to receive this signal.
+<em class="parameter"><code>object_path</code></em>
+ is a unique id by input context.
+<em class="parameter"><code>client</code></em>
+ indicates a client type:
+'fake':    focus is on desktop background or other programs where no
+           input is possible
+'xim':     old X11 programs like xterm, emacs, ...
+           GTK3 programs in a Gnome Xorg session when GTK_IM_MODULE
+           is unset also use xim
+'gtk-im:&lt;client-name&gt;':  Gtk2 input module is used
+'gtk3-im:&lt;client-name&gt;': Gtk3 input module is used
+'gtk4-im:&lt;client-name&gt;': Gtk4 input module is used
+           In case of the Gtk input modules, the name of the
+           client is also shown after the “:”, for example
+           like 'gtk3-im:firefox', 'gtk4-im:gnome-text-editor', …
+'gnome-shell': Entries handled by gnome-shell
+               (like the command line dialog opened with Alt+F2
+               or the search field when pressing the Super key.)
+               When GTK_IM_MODULE is unset in a Gnome Wayland session
+               all programs which would show 'gtk3-im' or 'gtk4-im'
+               with GTK_IM_MODULE=ibus then show 'gnome-shell'
+               instead.
+'Qt':      Qt4 programs like keepassx-2.0.3 …
+'QIBusInputContext': Qt5 programs like keepassxc-2.7.1, anki-2.1.15
+                     telegram-desktop-3.7.3, </p>
+<p>You need to set <span class="type">“has-focus-id”</span> property to <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> when you
+construct an <a class="link" href="IBusEngine.html" title="IBusEngine"><span class="type">IBusEngine</span></a> to use this class method.</p>
+<p>See also: <a class="link" href="IBusInputContext.html#ibus-input-context-focus-in" title="ibus_input_context_focus_in ()"><code class="function">ibus_input_context_focus_in()</code></a></p>
+<div class="note"><p>Argument <em class="parameter"><code>user_data</code></em> is ignored in this function.</p></div>
+<div class="refsect3">
+<a name="IBusEngine-focus-in-id.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>engine</p></td>
+<td class="parameter_description"><p>An IBusEngine.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>object_path</p></td>
+<td class="parameter_description"><p>An object path.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>client</p></td>
+<td class="parameter_description"><p>An client name.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <a href="/usr/share/gtk-doc/html/gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a></p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="IBusEngine-focus-out"></a><h3>The <code class="literal">“focus-out”</code> signal</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
 user_function (<a class="link" href="IBusEngine.html" title="IBusEngine"><span class="type">IBusEngine</span></a> *engine,
@@ -1464,6 +1585,51 @@ in extended class to receive this signal.</p>
 <tr>
 <td class="parameter_name"><p>engine</p></td>
 <td class="parameter_description"><p>An IBusEngine.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <a href="/usr/share/gtk-doc/html/gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="IBusEngine-focus-out-id"></a><h3>The <code class="literal">“focus-out-id”</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+user_function (<a class="link" href="IBusEngine.html" title="IBusEngine"><span class="type">IBusEngine</span></a> *engine,
+               <span class="type">char</span>       *object_path,
+               <a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>    user_data)</pre>
+<p>Emitted when the client application  lost the focus.
+Implement the member function IBusEngineClass::focus_out
+in extended class to receive this signal.
+<em class="parameter"><code>object_path</code></em>
+ is a unique id by input context.
+You need to set <span class="type">“has-focus-id”</span> property to <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> when you
+construct an <a class="link" href="IBusEngine.html" title="IBusEngine"><span class="type">IBusEngine</span></a> to use this class method.</p>
+<p>See also: <a class="link" href="IBusInputContext.html#ibus-input-context-focus-out" title="ibus_input_context_focus_out ()"><code class="function">ibus_input_context_focus_out()</code></a></p>
+<div class="note"><p>Argument <em class="parameter"><code>user_data</code></em> is ignored in this function.</p></div>
+<div class="refsect3">
+<a name="IBusEngine-focus-out-id.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>engine</p></td>
+<td class="parameter_description"><p>An IBusEngine.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>object_path</p></td>
+<td class="parameter_description"><p>An object path.</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>
@@ -1572,7 +1738,8 @@ in extended class to receive this signal.</p>
 </tr>
 <tr>
 <td class="parameter_name"><p>coordinates</p></td>
-<td class="parameter_description"><p>An array of double (0.0 to 1.0) which represents a stroke (i.e. [x1, y1, x2, y2, x3, y3, ...]).</p></td>
+<td class="parameter_description"><p>An array of double (0.0 to 1.0) which represents a stroke
+(i.e. [x1, y1, x2, y2, x3, y3, ...]).</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>

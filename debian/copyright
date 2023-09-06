@@ -6,7 +6,7 @@ Source: https://github.com/ibus/ibus/releases
 Files:     *
 Copyright: 2008-2018 Peng Huang <shawn.p.huang@gmail.com>
            2007-2019 Red Hat, Inc.
-	   2010-2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
+	   2010-2023 Takao Fujiwara <takao.fujiwara1@gmail.com>
 License:   LGPL-2.1+
 
 Files:     debian/*
@@ -16,7 +16,7 @@ Copyright: 2008-2010 LI Daobing <lidaobing@debian.org>
            2012-2016 Aron Xu <aron@debian.org>
            2011-2019 Osamu Aoki <osamu@debian.org>
            2019 Boyuan Yang <byang@debian.org>
-           2019-2021 Changwoo Ryu <cwryu@debian.org>
+           2019-2023 Changwoo Ryu <cwryu@debian.org>
 License:   LGPL-2.1+
 
 Files:     Makefile.in
@@ -250,10 +250,6 @@ Comment:   FSF changes to this file are in the public domain.
 Files:     src/ibuskeynames.c
            src/ibuskeyuni.c
 Copyright: 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
-License:   LGPL-2.0+
-
-Files:     src/gtkimcontextsimpleseqs.h
-Copyright: 2007-2008 GNOME Foundation
 License:   LGPL-2.0+
 
 Files:     client/x11/gdk-private.h

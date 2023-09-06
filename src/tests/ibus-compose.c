@@ -6,13 +6,14 @@
 #define GREEN "\033[0;32m"
 #define RED   "\033[0;31m"
 #define NC    "\033[0m"
-#define X11_DATADIR X11_DATA_PREFIX "/share/X11/locale"
 
 IBusBus *m_bus;
 gchar *m_compose_file;
 IBusComposeTableEx *m_compose_table;
 IBusEngine *m_engine;
 gchar *m_srcdir;
+
+guint ibus_compose_key_flag (guint key);
 
 static gboolean window_focus_in_event_cb (GtkWidget     *entry,
                                           GdkEventFocus *event,
@@ -36,7 +37,7 @@ get_compose_path ()
             break;
         if (g_strcmp0 (*l, "C") == 0)
             break;
-        compose_path = g_build_filename (X11_DATADIR,
+        compose_path = g_build_filename (X11_LOCALEDATADIR,
                                          *l,
                                          "Compose",
                                          NULL);
@@ -164,6 +165,7 @@ set_engine_cb (GObject *object, GAsyncResult *res, gpointer data)
 
             if (keyval == 0)
                 break;
+            keyval += ibus_compose_key_flag (keyval);
             g_signal_emit_by_name (m_engine, "process-key-event",
                                    keyval, keycode, modifiers, &retval);
             modifiers |= IBUS_RELEASE_MASK;
@@ -184,6 +186,7 @@ set_engine_cb (GObject *object, GAsyncResult *res, gpointer data)
 
                 if (keyval == 0)
                     break;
+                keyval += ibus_compose_key_flag (keyval);
                 g_signal_emit_by_name (m_engine, "process-key-event",
                                        keyval, keycode, modifiers, &retval);
                 modifiers |= IBUS_RELEASE_MASK;
@@ -246,6 +249,8 @@ window_inserted_text_cb (GtkEntryBuffer *buffer,
 #endif
     i = stride + (m_compose_table->max_seq_len + 2) - 2;
     seq = (i + 2) / (m_compose_table->max_seq_len + 2);
+    if (!enable_32bit && !m_compose_table->n_seqs && priv)
+        enable_32bit = TRUE;
     if (!enable_32bit) {
         if (m_compose_table->data[i] == code) {
             test = GREEN "PASS" NC;
@@ -295,6 +300,7 @@ window_inserted_text_cb (GtkEntryBuffer *buffer,
         if (priv) {
             enable_32bit = TRUE;
             stride = 0;
+            seq = 0;
         } else {
             gtk_main_quit ();
             return;
@@ -354,7 +360,7 @@ test_compose (void)
 int
 main (int argc, char *argv[])
 {
-    const gchar *test_name;
+    gchar *test_name;
     gchar *test_path;
 
     ibus_init ();
@@ -370,13 +376,18 @@ main (int argc, char *argv[])
             ? g_strdup (argv[1]) : g_strdup (".");
     m_compose_file = g_strdup (g_getenv ("COMPOSE_FILE"));
 #if GLIB_CHECK_VERSION (2, 58, 0)
-    test_name = g_get_language_names_with_category ("LC_CTYPE")[0];
+    test_name = g_strdup (g_get_language_names_with_category ("LC_CTYPE")[0]);
 #else
-    test_name = g_getenv ("LANG");
+    test_name = g_strdup (g_getenv ("LANG"));
 #endif
+    if (!test_name || !g_ascii_strncasecmp (test_name, "en_US", 5)) {
+        g_free (test_name);
+        test_name = g_path_get_basename (m_compose_file);
+    }
     test_path = g_build_filename ("/ibus-compose", test_name, NULL);
     g_test_add_func (test_path, test_compose);
     g_free (test_path);
+    g_free (test_name);
 
     return g_test_run ();
 }

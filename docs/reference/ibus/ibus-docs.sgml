@@ -5,7 +5,7 @@
   <bookinfo>
     <title>IBus Reference Manual</title>
     <releaseinfo>
-      Intelligent Input Bus (IBus) 1.5.25 reference manual.
+      Intelligent Input Bus (IBus) 1.5.29-rc1 reference manual.
       The latest version of this documentation can be found on-line at
       <ulink role="online-location" url="https://github.com/ibus/ibus/wiki">https://github.com/ibus/ibus/wiki</ulink>.
     </releaseinfo>
