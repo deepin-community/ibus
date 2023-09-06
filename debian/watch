@@ -1,6 +1,5 @@
 version=4
-https://github.com/ibus/ibus/releases \
- .*/ibus-([0-9][0-9\.]*)@ARCHIVE_EXT@
-
-
-
+opts=filenamemangle=s%(?:.*?)?v?(\d[\d.]*(?:-(?:beta|rc)\d?)?)\.tar\.gz%@PACKAGE@-$1.tar.gz%,\
+uversionmangle=s/-(beta|rc)/~$1/,\
+downloadurlmangle=s#archive/refs/tags/(.*)\.tar\.gz#releases/download/$1/@PACKAGE@-$1\.tar\.gz# \
+https://github.com/ibus/@PACKAGE@/tags .*/([0-9][0-9\.]*(?:-(?:beta|rc)\d?)?)\.tar\.gz

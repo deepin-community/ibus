@@ -2,8 +2,8 @@
 /* vim:set et sts=4: */
 /* ibus - The Input Bus
  * Copyright (C) 2008-2013 Peng Huang <shawn.p.huang@gmail.com>
- * Copyright (C) 2018-2019 Takao Fujiwara <takao.fujiwara1@gmail.com>
- * Copyright (C) 2008-2019 Red Hat, Inc.
+ * Copyright (C) 2018-2023 Takao Fujiwara <takao.fujiwara1@gmail.com>
+ * Copyright (C) 2008-2021 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,7 +37,9 @@
 enum {
     PROCESS_KEY_EVENT,
     FOCUS_IN,
+    FOCUS_IN_ID,
     FOCUS_OUT,
+    FOCUS_OUT_ID,
     RESET,
     ENABLE,
     DISABLE,
@@ -61,6 +63,8 @@ enum {
 enum {
     PROP_0,
     PROP_ENGINE_NAME,
+    PROP_HAS_FOCUS_ID,
+    PROP_ACTIVE_SURROUNDING_TEXT,
 };
 
 
@@ -82,6 +86,8 @@ struct _IBusEnginePrivate {
     GHashTable            *extension_keybindings;
     gboolean               enable_extension;
     gchar                 *current_extension_name;
+    gboolean               has_focus_id;
+    gboolean               has_active_surrounding_text;
 };
 
 
@@ -104,7 +110,8 @@ static void      ibus_engine_service_method_call
                                                GDBusConnection    *connection,
                                                const gchar        *sender,
                                                const gchar        *object_path,
-                                               const gchar        *interface_name,
+                                               const gchar
+                                                                *interface_name,
                                                const gchar        *method_name,
                                                GVariant           *parameters,
                                                GDBusMethodInvocation
@@ -132,7 +139,12 @@ static gboolean  ibus_engine_process_key_event
                                               guint               keycode,
                                               guint               state);
 static void      ibus_engine_focus_in        (IBusEngine         *engine);
+static void      ibus_engine_focus_in_id     (IBusEngine         *engine,
+                                              const gchar        *object_path,
+                                              const gchar        *client);
 static void      ibus_engine_focus_out       (IBusEngine         *engine);
+static void      ibus_engine_focus_out_id    (IBusEngine         *engine,
+                                              const gchar        *object_path);
 static void      ibus_engine_reset           (IBusEngine         *engine);
 static void      ibus_engine_enable          (IBusEngine         *engine);
 static void      ibus_engine_disable         (IBusEngine         *engine);
@@ -170,7 +182,8 @@ static void      ibus_engine_set_surrounding_text
 static void      ibus_engine_process_hand_writing_event
                                              (IBusEngine         *engine,
                                               const gdouble      *coordinates,
-                                              guint               coordinates_len);
+                                              guint
+                                                               coordinates_len);
 static void      ibus_engine_cancel_hand_writing
                                              (IBusEngine         *engine,
                                               guint               n_strokes);
@@ -230,7 +243,15 @@ static const gchar introspection_xml[] =
     "      <arg direction='in'  type='u' name='state' />"
     "    </method>"
     "    <method name='FocusIn' />"
+    "    <method name='FocusInId'>"
+    "      <arg direction='in'  type='s' name='object_path' />"
+    "      <arg direction='in'  type='s' name='client' />"
+    "    </method>"
+    "    <method name='FocusIn' />"
     "    <method name='FocusOut' />"
+    "    <method name='FocusOutId'>"
+    "      <arg direction='in'  type='s' name='object_path' />"
+    "    </method>"
     "    <method name='Reset' />"
     "    <method name='Enable' />"
     "    <method name='Disable' />"
@@ -283,6 +304,8 @@ static const gchar introspection_xml[] =
     "    </signal>"
     /* FIXME properties */
     "    <property name='ContentType' type='(uu)' access='write' />"
+    "    <property name='FocusId' type='(b)' access='read' />"
+    "    <property name='ActiveSurroundingText' type='(b)' access='read' />"
     "  </interface>"
     "</node>";
 
@@ -324,7 +347,9 @@ ibus_engine_class_init (IBusEngineClass *class)
 
     class->process_key_event = ibus_engine_process_key_event;
     class->focus_in     = ibus_engine_focus_in;
+    class->focus_in_id  = ibus_engine_focus_in_id;
     class->focus_out    = ibus_engine_focus_out;
+    class->focus_out_id = ibus_engine_focus_out_id;
     class->reset        = ibus_engine_reset;
     class->enable       = ibus_engine_enable;
     class->disable      = ibus_engine_disable;
@@ -346,7 +371,7 @@ ibus_engine_class_init (IBusEngineClass *class)
 
     /* install properties */
     /**
-     * IBusEngine:name:
+     * IBusEngine:engine-name:
      *
      * Name of this IBusEngine.
      */
@@ -359,6 +384,42 @@ ibus_engine_class_init (IBusEngineClass *class)
                         G_PARAM_READWRITE |
                         G_PARAM_CONSTRUCT_ONLY |
                         G_PARAM_STATIC_STRINGS));
+
+    /**
+     * IBusEngine:has-focus-id:
+     *
+     * Use #IBusEngine::focus_in_id()/focus_out_id() class method insteads of
+     * focus_in()/focus_out() class methods when this property is set to %TRUE.
+     * Otherwise, use #IBusEngine::focus_in()/focus_out class methods.
+     * This property can only be set at construct time.
+     *
+     * See also: IBusEngine::focus-in-id
+     */
+    g_object_class_install_property (gobject_class,
+                    PROP_HAS_FOCUS_ID,
+                    g_param_spec_boolean ("has-focus-id",
+                        "has focus id",
+                        "Has focus ID",
+                        FALSE,
+                        G_PARAM_READWRITE |
+                        G_PARAM_CONSTRUCT_ONLY));
+
+    /**
+     * IBusEngine:active-surrounding-text:
+     *
+     * When this property is set to %TRUE, "RequireSurroundingText" D-Bus
+     * signal will be called by ibus-daemon on every focus-in/out event, with
+     * no need for the engine to call ibus_engine_get_surrounding_text().
+     * This property can only be set at construct time.
+     */
+    g_object_class_install_property (gobject_class,
+                    PROP_ACTIVE_SURROUNDING_TEXT,
+                    g_param_spec_boolean ("active-surrounding-text",
+                        "enable surrounding text update by focus event",
+                        "Enable surrounding text update by focus event",
+                        FALSE,
+                        G_PARAM_READWRITE |
+                        G_PARAM_CONSTRUCT_ONLY));
 
     /* install signals */
     /**
@@ -378,7 +439,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * Returns: %TRUE for successfully process the key; %FALSE otherwise.
      * See also:  ibus_input_context_process_key_event().
      *
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[PROCESS_KEY_EVENT] =
         g_signal_new (I_("process-key-event"),
@@ -402,7 +464,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * in extended class to receive this signal.
      *
      * See also: ibus_input_context_focus_in()
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[FOCUS_IN] =
         g_signal_new (I_("focus-in"),
@@ -415,6 +478,58 @@ ibus_engine_class_init (IBusEngineClass *class)
             0);
 
     /**
+     * IBusEngine::focus-in-id:
+     * @engine: An IBusEngine.
+     * @object_path: An object path.
+     * @client: An client name.
+     *
+     * Emitted when the client application get the focus.
+     * Implement the member function IBusEngineClass::focus_in
+     * in extended class to receive this signal.
+     * @object_path is a unique id by input context.
+     * @client indicates a client type:
+     * 'fake':    focus is on desktop background or other programs where no
+     *            input is possible
+     * 'xim':     old X11 programs like xterm, emacs, ...
+     *            GTK3 programs in a Gnome Xorg session when GTK_IM_MODULE
+     *            is unset also use xim
+     * 'gtk-im:&lt;client-name&gt;':  Gtk2 input module is used
+     * 'gtk3-im:&lt;client-name&gt;': Gtk3 input module is used
+     * 'gtk4-im:&lt;client-name&gt;': Gtk4 input module is used
+     *            In case of the Gtk input modules, the name of the
+     *            client is also shown after the “:”, for example
+     *            like 'gtk3-im:firefox', 'gtk4-im:gnome-text-editor', …
+     * 'gnome-shell': Entries handled by gnome-shell
+     *                (like the command line dialog opened with Alt+F2
+     *                or the search field when pressing the Super key.)
+     *                When GTK_IM_MODULE is unset in a Gnome Wayland session
+     *                all programs which would show 'gtk3-im' or 'gtk4-im'
+     *                with GTK_IM_MODULE=ibus then show 'gnome-shell'
+     *                instead.
+     * 'Qt':      Qt4 programs like keepassx-2.0.3 …
+     * 'QIBusInputContext': Qt5 programs like keepassxc-2.7.1, anki-2.1.15
+     *                      telegram-desktop-3.7.3, 
+     *
+     * You need to set #IBusEngine::has-focus-id property to %TRUE when you
+     * construct an #IBusEngine to use this class method.
+     *
+     * See also: ibus_input_context_focus_in()
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
+     */
+    engine_signals[FOCUS_IN_ID] =
+        g_signal_new (I_("focus-in-id"),
+            G_TYPE_FROM_CLASS (gobject_class),
+            G_SIGNAL_RUN_LAST,
+            G_STRUCT_OFFSET (IBusEngineClass, focus_in_id),
+            NULL, NULL,
+            _ibus_marshal_VOID__STRING_STRING,
+            G_TYPE_NONE,
+            2,
+            G_TYPE_STRING,
+            G_TYPE_STRING);
+
+    /**
      * IBusEngine::focus-out:
      * @engine: An IBusEngine.
      *
@@ -423,7 +538,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * in extended class to receive this signal.
      *
      * See also: ibus_input_context_focus_out()
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[FOCUS_OUT] =
         g_signal_new (I_("focus-out"),
@@ -436,6 +552,33 @@ ibus_engine_class_init (IBusEngineClass *class)
             0);
 
     /**
+     * IBusEngine::focus-out-id:
+     * @engine: An IBusEngine.
+     * @object_path: An object path.
+     *
+     * Emitted when the client application  lost the focus.
+     * Implement the member function IBusEngineClass::focus_out
+     * in extended class to receive this signal.
+     * @object_path is a unique id by input context.
+     * You need to set #IBusEngine::has-focus-id property to %TRUE when you
+     * construct an #IBusEngine to use this class method.
+     *
+     * See also: ibus_input_context_focus_out()
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
+     */
+    engine_signals[FOCUS_OUT_ID] =
+        g_signal_new (I_("focus-out-id"),
+            G_TYPE_FROM_CLASS (gobject_class),
+            G_SIGNAL_RUN_LAST,
+            G_STRUCT_OFFSET (IBusEngineClass, focus_out_id),
+            NULL, NULL,
+            _ibus_marshal_VOID__STRING,
+            G_TYPE_NONE,
+            1,
+            G_TYPE_STRING);
+
+    /**
      * IBusEngine::reset:
      * @engine: An IBusEngine.
      *
@@ -444,7 +587,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * in extended class to receive this signal.
      *
      * See also:  ibus_input_context_reset().
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[RESET] =
         g_signal_new (I_("reset"),
@@ -465,7 +609,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * in extended class to receive this signal.
      *
      * See also:  ibus_bus_set_global_engine().
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[ENABLE] =
         g_signal_new (I_("enable"),
@@ -486,7 +631,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * in extended class to receive this signal.
      *
      * See also:  ibus_bus_set_global_engine().
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[DISABLE] =
         g_signal_new (I_("disable"),
@@ -511,7 +657,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * in extended class to receive this signal.
      *
      * See also:  ibus_input_context_set_cursor_location().
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[SET_CURSOR_LOCATION] =
         g_signal_new (I_("set-cursor-location"),
@@ -537,7 +684,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * in extended class to receive this signal.
      *
      * See also:  ibus_input_context_set_capabilities().
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[SET_CAPABILITIES] =
         g_signal_new (I_("set-capabilities"),
@@ -558,7 +706,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * Implement the member function IBusEngineClass::page_up
      * in extended class to receive this signal.
      *
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[PAGE_UP] =
         g_signal_new (I_("page-up"),
@@ -578,7 +727,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * Implement the member function IBusEngineClass::page_down
      * in extended class to receive this signal.
      *
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[PAGE_DOWN] =
         g_signal_new (I_("page-down"),
@@ -598,7 +748,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * Implement the member function IBusEngineClass::cursor_up
      * in extended class to receive this signal.
      *
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[CURSOR_UP] =
         g_signal_new (I_("cursor-up"),
@@ -618,7 +769,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * Implement the member function IBusEngineClass::cursor_down
      * in extended class to receive this signal.
      *
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[CURSOR_DOWN] =
         g_signal_new (I_("cursor-down"),
@@ -641,7 +793,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * Implement the member function IBusEngineClass::candidate_clicked
      * in extended class to receive this signal.
      *
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[CANDIDATE_CLICKED] =
         g_signal_new (I_("candidate-clicked"),
@@ -666,7 +819,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * Implement the member function IBusEngineClass::property_activate
      * in extended class to receive this signal.
      *
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[PROPERTY_ACTIVATE] =
         g_signal_new (I_("property-activate"),
@@ -689,7 +843,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * Implement the member function IBusEngineClass::property_side
      * in extended class to receive this signal.
      *
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[PROPERTY_SHOW] =
         g_signal_new (I_("property-show"),
@@ -711,7 +866,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * Implement the member function IBusEngineClass::property_hide
      * in extended class to receive this signal.
      *
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[PROPERTY_HIDE] =
         g_signal_new (I_("property-hide"),
@@ -727,14 +883,16 @@ ibus_engine_class_init (IBusEngineClass *class)
     /**
      * IBusEngine::process-hand-writing-event:
      * @engine: An IBusEngine.
-     * @coordinates: An array of double (0.0 to 1.0) which represents a stroke (i.e. [x1, y1, x2, y2, x3, y3, ...]).
+     * @coordinates: An array of double (0.0 to 1.0) which represents a stroke
+     *               (i.e. [x1, y1, x2, y2, x3, y3, ...]).
      * @coordinates_len: The number of elements in the array.
      *
      * Emitted when a hand writing operation is cancelled.
      * Implement the member function IBusEngineClass::cancel_hand_writing
      * in extended class to receive this signal.
      *
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[PROCESS_HAND_WRITING_EVENT] =
         g_signal_new (I_("process-hand-writing-event"),
@@ -757,7 +915,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * Implement the member function IBusEngineClass::cancel_hand_writing
      * in extended class to receive this signal.
      *
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[CANCEL_HAND_WRITING] =
         g_signal_new (I_("cancel-hand-writing"),
@@ -783,7 +942,8 @@ ibus_engine_class_init (IBusEngineClass *class)
      * If anchor_pos equals to cursor_pos, it means "there are no selection"
      * or "does not support selection retrival".
      *
-     * <note><para>Argument @user_data is ignored in this function.</para></note>
+     * <note><para>Argument @user_data is ignored in this function.</para>
+     * </note>
      */
     engine_signals[SET_SURROUNDING_TEXT] =
         g_signal_new (I_("set-surrounding-text"),
@@ -872,6 +1032,12 @@ ibus_engine_set_property (IBusEngine   *engine,
     case PROP_ENGINE_NAME:
         engine->priv->engine_name = g_value_dup_string (value);
         break;
+    case PROP_HAS_FOCUS_ID:
+        engine->priv->has_focus_id = g_value_get_boolean (value);
+        break;
+    case PROP_ACTIVE_SURROUNDING_TEXT:
+        engine->priv->has_active_surrounding_text = g_value_get_boolean (value);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (engine, prop_id, pspec);
     }
@@ -887,7 +1053,12 @@ ibus_engine_get_property (IBusEngine *engine,
     case PROP_ENGINE_NAME:
         g_value_set_string (value, engine->priv->engine_name);
         break;
-
+    case PROP_HAS_FOCUS_ID:
+        g_value_set_boolean (value, engine->priv->has_focus_id);
+        break;
+    case PROP_ACTIVE_SURROUNDING_TEXT:
+        g_value_set_boolean (value, engine->priv->has_active_surrounding_text);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (engine, prop_id, pspec);
     }
@@ -954,6 +1125,10 @@ ibus_engine_filter_key_event (IBusEngine *engine,
         return FALSE;
     for (n = names; n; n = n->next) {
         const gchar *name = (const gchar *)n->data;
+        if (!g_strcmp0 (name, "emoji") &&
+            (engine->priv->content_hints & IBUS_INPUT_HINT_NO_EMOJI)) {
+            continue;
+        }
         keys = g_hash_table_lookup (priv->extension_keybindings, name);
         for (; keys; keys++) {
             if (keys->keyval == 0 && keys->keycode == 0 && keys->state == 0)
@@ -1117,7 +1292,8 @@ ibus_engine_service_method_call (IBusService           *service,
                                                    keycode,
                                                    state);
         }
-        g_dbus_method_invocation_return_value (invocation, g_variant_new ("(b)", retval));
+        g_dbus_method_invocation_return_value (invocation,
+                                               g_variant_new ("(b)", retval));
         return;
     }
     if (g_strcmp0 (method_name, "PanelExtensionReceived") == 0) {
@@ -1170,6 +1346,30 @@ ibus_engine_service_method_call (IBusService           *service,
             g_dbus_method_invocation_return_value (invocation, NULL);
             return;
         }
+    }
+
+    if (g_strcmp0 (method_name, "FocusInId") == 0) {
+        gchar *object_path = NULL;
+        gchar *client = NULL;
+        g_variant_get (parameters, "(&s&s)", &object_path, &client);
+        g_signal_emit (engine,
+                       engine_signals[FOCUS_IN_ID],
+                       0,
+                       object_path,
+                       client);
+        g_dbus_method_invocation_return_value (invocation, NULL);
+        return;
+    }
+
+    if (g_strcmp0 (method_name, "FocusOutId") == 0) {
+        gchar *object_path = NULL;
+        g_variant_get (parameters, "(&s)", &object_path);
+        g_signal_emit (engine,
+                       engine_signals[FOCUS_OUT_ID],
+                       0,
+                       object_path);
+        g_dbus_method_invocation_return_value (invocation, NULL);
+        return;
     }
 
     if (g_strcmp0 (method_name, "CandidateClicked") == 0) {
@@ -1277,8 +1477,10 @@ ibus_engine_service_method_call (IBusService           *service,
 
         coordinates = g_variant_get_fixed_array (g_variant_get_child_value (parameters, 0), &coordinates_len, sizeof (gdouble));
         g_return_if_fail (coordinates != NULL);
-        g_return_if_fail (coordinates_len >= 4); /* The array should contain at least one line. */
-        g_return_if_fail (coordinates_len <= G_MAXUINT); /* to prevent overflow in the cast in g_signal_emit */
+        /* The array should contain at least one line. */
+        g_return_if_fail (coordinates_len >= 4);
+        /* to prevent overflow in the cast in g_signal_emit */
+        g_return_if_fail (coordinates_len <= G_MAXUINT);
         g_return_if_fail ((coordinates_len & 1) == 0);
 
         g_signal_emit (engine, engine_signals[PROCESS_HAND_WRITING_EVENT], 0,
@@ -1299,6 +1501,38 @@ ibus_engine_service_method_call (IBusService           *service,
     g_return_if_reached ();
 }
 
+/**
+ * _ibus_engine_get_active_surrounding_text:
+ *
+ * Implement the "ActiveSurroundingText" method call of the
+ * org.freedesktop.IBus interface.
+ */
+static GVariant *
+_ibus_engine_get_active_surrounding_text (IBusEngine      *engine,
+                                          GDBusConnection *connection,
+                                          GError         **error)
+{
+    GVariant *retval = g_variant_new_boolean (
+            engine->priv->has_active_surrounding_text);
+    g_assert (retval);
+    return retval;
+}
+
+/**
+ * _ibus_engine_has_focus_id:
+ *
+ * Implement the "FocusId" method call of the org.freedesktop.IBus interface.
+ */
+static GVariant *
+_ibus_engine_has_focus_id (IBusEngine      *engine,
+                           GDBusConnection *connection,
+                           GError         **error)
+{
+    GVariant *retval = g_variant_new_boolean (engine->priv->has_focus_id);
+    g_assert (retval);
+    return retval;
+}
+
 static GVariant *
 ibus_engine_service_get_property (IBusService        *service,
                                   GDBusConnection    *connection,
@@ -1308,7 +1542,21 @@ ibus_engine_service_get_property (IBusService        *service,
                                   const gchar        *property_name,
                                   GError            **error)
 {
-    return IBUS_SERVICE_CLASS (ibus_engine_parent_class)->
+    int i;
+    static const struct {
+        const gchar *method_name;
+        GVariant * (* method_callback) (IBusEngine *,
+                                        GDBusConnection *,
+                                        GError **);
+    } methods [] =  {
+        { "FocusId",                _ibus_engine_has_focus_id },
+        { "ActiveSurroundingText",  _ibus_engine_get_active_surrounding_text },
+    };
+
+    if (error)
+        *error = NULL;
+    if (g_strcmp0 (interface_name, IBUS_INTERFACE_ENGINE) != 0) {
+        return IBUS_SERVICE_CLASS (ibus_engine_parent_class)->
                 service_get_property (service,
                                       connection,
                                       sender,
@@ -1316,6 +1564,22 @@ ibus_engine_service_get_property (IBusService        *service,
                                       interface_name,
                                       property_name,
                                       error);
+    }
+
+    for (i = 0; i < G_N_ELEMENTS (methods); i++) {
+        if (g_strcmp0 (methods[i].method_name, property_name) == 0) {
+            return methods[i].method_callback ((IBusEngine *) service,
+                                               connection,
+                                               error);
+        }
+    }
+
+    g_set_error (error,
+                 G_DBUS_ERROR,
+                 G_DBUS_ERROR_FAILED,
+                 "service_get_property received an unknown property: %s",
+                 property_name ? property_name : "(null)");
+    g_return_val_if_reached (NULL);
 }
 
 static gboolean
@@ -1330,6 +1594,8 @@ ibus_engine_service_set_property (IBusService        *service,
 {
     IBusEngine *engine = IBUS_ENGINE (service);
 
+    if (error)
+        *error = NULL;
     if (g_strcmp0 (interface_name, IBUS_INTERFACE_ENGINE) != 0) {
         return IBUS_SERVICE_CLASS (ibus_engine_parent_class)->
             service_set_property (service,
@@ -1342,8 +1608,15 @@ ibus_engine_service_set_property (IBusService        *service,
                                   error);
     }
 
-    if (!ibus_engine_service_authorized_method (service, connection))
+    if (!ibus_engine_service_authorized_method (service, connection)) {
+        /* No error message due to the security issue but GError is required
+         * by gdbusconnection.c:invoke_set_property_in_idle_cb() */
+        g_set_error (error,
+                     G_DBUS_ERROR,
+                     G_DBUS_ERROR_FAILED,
+                     " ");
         return FALSE;
+    }
 
     if (g_strcmp0 (property_name, "ContentType") == 0) {
         guint purpose = 0;
@@ -1367,6 +1640,11 @@ ibus_engine_service_set_property (IBusService        *service,
         return TRUE;
     }
 
+    g_set_error (error,
+                 G_DBUS_ERROR,
+                 G_DBUS_ERROR_FAILED,
+                 "service_set_property received an unknown property: %s",
+                 property_name ? property_name : "(null)");
     g_return_val_if_reached (FALSE);
 }
 
@@ -1382,31 +1660,39 @@ ibus_engine_process_key_event (IBusEngine *engine,
 static void
 ibus_engine_focus_in (IBusEngine *engine)
 {
-    // g_debug ("focus-in");
+}
+
+static void
+ibus_engine_focus_in_id (IBusEngine  *engine,
+                         const gchar *object_path,
+                         const gchar *client)
+{
 }
 
 static void
 ibus_engine_focus_out (IBusEngine *engine)
 {
-    // g_debug ("focus-out");
+}
+
+static void
+ibus_engine_focus_out_id (IBusEngine  *engine,
+                          const gchar *object_path)
+{
 }
 
 static void
 ibus_engine_reset (IBusEngine *engine)
 {
-    // g_debug ("reset");
 }
 
 static void
 ibus_engine_enable (IBusEngine *engine)
 {
-    // g_debug ("enable");
 }
 
 static void
 ibus_engine_disable (IBusEngine *engine)
 {
-    // g_debug ("disable");
 }
 
 static void
@@ -1416,38 +1702,32 @@ ibus_engine_set_cursor_location (IBusEngine *engine,
                                  gint        w,
                                  gint        h)
 {
-    // g_debug ("set-cursor-location (%d, %d, %d, %d)", x, y, w, h);
 }
 
 static void
 ibus_engine_set_capabilities (IBusEngine *engine,
                               guint       caps)
 {
-    // g_debug ("set-capabilities (0x%04x)", caps);
 }
 
 static void
 ibus_engine_page_up (IBusEngine *engine)
 {
-    // g_debug ("page-up");
 }
 
 static void
 ibus_engine_page_down (IBusEngine *engine)
 {
-    // g_debug ("page-down");
 }
 
 static void
 ibus_engine_cursor_up (IBusEngine *engine)
 {
-    // g_debug ("cursor-up");
 }
 
 static void
 ibus_engine_cursor_down (IBusEngine *engine)
 {
-    // g_debug ("cursor-down");
 }
 
 static void
@@ -1456,7 +1736,6 @@ ibus_engine_candidate_clicked (IBusEngine *engine,
                                guint       button,
                                guint       state)
 {
-    // g_debug ("candidate-clicked");
 }
 
 static void
@@ -1464,19 +1743,16 @@ ibus_engine_property_activate (IBusEngine  *engine,
                                const gchar *prop_name,
                                guint        prop_state)
 {
-    // g_debug ("property-activate ('%s', %d)", prop_name, prop_state);
 }
 
 static void
 ibus_engine_property_show (IBusEngine *engine, const gchar *prop_name)
 {
-    // g_debug ("property-show ('%s')", prop_name);
 }
 
 static void
 ibus_engine_property_hide (IBusEngine *engine, const gchar *prop_name)
 {
-    // g_debug ("property-hide ('%s')", prop_name);
 }
 
 static void
@@ -1494,7 +1770,6 @@ ibus_engine_set_surrounding_text (IBusEngine *engine,
     engine->priv->surrounding_text = (IBusText *) g_object_ref_sink (text ? text : text_empty);
     engine->priv->surrounding_cursor_pos = cursor_pos;
     engine->priv->selection_anchor_pos = anchor_pos;
-    // g_debug ("set-surrounding-text ('%s', %d, %d)", text->text, cursor_pos, anchor_pos);
 }
 
 static void
@@ -1502,17 +1777,18 @@ ibus_engine_process_hand_writing_event (IBusEngine         *engine,
                                         const gdouble      *coordinates,
                                         guint               coordinates_len)
 {
-    // guint i;
-    // g_debug ("process-hand-writing-event (%u)", coordinates_len);
-    // for (i = 0; i < coordinates_len; i++)
-    //     g_debug (" %lf", coordinates[i]);
+#if 0
+    guint i;
+    g_debug ("process-hand-writing-event (%u)", coordinates_len);
+    for (i = 0; i < coordinates_len; i++)
+        g_debug (" %lf", coordinates[i]);
+#endif
 }
 
 static void
 ibus_engine_cancel_hand_writing (IBusEngine         *engine,
                                  guint               n_strokes)
 {
-    // g_debug ("cancel-hand-writing (%u)", n_strokes);
 }
 
 static void
@@ -1520,7 +1796,6 @@ ibus_engine_set_content_type (IBusEngine *engine,
                               guint       purpose,
                               guint       hints)
 {
-    // g_debug ("set-content-type (%u %u)", purpose, hints);
 }
 
 static void
@@ -1845,8 +2120,6 @@ ibus_engine_get_surrounding_text (IBusEngine   *engine,
     ibus_engine_emit_signal (engine,
                              "RequireSurroundingText",
                              NULL);
-
-    // g_debug ("get-surrounding-text ('%s', %d, %d)", (*text)->text, *cursor_pos, *anchor_pos);
 }
 
 void

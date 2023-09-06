@@ -3,7 +3,7 @@
  * ibus - The Input Bus
  *
  * Copyright(c) 2018 Peng Huang <shawn.p.huang@gmail.com>
- * Copyright(c) 2018-2020 Takao Fujwiara <takao.fujiwara1@gmail.com>
+ * Copyright(c) 2018-2021 Takao Fujwiara <takao.fujiwara1@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -270,6 +270,22 @@ class PanelBinding : IBus.PanelService {
                                               ref m_css_provider);
         });
 
+        m_settings_panel.changed["custom-theme"].connect((key) => {
+                BindingCommon.set_custom_theme(m_settings_panel);
+        });
+
+        m_settings_panel.changed["use-custom-theme"].connect((key) => {
+                BindingCommon.set_custom_theme(m_settings_panel);
+        });
+
+        m_settings_panel.changed["custom-icon"].connect((key) => {
+                BindingCommon.set_custom_icon(m_settings_panel);
+        });
+
+        m_settings_panel.changed["use-custom-icon"].connect((key) => {
+                BindingCommon.set_custom_icon(m_settings_panel);
+        });
+
         m_settings_emoji.changed["unicode-hotkey"].connect((key) => {
                 set_emoji_hotkey();
         });
@@ -422,6 +438,8 @@ class PanelBinding : IBus.PanelService {
         BindingCommon.set_custom_font(m_settings_panel,
                                       m_settings_emoji,
                                       ref m_css_provider);
+        BindingCommon.set_custom_theme(m_settings_panel);
+        BindingCommon.set_custom_icon(m_settings_panel);
         set_emoji_favorites();
         if (m_load_emoji_at_startup && !m_loaded_emoji)
             set_emoji_lang();
@@ -484,9 +502,18 @@ class PanelBinding : IBus.PanelService {
             return true;
         string selected_string = m_emojier.get_selected_string();
         string prev_context_path = m_emojier.get_input_context_path();
-        if (selected_string != null &&
-            prev_context_path != "" &&
-            prev_context_path == m_current_context_path) {
+        if (selected_string != null && prev_context_path != "") {
+            if (prev_context_path != m_current_context_path) {
+                if (m_is_wayland) {
+                    // Using Wayland input-method protocol in Plasma Wayland
+                    // always allocates new input contexts with focus changes.
+                    debug("Prev input context path %s, now %s",
+                          prev_context_path,
+                          m_current_context_path);
+                } else {
+                    return false;
+                }
+            }
             IBus.Text text = new IBus.Text.from_string(selected_string);
             commit_text_update_favorites(text, false);
             m_emojier.reset();
@@ -758,18 +785,36 @@ class PanelBinding : IBus.PanelService {
 
     private void show_preedit_and_candidate(bool show_candidate) {
         uint cursor_pos = 0;
+        IBus.Text text;
+        bool visible = true;
+
         if (!show_candidate)
             cursor_pos = m_preedit.get_engine_preedit_cursor_pos();
+        /* Showing Emojier in Wayland takes the input focus
+         * and the focus change causes the preedit commit in Qt applications
+         * likes kwrite.
+         * so need to clear the preedit text before showing Emojier.
+         *
+         * Use m_preedit.get_text() because
+         * m_wayland_lookup_table_is_visible will be true after
+         * show_emoji_lookup_table() is called below.
+         */
+        if (show_candidate && m_is_wayland && m_preedit.get_text() == "") {
+            if (m_emojier == null)
+                return;
+            visible = false;
+            text = new IBus.Text.from_static_string("");
+        } else {
+            text = m_preedit.get_engine_preedit_text();
+        }
         update_preedit_text_received(
-                m_preedit.get_engine_preedit_text(),
+                text,
                 cursor_pos,
-                true);
+                visible);
         if (!show_candidate) {
             hide_emoji_lookup_table();
             return;
         }
-        if (m_emojier == null)
-            return;
         /* Wayland gives the focus on Emojir which is a GTK popup window
          * and move the focus fom the current input context to Emojier.
          * This forwards the lookup table to gnome-shell's lookup table
@@ -799,6 +844,23 @@ class PanelBinding : IBus.PanelService {
 
     public override void focus_out(string input_context_path) {
         m_current_context_path = "";
+        /* Close emoji typing when the focus out happens but it's not a
+         * rebuilding GUI.
+         * Emojier rebuilding GUI happens when Escape key is pressed on
+         * Emojier candidate list and the rebuilding also causes focus-out/in
+         * events in GNOME Wayland but not Xorg desktops.
+         * The rebuilding GUI can be checked with m_emojier.is_rebuilding_gui()
+         * in Wayland.
+         * m_emojier.is_rebuilding_gui() always returns false in Xorg desktops
+         * since focus-out/in events does not happen.
+         */
+        if (m_emojier != null && !m_emojier.is_rebuilding_gui()) {
+            m_preedit.reset();
+            m_emojier.set_annotation("");
+            if (m_wayland_lookup_table_is_visible)
+                hide_wayland_lookup_table();
+            key_press_escape();
+        }
     }
 
 
@@ -822,7 +884,7 @@ class PanelBinding : IBus.PanelService {
             m_loaded_unicode = true;
         }
         if (m_emojier == null) {
-            m_emojier = new IBusEmojier();
+            m_emojier = new IBusEmojier(m_is_wayland);
             // For title handling in gnome-shell
             m_application.add_window(m_emojier);
             m_emojier.candidate_clicked.connect((i, b, s) => {
@@ -888,6 +950,17 @@ class PanelBinding : IBus.PanelService {
 
     public override void hide_preedit_text() {
         m_preedit.hide_engine_preedit_text();
+        /* Space key to launch Emojier category popup causes a hide-preedit-text
+         * signal by ibus_engine_simple_update_preedit_text().
+         * On the other hand, the Emoji preedit "e" should be hidden
+         * in Plasam Wayland before Qt applications commit the preedit
+         * with the focus-out event.
+         * So avoid the duplicated show_preedit_and_candidate() here.
+         * Emojier should hide the preedit by itself instead of the callback
+         * of each engine.
+         */
+        if (m_is_wayland && m_preedit.get_text() == "")
+            return;
         show_preedit_and_candidate(false);
     }
 

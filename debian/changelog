@@ -1,3 +1,202 @@
+ibus (1.5.29~rc1-1) unstable; urgency=medium
+
+  * Upstream rc release
+    - Fixes issue with candidate window position in gtk4 apps
+      (closes: #1040615).
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Tue, 22 Aug 2023 16:13:57 +0200
+
+ibus (1.5.29~beta2-1) unstable; urgency=medium
+
+  * Make d/watch search also for beta releases
+  * Upstream beta release
+  * Drop patch, applied upstream
+  * Refresh d/p/debian-multiarch.patch
+  * Update d/libibus-1.0-5.symbols
+  * Lintian overrides about no-manual-page
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Tue, 15 Aug 2023 14:00:08 +0200
+
+ibus (1.5.29~beta1-3) unstable; urgency=high
+
+  * d/p/Fix-typo-in-src-ibusservice.h.patch
+    - Modified patch added in 1.5.29~beta1-2 to fix build failure.
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Wed, 02 Aug 2023 17:43:06 +0200
+
+ibus (1.5.29~beta1-2) unstable; urgency=high
+
+  * Fix typo in src/ibusservice.h (LP: #2029322)
+  * d/control: Add myself to Uploaders list
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Wed, 02 Aug 2023 08:24:16 +0200
+
+ibus (1.5.29~beta1-1) unstable; urgency=medium
+
+  * Upstream beta release
+  * Dropped patches, applied upstream
+  * Refreshed patches:
+    - 0003-dconf-Use-dbus-run-session-to-set-up-dconf-overrides.patch
+    - dconf-Create-a-temporary-XDG_RUNTIME_DIR.patch
+  * Added libdbusmenu to Build-Depends
+  * Update d/libibus-1.0-5.symbols again
+  * d/control: Drop obsolete Breaks/Replaces
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Tue, 01 Aug 2023 10:45:25 +0200
+
+ibus (1.5.28-6) unstable; urgency=medium
+
+  * Team upload
+  * Fix jumbling issue when typing fast (LP: #1996652)
+    - d/p/bus-Apply-code-style-to-inputcontext.c.patch
+    - d/p/src-Fix-sync-ibus_input_context_process_key_event.patch
+    - d/p/client-x11-Fix-sync-ibus_input_context_process_key_event.patch
+  * Update d/libibus-1.0-5.symbols accordingly
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Wed, 26 Jul 2023 22:39:15 +0200
+
+ibus (1.5.28-5) unstable; urgency=medium
+
+  * Team upload
+  * Re-enable the xkb-latin-layouts test
+  * Upload to unstable
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Mon, 19 Jun 2023 18:31:29 +0200
+
+ibus (1.5.28-4) experimental; urgency=medium
+
+  * Team upload
+  * Fix FTBFS twice in a row (closes: #1034090)
+    - d/p/Make-ibusenumtypes.h-ready-after-clean.patch
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Tue, 11 Apr 2023 19:43:57 +0200
+
+ibus (1.5.28-3) experimental; urgency=medium
+
+  * Team upload
+  * Fix broken code point feature (LP: #2012788)
+    - d/p/src-Call-IBUS_TYPE_EMOJI_DATA-in-ibus_init.patch
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Wed, 29 Mar 2023 16:38:51 +0200
+
+ibus (1.5.28-2) experimental; urgency=medium
+
+  * Team upload
+  * Fix missing key events (LP: #2009700)
+    - d/p/client-x11-Fix-Key-typing-order.patch
+    - d/p/util-IMdkit-Disable-while-loop-before-call-ForwardEvent.patch
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Thu, 16 Mar 2023 13:31:39 +0100
+
+ibus (1.5.28-1) experimental; urgency=medium
+
+  * Team upload
+  * New upstream release
+  * Drop patches applied upstream
+  * Refresh debian-multiarch.patch
+  * d/rules: Skip the xkb-latin-layouts test
+    - This is a temporary workaround. simple.xml has been adapted to
+      xkeyboard-config 2.38, while Debian is still on 2.35.
+  * Updated d/libibus-1.0-5.symbols
+  * d/copyright: Dropped reference to non-existing file
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Wed, 22 Feb 2023 21:49:59 +0100
+
+ibus (1.5.27-5) unstable; urgency=medium
+
+  * Team upload
+
+  [ Janitor ]
+  * Remove constraints unnecessary since buster
+
+  [ Gunnar Hjalmarsson ]
+  * Bump Standards-Version to 4.6.2
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Mon, 13 Feb 2023 12:22:01 +0100
+
+ibus (1.5.27-4) unstable; urgency=medium
+
+  * Team upload
+  * Work around uscan issue with GitHub releases page
+  * Override Lintian "source-is-missing" error
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Sun, 06 Nov 2022 22:12:55 +0100
+
+ibus (1.5.27-3) unstable; urgency=medium
+
+  * Team upload
+
+  [ Changwoo Ryu ]
+  * Drop the FHS 2.x /usr/lib/ibus compatibility; all the ibus engine
+    packages have been migrated to use /usr/libexec. (Closes: #955219)
+
+  [ Eberhard Beilharz ]
+  * Fix surrounding text issue (closes: #1019453):
+    - d/p/client-gtk2_Stop-many-warnings-of-surrounding-text.patch
+    - d/p/client-gtk2_Update-capabilities-if-retrieve-surrounding-.patch
+    - d/p/client-gtk2_Update-surrounding-text-properties-by-focus-.patch
+
+  [ Samuel Thibault ]
+  * Ignore systemd when building on non-Linux (closes: #1023340)
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Wed, 02 Nov 2022 23:01:09 +0100
+
+ibus (1.5.27-2) unstable; urgency=medium
+
+  * Team upload
+
+  [ Simon McVittie ]
+  * Only build and run ibus-tests on architectures with working mozjs102
+    (closes: #1018871)
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Thu, 01 Sep 2022 22:31:05 +0200
+
+ibus (1.5.27-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream release
+  * Dropped patches, applied upstream
+  * Refresh d/p/debian-multiarch.patch
+  * Bump Standards-Version to 4.6.1
+  * Build-dep on libnotify-dev
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Mon, 29 Aug 2022 00:01:19 +0200
+
+ibus (1.5.26-4) unstable; urgency=medium
+
+  * Team upload
+  * d/p/src-services_Fix-bashisms-in-org.freedesktop.IBus.session.patch:
+    - Cherry picked upstream PR from Mitsuya Shibata (closes: #1009256,
+      LP: #1968459).
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Sun, 10 Apr 2022 14:16:37 +0200
+
+ibus (1.5.26-3) unstable; urgency=medium
+
+  * Team upload
+  * d/p/src-Fix-refcounting-issues.patch:
+    - Cherry picked from upstream (LP: #1965673)
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Mon, 04 Apr 2022 13:01:37 +0200
+
+ibus (1.5.26-2) unstable; urgency=medium
+
+  * Team upload
+  * Add systemd to Build-Depends (LP: #1964682)
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Mon, 14 Mar 2022 18:55:49 +0100
+
+ibus (1.5.26-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream release
+  * Tweak of lintian override files
+  * Dropped patches, applied upstream
+  * Install new files
+  * Bump copyright year
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Mon, 14 Mar 2022 11:27:48 +0100
+
 ibus (1.5.25-3) unstable; urgency=medium
 
   * Team upload

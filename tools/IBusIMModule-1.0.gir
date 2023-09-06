@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!-- This file was automatically generated from C sources - DO NOT EDIT!
+To affect the contents of this file, edit the original C definitions,
+and/or use gtk-doc annotations.  -->
+<repository version="1.2"
+            xmlns="http://www.gtk.org/introspection/core/1.0"
+            xmlns:c="http://www.gtk.org/introspection/c/1.0"
+            xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
+  <include name="GLib" version="2.0"/>
+  <package name="glib-2.0"/>
+  <c:include name="ibus.h"/>
+  <namespace name="IBusIMModule"
+             version="1.0"
+             shared-library=""
+             c:identifier-prefixes="IBus"
+             c:symbol-prefixes="ibus">
+    <function name="im_module_get_id" c:identifier="ibus_im_module_get_id">
+      <doc xml:space="preserve"
+           filename="ibusimmodule.h"
+           line="25">Retrieve im-module value from GTK instance.</doc>
+      <source-position filename="ibusimmodule.h" line="34"/>
+      <return-value transfer-ownership="full" nullable="1">
+        <doc xml:space="preserve"
+             filename="ibusimmodule.h"
+             line="32">im-module value.</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="argc" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="ibusimmodule.h"
+               line="27">The length of argv</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="argv" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="ibusimmodule.h"
+               line="28">argv from main()</doc>
+          <array length="0" zero-terminated="0" c:type="char**">
+            <type name="utf8"/>
+          </array>
+        </parameter>
+      </parameters>
+    </function>
+  </namespace>
+</repository>

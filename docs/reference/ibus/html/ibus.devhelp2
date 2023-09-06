@@ -250,7 +250,9 @@
     <keyword type="function" name="ibus_engine_get_content_type ()" link="IBusEngine.html#ibus-engine-get-content-type"/>
     <keyword type="function" name="ibus_engine_get_name ()" link="IBusEngine.html#ibus-engine-get-name"/>
     <keyword type="struct" name="struct IBusEngine" link="IBusEngine.html#IBusEngine-struct"/>
+    <keyword type="property" name="The “active-surrounding-text” property" link="IBusEngine.html#IBusEngine--active-surrounding-text"/>
     <keyword type="property" name="The “engine-name” property" link="IBusEngine.html#IBusEngine--engine-name"/>
+    <keyword type="property" name="The “has-focus-id” property" link="IBusEngine.html#IBusEngine--has-focus-id"/>
     <keyword type="signal" name="The “cancel-hand-writing” signal" link="IBusEngine.html#IBusEngine-cancel-hand-writing"/>
     <keyword type="signal" name="The “candidate-clicked” signal" link="IBusEngine.html#IBusEngine-candidate-clicked"/>
     <keyword type="signal" name="The “cursor-down” signal" link="IBusEngine.html#IBusEngine-cursor-down"/>
@@ -258,7 +260,9 @@
     <keyword type="signal" name="The “disable” signal" link="IBusEngine.html#IBusEngine-disable"/>
     <keyword type="signal" name="The “enable” signal" link="IBusEngine.html#IBusEngine-enable"/>
     <keyword type="signal" name="The “focus-in” signal" link="IBusEngine.html#IBusEngine-focus-in"/>
+    <keyword type="signal" name="The “focus-in-id” signal" link="IBusEngine.html#IBusEngine-focus-in-id"/>
     <keyword type="signal" name="The “focus-out” signal" link="IBusEngine.html#IBusEngine-focus-out"/>
+    <keyword type="signal" name="The “focus-out-id” signal" link="IBusEngine.html#IBusEngine-focus-out-id"/>
     <keyword type="signal" name="The “page-down” signal" link="IBusEngine.html#IBusEngine-page-down"/>
     <keyword type="signal" name="The “page-up” signal" link="IBusEngine.html#IBusEngine-page-up"/>
     <keyword type="signal" name="The “process-hand-writing-event” signal" link="IBusEngine.html#IBusEngine-process-hand-writing-event"/>
@@ -346,6 +350,8 @@
     <keyword type="function" name="ibus_input_context_needs_surrounding_text ()" link="IBusInputContext.html#ibus-input-context-needs-surrounding-text"/>
     <keyword type="function" name="ibus_input_context_set_content_type ()" link="IBusInputContext.html#ibus-input-context-set-content-type"/>
     <keyword type="function" name="ibus_input_context_set_client_commit_preedit ()" link="IBusInputContext.html#ibus-input-context-set-client-commit-preedit"/>
+    <keyword type="function" name="ibus_input_context_set_post_process_key_event ()" link="IBusInputContext.html#ibus-input-context-set-post-process-key-event" since="1.5.29" stability="Unstable"/>
+    <keyword type="function" name="ibus_input_context_post_process_key_event ()" link="IBusInputContext.html#ibus-input-context-post-process-key-event" since="1.5.29" stability="Unstable"/>
     <keyword type="struct" name="struct IBusInputContext" link="IBusInputContext.html#IBusInputContext-struct"/>
     <keyword type="signal" name="The “commit-text” signal" link="IBusInputContext.html#IBusInputContext-commit-text"/>
     <keyword type="signal" name="The “cursor-down-lookup-table” signal" link="IBusInputContext.html#IBusInputContext-cursor-down-lookup-table"/>
@@ -360,6 +366,7 @@
     <keyword type="signal" name="The “page-down-lookup-table” signal" link="IBusInputContext.html#IBusInputContext-page-down-lookup-table"/>
     <keyword type="signal" name="The “page-up-lookup-table” signal" link="IBusInputContext.html#IBusInputContext-page-up-lookup-table"/>
     <keyword type="signal" name="The “register-properties” signal" link="IBusInputContext.html#IBusInputContext-register-properties"/>
+    <keyword type="signal" name="The “require-surrounding-text” signal" link="IBusInputContext.html#IBusInputContext-require-surrounding-text"/>
     <keyword type="signal" name="The “show-auxiliary-text” signal" link="IBusInputContext.html#IBusInputContext-show-auxiliary-text"/>
     <keyword type="signal" name="The “show-lookup-table” signal" link="IBusInputContext.html#IBusInputContext-show-lookup-table"/>
     <keyword type="signal" name="The “show-preedit-text” signal" link="IBusInputContext.html#IBusInputContext-show-preedit-text"/>
@@ -4766,18 +4773,23 @@
     <keyword type="function" name="ibus_bus_preload_engines ()" link="IBusBus.html#ibus-bus-preload-engines"/>
     <keyword type="function" name="ibus_bus_preload_engines_async ()" link="IBusBus.html#ibus-bus-preload-engines-async"/>
     <keyword type="function" name="ibus_bus_preload_engines_async_finish ()" link="IBusBus.html#ibus-bus-preload-engines-async-finish"/>
+    <keyword type="function" name="ibus_bus_set_global_shortcut_keys ()" link="IBusBus.html#ibus-bus-set-global-shortcut-keys" since="1.5.29" stability="Unstable"/>
+    <keyword type="function" name="ibus_bus_set_global_shortcut_keys_async ()" link="IBusBus.html#ibus-bus-set-global-shortcut-keys-async" since="1.5.29" stability="Unstable"/>
+    <keyword type="function" name="ibus_bus_set_global_shortcut_keys_async_finish ()" link="IBusBus.html#ibus-bus-set-global-shortcut-keys-async-finish" since="1.5.29" stability="Unstable"/>
     <keyword type="function" name="ibus_bus_get_ibus_property ()" link="IBusBus.html#ibus-bus-get-ibus-property"/>
     <keyword type="function" name="ibus_bus_get_ibus_property_async ()" link="IBusBus.html#ibus-bus-get-ibus-property-async"/>
     <keyword type="function" name="ibus_bus_get_ibus_property_async_finish ()" link="IBusBus.html#ibus-bus-get-ibus-property-async-finish"/>
     <keyword type="function" name="ibus_bus_set_ibus_property ()" link="IBusBus.html#ibus-bus-set-ibus-property"/>
     <keyword type="function" name="ibus_bus_set_ibus_property_async ()" link="IBusBus.html#ibus-bus-set-ibus-property-async"/>
     <keyword type="function" name="ibus_bus_set_ibus_property_async_finish ()" link="IBusBus.html#ibus-bus-set-ibus-property-async-finish"/>
+    <keyword type="enum" name="enum IBusBusGlobalBindingType" link="IBusBus.html#IBusBusGlobalBindingType" since="1.5.29" stability="Unstable"/>
     <keyword type="struct" name="struct IBusBus" link="IBusBus.html#IBusBus-struct"/>
     <keyword type="property" name="The “client-only” property" link="IBusBus.html#IBusBus--client-only"/>
     <keyword type="property" name="The “connect-async” property" link="IBusBus.html#IBusBus--connect-async"/>
     <keyword type="signal" name="The “connected” signal" link="IBusBus.html#IBusBus-connected"/>
     <keyword type="signal" name="The “disconnected” signal" link="IBusBus.html#IBusBus-disconnected"/>
     <keyword type="signal" name="The “global-engine-changed” signal" link="IBusBus.html#IBusBus-global-engine-changed"/>
+    <keyword type="signal" name="The “global-shortcut-key-responded” signal" link="IBusBus.html#IBusBus-global-shortcut-key-responded"/>
     <keyword type="signal" name="The “name-owner-changed” signal" link="IBusBus.html#IBusBus-name-owner-changed"/>
     <keyword type="macro" name="IBUS_PROXY_FLAGS()" link="IBusProxy.html#IBUS-PROXY-FLAGS:CAPS"/>
     <keyword type="macro" name="IBUS_PROXY_SET_FLAGS()" link="IBusProxy.html#IBUS-PROXY-SET-FLAGS:CAPS"/>
@@ -4809,6 +4821,7 @@
     <keyword type="function" name="ibus_service_unregister ()" link="IBusService.html#ibus-service-unregister"/>
     <keyword type="function" name="ibus_service_emit_signal ()" link="IBusService.html#ibus-service-emit-signal"/>
     <keyword type="function" name="ibus_service_class_add_interfaces ()" link="IBusService.html#ibus-service-class-add-interfaces"/>
+    <keyword type="function" name="ibus_service_class_free_interfaces ()" link="IBusService.html#ibus-service-class-free-interfaces"/>
     <keyword type="struct" name="struct IBusService" link="IBusService.html#IBusService-struct"/>
     <keyword type="macro" name="ibus_warning()" link="ibus-ibusdebug.html#ibus-warning"/>
     <keyword type="function" name="ibus_error_quark ()" link="ibus-ibuserror.html#ibus-error-quark"/>
@@ -4890,6 +4903,9 @@
     <keyword type="constant" name="PROP_STATE_UNCHECKED" link="IBusProperty.html#PROP-STATE-UNCHECKED:CAPS"/>
     <keyword type="constant" name="PROP_STATE_CHECKED" link="IBusProperty.html#PROP-STATE-CHECKED:CAPS"/>
     <keyword type="constant" name="PROP_STATE_INCONSISTENT" link="IBusProperty.html#PROP-STATE-INCONSISTENT:CAPS"/>
+    <keyword type="constant" name="IBUS_BUS_GLOBAL_BINDING_TYPE_ANY" link="IBusBus.html#IBUS-BUS-GLOBAL-BINDING-TYPE-ANY:CAPS"/>
+    <keyword type="constant" name="IBUS_BUS_GLOBAL_BINDING_TYPE_IME_SWITCHER" link="IBusBus.html#IBUS-BUS-GLOBAL-BINDING-TYPE-IME-SWITCHER:CAPS"/>
+    <keyword type="constant" name="IBUS_BUS_GLOBAL_BINDING_TYPE_EMOJI_TYPING" link="IBusBus.html#IBUS-BUS-GLOBAL-BINDING-TYPE-EMOJI-TYPING:CAPS"/>
     <keyword type="constant" name="IBUS_IN_DESTRUCTION" link="IBusObject.html#IBUS-IN-DESTRUCTION:CAPS"/>
     <keyword type="constant" name="IBUS_DESTROYED" link="IBusObject.html#IBUS-DESTROYED:CAPS"/>
     <keyword type="constant" name="IBUS_RESERVED_1" link="IBusObject.html#IBUS-RESERVED-1:CAPS"/>
@@ -4921,6 +4937,9 @@
     <keyword type="constant" name="IBUS_CAP_FOCUS" link="ibus-ibustypes.html#IBUS-CAP-FOCUS:CAPS"/>
     <keyword type="constant" name="IBUS_CAP_PROPERTY" link="ibus-ibustypes.html#IBUS-CAP-PROPERTY:CAPS"/>
     <keyword type="constant" name="IBUS_CAP_SURROUNDING_TEXT" link="ibus-ibustypes.html#IBUS-CAP-SURROUNDING-TEXT:CAPS"/>
+    <keyword type="constant" name="IBUS_CAP_OSK" link="ibus-ibustypes.html#IBUS-CAP-OSK:CAPS"/>
+    <keyword type="constant" name="IBUS_CAP_SYNC_PROCESS_KEY" link="ibus-ibustypes.html#IBUS-CAP-SYNC-PROCESS-KEY:CAPS"/>
+    <keyword type="constant" name="IBUS_CAP_SYNC_PROCESS_KEY_V2" link="ibus-ibustypes.html#IBUS-CAP-SYNC-PROCESS-KEY-V2:CAPS"/>
     <keyword type="constant" name="IBUS_ENGINE_PREEDIT_CLEAR" link="ibus-ibustypes.html#IBUS-ENGINE-PREEDIT-CLEAR:CAPS"/>
     <keyword type="constant" name="IBUS_ENGINE_PREEDIT_COMMIT" link="ibus-ibustypes.html#IBUS-ENGINE-PREEDIT-COMMIT:CAPS"/>
     <keyword type="constant" name="IBUS_ORIENTATION_HORIZONTAL" link="ibus-ibustypes.html#IBUS-ORIENTATION-HORIZONTAL:CAPS"/>
@@ -4961,6 +4980,7 @@
     <keyword type="constant" name="IBUS_INPUT_HINT_VERTICAL_WRITING" link="ibus-ibustypes.html#IBUS-INPUT-HINT-VERTICAL-WRITING:CAPS"/>
     <keyword type="constant" name="IBUS_INPUT_HINT_EMOJI" link="ibus-ibustypes.html#IBUS-INPUT-HINT-EMOJI:CAPS"/>
     <keyword type="constant" name="IBUS_INPUT_HINT_NO_EMOJI" link="ibus-ibustypes.html#IBUS-INPUT-HINT-NO-EMOJI:CAPS"/>
+    <keyword type="constant" name="IBUS_INPUT_HINT_PRIVATE" link="ibus-ibustypes.html#IBUS-INPUT-HINT-PRIVATE:CAPS"/>
     <keyword type="member" name="IBusAttribute-struct.type" link="IBusAttribute.html#IBusAttribute-struct.type"/>
     <keyword type="member" name="IBusAttribute-struct.value" link="IBusAttribute.html#IBusAttribute-struct.value"/>
     <keyword type="member" name="IBusAttribute-struct.start-index" link="IBusAttribute.html#IBusAttribute-struct.start-index"/>

@@ -50,6 +50,7 @@ libibus-1.0.so.5 libibus-1.0-5 #MINVER#
  ibus_bus_get_use_sys_layout@Base 1.5.1
  ibus_bus_get_use_sys_layout_async@Base 1.5.1
  ibus_bus_get_use_sys_layout_async_finish@Base 1.5.1
+ ibus_bus_global_binding_type_get_type@Base 1.5.29~
  ibus_bus_hello@Base 1.5.1
  ibus_bus_is_connected@Base 1.5.1
  ibus_bus_is_global_engine_enabled@Base 1.5.1
@@ -89,6 +90,9 @@ libibus-1.0.so.5 libibus-1.0-5 #MINVER#
  ibus_bus_set_global_engine@Base 1.3.5
  ibus_bus_set_global_engine_async@Base 1.5.1
  ibus_bus_set_global_engine_async_finish@Base 1.5.1
+ ibus_bus_set_global_shortcut_keys@Base 1.5.29~
+ ibus_bus_set_global_shortcut_keys_async@Base 1.5.29~
+ ibus_bus_set_global_shortcut_keys_async_finish@Base 1.5.29~
  ibus_bus_set_ibus_property@Base 1.5.2-3~
  ibus_bus_set_ibus_property_async@Base 1.5.2-3~
  ibus_bus_set_ibus_property_async_finish@Base 1.5.2-3~
@@ -117,16 +121,16 @@ libibus-1.0.so.5 libibus-1.0-5 #MINVER#
  ibus_component_new_varargs@Base 1.5.1
  ibus_component_output@Base 1.2.99.20100202
  ibus_component_output_engines@Base 1.2.99.20100202
+ ibus_compose_key_flag@Base 1.5.29~beta2
  ibus_compose_table_check@Base 1.5.25
- ibus_compose_table_compact@Base 1.5.14
- ibus_compose_table_compact_32bit@Base 1.5.21
- ibus_compose_table_compact_32bit_priv@Base 1.5.21
- ibus_compose_table_compact_check@Base 1.5.25
+ ibus_compose_table_deserialize@Base 1.5.28
  ibus_compose_table_list_add_array@Base 1.5.14
  ibus_compose_table_list_add_file@Base 1.5.14
+ ibus_compose_table_list_add_table@Base 1.5.28
  ibus_compose_table_load_cache@Base 1.5.21
  ibus_compose_table_new_with_file@Base 1.5.14
  ibus_compose_table_save_cache@Base 1.5.21
+ ibus_compose_table_serialize@Base 1.5.28
  ibus_config_get_type@Base 1.2.99.20100202
  ibus_config_get_value@Base 1.2.99.20100202
  ibus_config_get_value_async@Base 1.5.1
@@ -258,6 +262,7 @@ libibus-1.0.so.5 libibus-1.0-5 #MINVER#
  ibus_input_context_new_async_finish@Base 1.5.1
  ibus_input_context_page_down@Base 1.2.99.20100202
  ibus_input_context_page_up@Base 1.2.99.20100202
+ ibus_input_context_post_process_key_event@Base 1.5.28
  ibus_input_context_process_hand_writing_event@Base 1.5.1
  ibus_input_context_process_key_event@Base 1.2.99.20100202
  ibus_input_context_process_key_event_async@Base 1.5.1
@@ -272,6 +277,7 @@ libibus-1.0.so.5 libibus-1.0-5 #MINVER#
  ibus_input_context_set_cursor_location@Base 1.2.99.20100202
  ibus_input_context_set_cursor_location_relative@Base 1.5.14
  ibus_input_context_set_engine@Base 1.2.99.20100202
+ ibus_input_context_set_post_process_key_event@Base 1.5.28
  ibus_input_context_set_surrounding_text@Base 1.5.1
  ibus_input_hints_get_type@Base 1.5.4
  ibus_input_purpose_get_type@Base 1.5.4
@@ -399,6 +405,7 @@ libibus-1.0.so.5 libibus-1.0-5 #MINVER#
  ibus_serializable_serialize_object@Base 1.5.18
  ibus_serializable_set_qattachment@Base 1.2.99.20100202
  ibus_service_class_add_interfaces@Base 1.5.1
+ ibus_service_class_free_interfaces@Base 1.5.29~
  ibus_service_emit_signal@Base 1.5.1
  ibus_service_get_connection@Base 1.5.1
  ibus_service_get_object_path@Base 1.5.1

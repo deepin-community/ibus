@@ -327,6 +327,12 @@ which is saved in ibus_emojier_run().</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="is-wayland"
+                writable="1"
+                transfer-ownership="none"
+                default-value="FALSE">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <field name="parent_instance" readable="0" private="1">
         <type name="Gtk.Window" c:type="GtkWindow"/>
       </field>
@@ -373,7 +379,10 @@ which is saved in ibus_emojier_run().</doc>
         <type name="Gtk.WindowClass" c:type="GtkWindowClass"/>
       </field>
     </record>
-    <record name="EmojierPrivate" c:type="IBusEmojierPrivate" disguised="1">
+    <record name="EmojierPrivate"
+            c:type="IBusEmojierPrivate"
+            disguised="1"
+            opaque="1">
       <source-position filename="ibusemojidialog.h" line="39"/>
     </record>
     <docsection name="ibusemojidialog">

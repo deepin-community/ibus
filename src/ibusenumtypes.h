@@ -40,6 +40,23 @@ GType ibus_attr_underline_get_type (void) G_GNUC_CONST;
  */
 #define IBUS_TYPE_ATTR_UNDERLINE (ibus_attr_underline_get_type ())
 
+/* enumerations from "ibusbus.h" */
+/**
+ * ibus_bus_global_binding_type_get_type:
+ * @returns: GType of IBUS_BUS_GLOBAL_BINDING_TYPE
+ *
+ * Returns the type of IBUS_BUS_GLOBAL_BINDING_TYPE as GType.
+ */
+GType ibus_bus_global_binding_type_get_type (void) G_GNUC_CONST;
+
+/**
+ * IBUS_TYPE_BUS_GLOBAL_BINDING_TYPE:
+ * @returns: GType of IBUS_BUS_GLOBAL_BINDING_TYPE
+ *
+ * Returns the type of IBUS_BUS_GLOBAL_BINDING_TYPE as GType.
+ */
+#define IBUS_TYPE_BUS_GLOBAL_BINDING_TYPE (ibus_bus_global_binding_type_get_type ())
+
 /* enumerations from "ibusobject.h" */
 /**
  * ibus_object_flags_get_type:

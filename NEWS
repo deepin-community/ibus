@@ -1,97 +1,183 @@
-Changes in IBus 1.5.25
+Changes in IBus 1.5.29-rc1
 
-Abu Huraira (1):
-      po: Update translation (Bengali)
+Alan01 (1):
+      po: Update translation (Danish)
 
-Alexey Rubtsov (1):
-      po: Update translation (Russian)
+Andi Chandler (1):
+      po: Update translation (English (United Kingdom))
 
-Emilio Herrera (1):
-      po: Update translation (Spanish)
+Emil Velikov (2):
+      makefile: don't gzip the man pages
+      makefile: manage the manpages via AC_CONFIG_FILES()
 
 Gunnar Hjalmarsson (1):
-      setup: Start ibus-daemon with the --daemonize option
+      Fix typo in src/ibusservice.h
 
-Jan Kuparinen (1):
-      po: Update translation (Finnish)
+Izumi Tsutsui (2):
+      src: Define X11_LOCALEDATADIR for BSD Compose data
+      Portability fixes for preparation of NetBSD CI
 
-JungHee Lee (1):
+Luna Jernberg (1):
+      po: Update translation (Swedish)
+
+Matt Turner (7):
+      configure: Run autoupdate
+      src/ibuscomposetable: Fix unaligned accesses
+      Add a .gitignore file
+      m4: Update m4 files
+      src: Fix missing ibusenumtypes.h with parallel build
+      src: Fix to build libibus-1.0.la twice
+      github/workflows: Build with make -j$(nproc)
+
+Mike FABIAN (1):
+      po: Update translation (German)
+
+Peng Wu (1):
+      client/gtk2: Update set_cursor_location function to use Gdk functions
+
+Piotr Drąg (1):
+      po: Update translation (Polish)
+
+Sibo Dong (1):
+      ui/gtk3: Update Emoji shortcut key in ibus-emoji(7)
+
+Simon Deziel (1):
+      src/services: use a shell exec in systemd service files
+
+Temuri Doghonadze (2):
+      po: Update translation (Georgian)
+      po: Update translation (Georgian)
+
+Yuri Chornoivan (1):
+      po: Update translation (Ukrainian)
+
+fujiwarat (48):
+      src: Call IBUS_TYPE_EMOJI_DATA in ibus_init()
+      client/x11: Fix Key typing order
+      util/IMdkit: Disable while loop before call ForwardEventMessageProc()
+      configure: Use AC_C_BIGENDIAN for BSD systems
+      src: Generate ibusenumtypes.h for gen-internal-compose-table
+      ui/gtk3: Add workaround Emojier can be launched
+      po: Update POT file
+      po: Update translation (Japanese)
+      setup: Unselect Add button in Select Input Method dialog
+      bus: Avoid to hang the process with SIGUSR1 signal
+      github/workflows: Delete internal patch since gspawn is fixed
+      bus: Fix to declare g_unix_signal_add with glib-unix.h
+      bus: Apply code style to inputcontext.c
+      src: Fix sync ibus_input_context_process_key_event()
+      client/x11: Fix sync ibus_input_context_process_key_event()
+      ui/gtk3: Revert to disable switching XKB layouts
+      client/wayland: Update Wayland protocol 1.31
+      client/wayland: Generate library to be imported by panel
+      ui/gtk3: Call set_overlay_panel with realize signal
+      ui/gtk3: Add desktop file for Plasma systemsettings5
+      client/gtk2: Connect global-engine-changed signal to switch XKB in Wayland
+      ui/gtk3: Make GtkMenu with GdkDisplayX11
+      ui/gtk3: Add an option to run ibus-daemon
+      ui/gtk3: Enable libdbusmenu in Indicator
+      bus: Handle IME switcher in BusIBusImpl
+      client/wayland: Implement new process_key_event
+      client/wayland: Fix sync ibus_input_context_process_key_event()
+      ui/gtk3: Fix Emojier on Plasma Wayland
+      Add Super-semicolon for Emojier shortcut key
+      ui/gtk3: Add notification popup for Plasma Wayland
+      github/workflows: Add libdbusmenu-gtk3-devel dependency
+      po: Update POT file
+      po: Update translation (Japanese)
+      Release 1.5.29-beta1
+      github/hooks: Add commit-msg
+      github/hooks: Fix typo in commit-msg
+      src/tests: Fix some tests
+      ui/gtk3: Fix configure --disable-appindicator
+      po: Update POT file
+      po: Update translation (Japanese)
+      src: Distinguish Arabic XKB and Keypad XKB options
+      Release 1.5.29-beta2
+      github/workflows: Fix Fedora 39 DNF
+      github/hooks: Add post-merge
+      github/hooks: Add a workaround in post-merge
+      Set local PKG_CONFIG_PATH
+      engine: Update simple.xml with xkeyboard-config 2.39
+      Release 1.5.29-rc1
+
+oreo639 (1):
+      configure: Fix cross compiling
+
+김인수 (1):
       po: Update translation (Korean)
 
-Liu Tao (1):
-      po: Update translation (Chinese (Simplified) (zh_CN))
 
-Olivier Fourdan (1):
-      client/x11: Add support for XFixes ClientDisconnectMode
-
-Quentin PAGÈS (1):
-      po: Update translation (Occitan)
-
-Seong-ho Cho (1):
-      po: Update translation (Korean)
-
-fujiwarat (19):
-      src/tests: Run gnome-session with no-overview mode
-      client/gtk2: Implement ibus_im_context_set_surrounding_with_selection()
-      Fix code reviews
-      src/tests: Fix ibus-desktop-testing-runner to get gsettings result
-      src/ibuscomposetable: Do not include the same compose file
-      src/tests: Delete G_MESSAGES_DEBUG in desktop-testing for gsettings
-      Change default Emoji shortcut key
-      setup: Enhance engine search function
-      src/ibuscomposetable: Move ibus_compose_table_check
-      src/ibusenginesimple: Multi_key to 0xB7
-      src: Update ibuskeysyms.h for latest dead keys
-      src/ibusenginesimple: Change gint to int
-      src/ibusenginesimple: Make Compose preedit less intrusive
-      Code reviews
-      client/gtk2/ibusimcontext: Enable sync process in GTK4
-      autogen: Check xkeyboard-config-devel for XKBCONFIG_BASE variable
-      engine: Update simple.xml with xkeyboard-config 2.33
-      src/ibuscomposetable: Do not output incompleted compose dead keys
-      Release 1.5.25
-
-lf- (2):
-      src/ibuscomposetable: Add support for the include directive
-      src/ibuscomposetable: Fix a buffer overflow in compose handling
-
-simmon (1):
-      po: Update translation (Japanese) (Korean)
-
-user202729 (1):
-      src: Fix a typo in ibusenginesimple.h
-
-
-src/tests: Run gnome-session with no-overview mode (fujiwarat) 214b60a3
-client/gtk2: Implement ibus_im_context_set_surrounding_with_selection() (fujiwarat) d105a394
-Fix code reviews (fujiwarat) e9e16428
-src/tests: Fix ibus-desktop-testing-runner to get gsettings result (fujiwarat) bc7811c6
-src/ibuscomposetable: Add support for the include directive (lf-) 9f9c88be
-src/ibuscomposetable: Do not include the same compose file (fujiwarat) a755d160
-src/ibuscomposetable: Fix a buffer overflow in compose handling (lf-) 7f09379b
-src/tests: Delete G_MESSAGES_DEBUG in desktop-testing for gsettings (fujiwarat) ab6b9587
-Change default Emoji shortcut key (fujiwarat) b952d30a
-setup: Enhance engine search function (fujiwarat) a4939f67
-src/ibuscomposetable: Move ibus_compose_table_check (fujiwarat) 7e12d589
-src/ibusenginesimple: Multi_key to 0xB7 (fujiwarat) 2fc1a028
-src: Update ibuskeysyms.h for latest dead keys (fujiwarat) 3e2609e6
-src/ibusenginesimple: Change gint to int (fujiwarat) df495660
-src/ibusenginesimple: Make Compose preedit less intrusive (fujiwarat) 4259f163
-Code reviews (fujiwarat) 17ae266c
-client/gtk2/ibusimcontext: Enable sync process in GTK4 (fujiwarat) a8231617
-client/x11: Add support for XFixes ClientDisconnectMode (Olivier Fourdan) 71ca4a98
-po: Update translation (Spanish) (Emilio Herrera) c0170aea
-po: Update translation (Bengali) (Abu Huraira) 1239c930
-po: Update translation (Finnish) (Jan Kuparinen) 3ceecf38
-po: Update translation (Occitan) (Quentin PAGÈS) 6e1588d0
-po: Update translation (Chinese (Simplified) (zh_CN)) (Liu Tao) 883f5172
-po: Update translation (Russian) (Alexey Rubtsov) a7ebfc94
-po: Update translation (Japanese) (Korean) (simmon) b85c399c
-po: Update translation (Korean) (Seong-ho Cho) 904f162e
-po: Update translation (Korean) (JungHee Lee) 32d54e0f
-setup: Start ibus-daemon with the --daemonize option (Gunnar Hjalmarsson) e465011b
-src: Fix a typo in ibusenginesimple.h (user202729) bc265fb6
-autogen: Check xkeyboard-config-devel for XKBCONFIG_BASE variable (fujiwarat) 934c456e
-engine: Update simple.xml with xkeyboard-config 2.33 (fujiwarat) 238eb612
-src/ibuscomposetable: Do not output incompleted compose dead keys (fujiwarat) 5bd2ecc5
-Release 1.5.25 (fujiwarat) cfb263f0
+src/services: use a shell exec in systemd service files (Simon Deziel) a140924e
+src: Call IBUS_TYPE_EMOJI_DATA in ibus_init() (fujiwarat) 7c8abbe8
+src: Define X11_LOCALEDATADIR for BSD Compose data (Izumi Tsutsui) ce5e2bb4
+client/x11: Fix Key typing order (fujiwarat) 497f0c74
+util/IMdkit: Disable while loop before call ForwardEventMessageProc() (fujiwarat) 8f706d16
+ui/gtk3: Update Emoji shortcut key in ibus-emoji(7) (Sibo Dong) a4007f7d
+Portability fixes for preparation of NetBSD CI (Izumi Tsutsui) 9553dbf1
+configure: Use AC_C_BIGENDIAN for BSD systems (fujiwarat) 630f3f73
+src: Generate ibusenumtypes.h for gen-internal-compose-table (fujiwarat) 67a0f36d
+ui/gtk3: Add workaround Emojier can be launched (fujiwarat) 310c442b
+po: Update translation (English (United Kingdom)) (Andi Chandler) fbbb76fd
+po: Update POT file (fujiwarat) 01c941e3
+po: Update translation (Japanese) (fujiwarat) 35d7438b
+makefile: don't gzip the man pages (Emil Velikov) 1a25975d
+makefile: manage the manpages via AC_CONFIG_FILES() (Emil Velikov) 03a486c1
+setup: Unselect Add button in Select Input Method dialog (fujiwarat) 4831ed59
+configure: Run autoupdate (Matt Turner) 76f2f4a3
+src/ibuscomposetable: Fix unaligned accesses (Matt Turner) b97e6669
+Add a .gitignore file (Matt Turner) d23bbdd4
+m4: Update m4 files (Matt Turner) f0492c86
+configure: Fix cross compiling (oreo639) 18f0d9f5
+bus: Avoid to hang the process with SIGUSR1 signal (fujiwarat) 25a2dfc1
+src: Fix missing ibusenumtypes.h with parallel build (Matt Turner) be1f1d0d
+src: Fix to build libibus-1.0.la twice (Matt Turner) f25c48a1
+github/workflows: Build with make -j$(nproc) (Matt Turner) 692da976
+github/workflows: Delete internal patch since gspawn is fixed (fujiwarat) 431c72b2
+bus: Fix to declare g_unix_signal_add with glib-unix.h (fujiwarat) 580ea41b
+bus: Apply code style to inputcontext.c (fujiwarat) 7237fcc6
+src: Fix sync ibus_input_context_process_key_event() (fujiwarat) 38f09c65
+client/x11: Fix sync ibus_input_context_process_key_event() (fujiwarat) 7502abbe
+ui/gtk3: Revert to disable switching XKB layouts (fujiwarat) c3667366
+client/wayland: Update Wayland protocol 1.31 (fujiwarat) e379bafa
+client/wayland: Generate library to be imported by panel (fujiwarat) 494448b7
+ui/gtk3: Call set_overlay_panel with realize signal (fujiwarat) 6ed5e45c
+ui/gtk3: Add desktop file for Plasma systemsettings5 (fujiwarat) 3f3f0b6b
+client/gtk2: Connect global-engine-changed signal to switch XKB in Wayland (fujiwarat) b0f06aef
+ui/gtk3: Make GtkMenu with GdkDisplayX11 (fujiwarat) b8ab8001
+ui/gtk3: Add an option to run ibus-daemon (fujiwarat) ed552e86
+ui/gtk3: Enable libdbusmenu in Indicator (fujiwarat) 8923456a
+bus: Handle IME switcher in BusIBusImpl (fujiwarat) 42be2727
+client/wayland: Implement new process_key_event (fujiwarat) 281c9aeb
+client/wayland: Fix sync ibus_input_context_process_key_event() (fujiwarat) 7b83a1f0
+ui/gtk3: Fix Emojier on Plasma Wayland (fujiwarat) 29520357
+Add Super-semicolon for Emojier shortcut key (fujiwarat) 0251f2cb
+ui/gtk3: Add notification popup for Plasma Wayland (fujiwarat) 4a15f66a
+github/workflows: Add libdbusmenu-gtk3-devel dependency (fujiwarat) 2f40eea2
+po: Update POT file (fujiwarat) e468c9e4
+po: Update translation (Georgian) (Temuri Doghonadze) c2a15bc2
+po: Update translation (Danish) (Alan01) 01f9a27f
+po: Update translation (Japanese) (fujiwarat) e9f59d64
+Release 1.5.29-beta1 (fujiwarat) dfad02bb
+github/hooks: Add commit-msg (fujiwarat) 3bbec69d
+github/hooks: Fix typo in commit-msg (fujiwarat) cac49dc5
+src/tests: Fix some tests (fujiwarat) d47dc552
+ui/gtk3: Fix configure --disable-appindicator (fujiwarat) 4e644e8d
+Fix typo in src/ibusservice.h (Gunnar Hjalmarsson) 98c6ee72
+po: Update POT file (fujiwarat) 56a6d270
+po: Update translation (Japanese) (fujiwarat) e6c436f8
+src: Distinguish Arabic XKB and Keypad XKB options (fujiwarat) ad883dc6
+Release 1.5.29-beta2 (fujiwarat) e225c117
+github/workflows: Fix Fedora 39 DNF (fujiwarat) f05c12da
+github/hooks: Add post-merge (fujiwarat) 5ed9f138
+github/hooks: Add a workaround in post-merge (fujiwarat) 7c61e224
+client/gtk2: Update set_cursor_location function to use Gdk functions (Peng Wu) 86d9bb9a
+po: Update translation (German) (Mike FABIAN) a474d6e2
+po: Update translation (Ukrainian) (Yuri Chornoivan) fc597046
+po: Update translation (Polish) (Piotr Drąg) 2d841c74
+po: Update translation (Korean) (김인수) 8d706762
+po: Update translation (Swedish) (Luna Jernberg) 6b62480a
+po: Update translation (Georgian) (Temuri Doghonadze) 96a6850f
+Set local PKG_CONFIG_PATH (fujiwarat) cf3c5c00
+engine: Update simple.xml with xkeyboard-config 2.39 (fujiwarat) 155c5845
+Release 1.5.29-rc1 (fujiwarat) 8991379c

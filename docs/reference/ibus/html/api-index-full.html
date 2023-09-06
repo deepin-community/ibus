@@ -2453,6 +2453,10 @@ ibus_accelerator_valid, function in Accelerator Groups
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="IBusBus.html#IBusBus-global-shortcut-key-responded" title="The “global-shortcut-key-responded” signal">IBusBus::global-shortcut-key-responded</a>, object signal in <a class="link" href="IBusBus.html" title="IBusBus">IBusBus</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="IBusBus.html#IBusBus-name-owner-changed" title="The “name-owner-changed” signal">IBusBus::name-owner-changed</a>, object signal in <a class="link" href="IBusBus.html" title="IBusBus">IBusBus</a>
 </dt>
 <dd></dd>
@@ -2462,6 +2466,10 @@ ibus_accelerator_valid, function in Accelerator Groups
 <dd></dd>
 <dt>
 <a class="link" href="IBusBus.html#IBusBus--connect-async" title="The “connect-async” property">IBusBus:connect-async</a>, object property in <a class="link" href="IBusBus.html" title="IBusBus">IBusBus</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="IBusBus.html#IBusBusGlobalBindingType" title="enum IBusBusGlobalBindingType">IBusBusGlobalBindingType</a>, enum in <a class="link" href="IBusBus.html" title="IBusBus">IBusBus</a>
 </dt>
 <dd></dd>
 <dt>
@@ -2749,6 +2757,18 @@ ibus_accelerator_valid, function in Accelerator Groups
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="IBusBus.html#ibus-bus-set-global-shortcut-keys" title="ibus_bus_set_global_shortcut_keys ()">ibus_bus_set_global_shortcut_keys</a>, function in <a class="link" href="IBusBus.html" title="IBusBus">IBusBus</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="IBusBus.html#ibus-bus-set-global-shortcut-keys-async" title="ibus_bus_set_global_shortcut_keys_async ()">ibus_bus_set_global_shortcut_keys_async</a>, function in <a class="link" href="IBusBus.html" title="IBusBus">IBusBus</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="IBusBus.html#ibus-bus-set-global-shortcut-keys-async-finish" title="ibus_bus_set_global_shortcut_keys_async_finish ()">ibus_bus_set_global_shortcut_keys_async_finish</a>, function in <a class="link" href="IBusBus.html" title="IBusBus">IBusBus</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="IBusBus.html#ibus-bus-set-ibus-property" title="ibus_bus_set_ibus_property ()">ibus_bus_set_ibus_property</a>, function in <a class="link" href="IBusBus.html" title="IBusBus">IBusBus</a>
 </dt>
 <dd></dd>
@@ -3014,10 +3034,6 @@ ibus_check_algorithmically, function in ibusenginesimpleprivate
 </dt>
 <dd></dd>
 <dt>
-IBusComposeTableCompactPrivate, struct in ibusenginesimpleprivate
-</dt>
-<dd></dd>
-<dt>
 IBusComposeTablePrivate, struct in ibusenginesimpleprivate
 </dt>
 <dd></dd>
@@ -3026,15 +3042,11 @@ ibus_compose_table_check, function in ibusenginesimpleprivate
 </dt>
 <dd></dd>
 <dt>
-ibus_compose_table_compact, variable in ibusenginesimpleprivate
+ibus_compose_table_deserialize, function in ibusenginesimpleprivate
 </dt>
 <dd></dd>
 <dt>
-ibus_compose_table_compact_32bit, variable in ibusenginesimpleprivate
-</dt>
-<dd></dd>
-<dt>
-ibus_compose_table_compact_check, function in ibusenginesimpleprivate
+ibus_compose_table_serialize, function in ibusenginesimpleprivate
 </dt>
 <dd></dd>
 <dt>
@@ -4112,7 +4124,15 @@ ibus_emoji_dict_save, function in IBusEmojiData
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="IBusEngine.html#IBusEngine-focus-in-id" title="The “focus-in-id” signal">IBusEngine::focus-in-id</a>, object signal in <a class="link" href="IBusEngine.html" title="IBusEngine">IBusEngine</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="IBusEngine.html#IBusEngine-focus-out" title="The “focus-out” signal">IBusEngine::focus-out</a>, object signal in <a class="link" href="IBusEngine.html" title="IBusEngine">IBusEngine</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="IBusEngine.html#IBusEngine-focus-out-id" title="The “focus-out-id” signal">IBusEngine::focus-out-id</a>, object signal in <a class="link" href="IBusEngine.html" title="IBusEngine">IBusEngine</a>
 </dt>
 <dd></dd>
 <dt>
@@ -4164,7 +4184,15 @@ ibus_emoji_dict_save, function in IBusEmojiData
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="IBusEngine.html#IBusEngine--active-surrounding-text" title="The “active-surrounding-text” property">IBusEngine:active-surrounding-text</a>, object property in <a class="link" href="IBusEngine.html" title="IBusEngine">IBusEngine</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="IBusEngine.html#IBusEngine--engine-name" title="The “engine-name” property">IBusEngine:engine-name</a>, object property in <a class="link" href="IBusEngine.html" title="IBusEngine">IBusEngine</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="IBusEngine.html#IBusEngine--has-focus-id" title="The “has-focus-id” property">IBusEngine:has-focus-id</a>, object property in <a class="link" href="IBusEngine.html" title="IBusEngine">IBusEngine</a>
 </dt>
 <dd></dd>
 <dt>
@@ -6280,6 +6308,10 @@ ibus_extension_event_new, function in IBusXEvent
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="IBusInputContext.html#IBusInputContext-require-surrounding-text" title="The “require-surrounding-text” signal">IBusInputContext::require-surrounding-text</a>, object signal in <a class="link" href="IBusInputContext.html" title="IBusInputContext">IBusInputContext</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="IBusInputContext.html#IBusInputContext-show-auxiliary-text" title="The “show-auxiliary-text” signal">IBusInputContext::show-auxiliary-text</a>, object signal in <a class="link" href="IBusInputContext.html" title="IBusInputContext">IBusInputContext</a>
 </dt>
 <dd></dd>
@@ -6372,6 +6404,10 @@ ibus_extension_event_new, function in IBusXEvent
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="IBusInputContext.html#ibus-input-context-post-process-key-event" title="ibus_input_context_post_process_key_event ()">ibus_input_context_post_process_key_event</a>, function in <a class="link" href="IBusInputContext.html" title="IBusInputContext">IBusInputContext</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="IBusInputContext.html#ibus-input-context-process-hand-writing-event" title="ibus_input_context_process_hand_writing_event ()">ibus_input_context_process_hand_writing_event</a>, function in <a class="link" href="IBusInputContext.html" title="IBusInputContext">IBusInputContext</a>
 </dt>
 <dd></dd>
@@ -6417,6 +6453,10 @@ ibus_extension_event_new, function in IBusXEvent
 <dd></dd>
 <dt>
 <a class="link" href="IBusInputContext.html#ibus-input-context-set-engine" title="ibus_input_context_set_engine ()">ibus_input_context_set_engine</a>, function in <a class="link" href="IBusInputContext.html" title="IBusInputContext">IBusInputContext</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="IBusInputContext.html#ibus-input-context-set-post-process-key-event" title="ibus_input_context_set_post_process_key_event ()">ibus_input_context_set_post_process_key_event</a>, function in <a class="link" href="IBusInputContext.html" title="IBusInputContext">IBusInputContext</a>
 </dt>
 <dd></dd>
 <dt>
@@ -18303,6 +18343,10 @@ IBusProcessKeyEventData, struct in IBusXEvent
 <dd></dd>
 <dt>
 <a class="link" href="IBusService.html#ibus-service-class-add-interfaces" title="ibus_service_class_add_interfaces ()">ibus_service_class_add_interfaces</a>, function in <a class="link" href="IBusService.html" title="IBusService">IBusService</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="IBusService.html#ibus-service-class-free-interfaces" title="ibus_service_class_free_interfaces ()">ibus_service_class_free_interfaces</a>, function in <a class="link" href="IBusService.html" title="IBusService">IBusService</a>
 </dt>
 <dd></dd>
 <dt>
